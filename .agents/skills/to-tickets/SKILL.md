@@ -103,3 +103,14 @@ The end-to-end behaviour this ticket makes work, from the user's perspective, no
 </issue-template>
 
 In either form, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
+
+## Hackathon 3-Stream Parallel Slicing & Gantt Chart (`issues/00-gantt-roadmap.md`)
+ Always write tickets as local markdown files in `issues/` (never GitHub issues) using this structure:
+1. **Wave 1 (`issues/01-shared-foundation.md` — `Track: SHARED`):**
+   - Put ALL shared types, database schema, shared store interfaces, and base UI tokens into `01-shared-foundation.md`. This MUST be completed on `main` before branching the 3 parallel trees.
+2. **Wave 2+ (Divide evenly into `Track: A`, `Track: B`, `Track: C`):**
+   - Assign every subsequent vertical slice ticket to either `Track: A`, `Track: B`, or `Track: C` in its markdown header (`Status: OPEN`, `Track: A | B | C`, `Blocked By: ...`, `Files Touched: ...`).
+   - **Strict File Isolation Rule:** Tickets in Track A, Track B, and Track C MUST NOT modify the same feature files, routes, or components so the 3 branches merge back with zero conflicts.
+3. **Generate `issues/00-gantt-roadmap.md`:**
+   - Render a `mermaid` `gantt` chart (`dateFormat YYYY-MM-DD`) with sections: `section Wave 1 (Shared Foundation)`, `section Track A (Stream 1)`, `section Track B (Stream 2)`, `section Track C (Stream 3)`, and `section Integration`.
+   - Below the chart, output a Markdown table showing the exact files owned by Track A, Track B, and Track C and the commands to run them.
