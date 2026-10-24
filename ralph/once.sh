@@ -17,10 +17,14 @@ $ISSUES
 ### Instructions
 $PROMPT"
 
+# Headless runs cannot answer permission prompts, so the agent must be allowed
+# to run npm/git (tests, build, commit) without asking.
 if [ "$AGENT" = "claude" ]; then
-  claude --permission-mode acceptEdits -p "$FULL_PROMPT"
+  claude -p "$FULL_PROMPT" \
+    --permission-mode acceptEdits \
+    --allowedTools "Bash(npm *)" "Bash(npx *)" "Bash(node *)" "Bash(git *)" "Bash(ls *)" "Bash(mkdir *)"
 elif [ "$AGENT" = "kiro" ]; then
-  kiro-cli chat --non-interactive "$FULL_PROMPT"
+  kiro-cli chat --no-interactive --trust-all-tools "$FULL_PROMPT"
 elif [ "$AGENT" = "codex" ]; then
   codex exec --full-auto "$FULL_PROMPT"
 else

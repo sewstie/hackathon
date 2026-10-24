@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
+In this repo the issue tracker is local markdown files in `issues/` (no GitHub issues, no triage labels).
 
 ## Process
 
@@ -57,9 +57,9 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the tickets to the configured tracker
 
-Publish the approved tickets. **How** depends on the tracker `/setup-matt-pocock-skills` configured; the tickets are the same either way, only the shape of the blocking edges changes:
+**In this repo the tracker is always local files in `issues/`**: follow the "Hackathon 3-Stream Parallel Slicing" section below, which overrides the generic options here. Ralph (`ralph/prompt.md`) parses those exact headers.
 
-- **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below: one ticket per file, never a single combined file.
+- **Local files** → write one file per ticket under `issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below: one ticket per file, never a single combined file.
 - **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. If the source was an existing issue, make each ticket its sub-issue (tracker doc's operation). Apply the `ready-for-agent` triage label unless instructed otherwise; the tickets are agent-grabbable by construction.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
@@ -70,11 +70,12 @@ Do NOT close or modify any parent issue.
 
 # <NN>: <Ticket title>
 
+Status: OPEN
+Track: SHARED | A | B | C
+Blocked By: <NN-filenames, e.g. 01-shared-foundation.md> | None
+Files Touched: <folders/files this ticket may create or edit>
+
 **What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
-
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
-
-**Status:** ready-for-agent
 
 - [ ] Acceptance criterion 1
 - [ ] Acceptance criterion 2
@@ -111,6 +112,8 @@ In either form, avoid specific file paths or code snippets: they go stale fast. 
 2. **Wave 2+ (Divide evenly into `Track: A`, `Track: B`, `Track: C`):**
    - Assign every subsequent vertical slice ticket to either `Track: A`, `Track: B`, or `Track: C` in its markdown header (`Status: OPEN`, `Track: A | B | C`, `Blocked By: ...`, `Files Touched: ...`).
    - **Strict File Isolation Rule:** Tickets in Track A, Track B, and Track C MUST NOT modify the same feature files, routes, or components so the 3 branches merge back with zero conflicts.
+   - **No Cross-Track Blockers:** A Track A/B/C ticket may only be `Blocked By` `01-shared-foundation.md` or tickets in its OWN track. Each track runs on a separate branch/laptop, so it can never see another track's `Status: DONE`.
+   - Use the exact plain-text header lines from the local ticket template (`Status: OPEN`, `Track: X`, `Blocked By: ...`, `Files Touched: ...`); Ralph greps for them.
 3. **Generate `issues/00-gantt-roadmap.md`:**
    - Render a `mermaid` `gantt` chart (`dateFormat YYYY-MM-DD`) with sections: `section Wave 1 (Shared Foundation)`, `section Track A (Stream 1)`, `section Track B (Stream 2)`, `section Track C (Stream 3)`, and `section Integration`.
    - Below the chart, output a Markdown table showing the exact files owned by Track A, Track B, and Track C and the commands to run them.

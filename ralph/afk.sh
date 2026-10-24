@@ -16,3 +16,6 @@ for ((i=1; i<=MAX_LOOPS; i++)); do
     exit 0
   fi
 done
+
+echo "⚠️  Hit MAX_LOOPS=$MAX_LOOPS before Track $TRACK was COMPLETE. Check issues/ and rerun."
+exit 1
