@@ -1,6 +1,6 @@
 # 14: Campus home map (pins + heat layer)
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 13-landing-impact-search.md
 Files Touched: src/app/campus/[campusId]/ (campus home map section), src/components/map/ (client-only map, dynamic import)
