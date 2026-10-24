@@ -8,7 +8,7 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryStore, MIT_CAMPUS_ID } from "@/lib/store";
 import { buildSeed } from "@/lib/store/seed";
-import { PUBLIC_TEAMS, STATUSES, TIERS } from "@/types";
+import { OFFICES, PUBLIC_TEAMS, STATUSES, TIERS } from "@/types";
 import type { Category, Report } from "@/types";
 
 // A report's team is its category when that category is a public team.
@@ -94,6 +94,28 @@ describe("enriched MIT seed", () => {
     expect(seed.privateReports.find((p) => p.id === "priv-housing")?.reporterId).toBe(
       "user-ana",
     );
+  });
+
+  it("gives every private office at least one direct report (no empty staff inbox)", () => {
+    const seed = buildSeed();
+    for (const office of OFFICES) {
+      expect(
+        seed.privateReports.filter((p) => p.currentOffice === office).length,
+        `office ${office} should have a private report`,
+      ).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it("gives every staff member something to open in the staff view", async () => {
+    const store = new InMemoryStore();
+    const seed = buildSeed();
+    const reports = await store.listReports(MIT_CAMPUS_ID);
+    for (const staff of seed.users.filter((u) => u.role === "responder")) {
+      const queue = staff.publicTeam ? reports.filter((r) => r.category === staff.publicTeam).length : 0;
+      const inbox = (await store.listPrivateReportsForActor(staff)).length;
+      expect(queue + inbox, `${staff.name} should have reports`).toBeGreaterThan(0);
+      if (staff.publicTeam) expect(queue, `${staff.publicTeam} queue`).toBeGreaterThanOrEqual(6);
+    }
   });
 
   it("is deterministic: buildSeed() returns the same data every call", () => {

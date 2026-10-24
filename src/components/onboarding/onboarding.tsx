@@ -2,124 +2,172 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button, Dialog } from "@/components/ui";
-import { useActiveUser } from "@/components/layout";
+import { AriRobot } from "@/components/ari";
+import { demoViewFor, DEMO_ENTRY, type DemoView } from "@/components/layout";
 import {
   initialOnboardingState,
   onboardingReducer,
 } from "./onboarding-sequence";
 
-/** How long after entering the feed the try-reporting nudge appears. */
-const DEFAULT_NUDGE_DELAY_MS = 16_000;
-/** One-per-session marker so a reload / re-navigation doesn't re-onboard. */
-const SESSION_KEY = "unifix.onboarding.seen";
+/** How long after the welcome closes the try-reporting nudge appears. */
+const DEFAULT_NUDGE_DELAY_MS = 10_000;
+/** One-per-session markers so a reload / re-navigation doesn't re-onboard. */
+const SESSION_KEYS: Record<Exclude<DemoView, "landing">, string> = {
+  student: "unifix.onboarding.seen",
+  staff: "unifix.onboarding.staff.seen",
+};
 
-export interface OnboardingProps {
-  /**
-   * Delay before the nudge becomes ready (ms). Overridable for tests; defaults
-   * to ~16s per the spec's "~15–20s or after some scrolling".
-   */
-  nudgeDelayMs?: number;
+/** Pages where nudging "go file a report" makes no sense: you're already there. */
+function isReportingPage(pathname: string | null): boolean {
+  return !!pathname && (pathname.startsWith("/report") || pathname.startsWith("/private"));
 }
 
+export interface OnboardingProps {
+  /** Delay before the nudge becomes ready (ms). Overridable for tests. */
+  nudgeDelayMs?: number;
+  /** Force a view (tests); defaults to the view of the current URL. */
+  view?: DemoView;
+}
+
+const linkButton =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-[--radius] px-4 text-sm font-medium transition-colors hover:opacity-90";
+
 /**
- * Demo onboarding, mounted on the student feed. On first entry of a session it
- * shows a small, dismissible WELCOME pop-up explaining the student view and
- * offering a one-tap switch to the staff view. A little later a one-time,
- * dismissible NUDGE invites the judge to try filing a report. The two are
- * SEQUENCED by `onboardingReducer` so they never overlap, and the whole thing
- * runs at most once per session (tracked in `sessionStorage`).
+ * Demo onboarding, mounted once in the root layout. The first time a session
+ * enters the STUDENT demo it shows a welcome pop-up (narrated by Ari) saying
+ * "this is the student view"; a little later a one-time nudge invites the
+ * judge to try reporting an incident. The first time it enters the STAFF demo
+ * it shows its own pop-up saying "this is the staff view". The explainer site
+ * gets nothing. Sequencing (never two at once, each once) is the reducer's job.
  */
-export function Onboarding({ nudgeDelayMs = DEFAULT_NUDGE_DELAY_MS }: OnboardingProps) {
+export function Onboarding({ nudgeDelayMs = DEFAULT_NUDGE_DELAY_MS, view }: OnboardingProps) {
+  const pathname = usePathname();
+  const current = view ?? demoViewFor(pathname);
+  if (current === "landing") return null;
+  // Keyed by view: entering the other demo starts its own onboarding.
+  return (
+    <ViewOnboarding
+      key={current}
+      view={current}
+      nudgeDelayMs={nudgeDelayMs}
+      suppressNudge={isReportingPage(pathname)}
+    />
+  );
+}
+
+function ViewOnboarding({
+  view,
+  nudgeDelayMs,
+  suppressNudge,
+}: {
+  view: Exclude<DemoView, "landing">;
+  nudgeDelayMs: number;
+  suppressNudge: boolean;
+}) {
   const [state, dispatch] = React.useReducer(
     onboardingReducer,
     undefined,
     initialOnboardingState,
   );
-  const { users, setActiveUserId } = useActiveUser();
+  const sessionKey = SESSION_KEYS[view];
+  const dismiss = React.useCallback(() => dispatch({ type: "DISMISS" }), []);
 
-  // Entry: show the welcome once per session.
+  // Entry: show the welcome once per session (per view).
   React.useEffect(() => {
     let alreadySeen = false;
     try {
-      alreadySeen = window.sessionStorage.getItem(SESSION_KEY) === "1";
+      alreadySeen = window.sessionStorage.getItem(sessionKey) === "1";
     } catch {
       // sessionStorage can throw (privacy mode); fall back to in-memory once.
     }
     if (!alreadySeen) dispatch({ type: "ENTER" });
-  }, []);
+  }, [sessionKey]);
 
-  // Mark the session as onboarded once the welcome has been shown, so a reload
-  // doesn't replay it. (The in-session reducer guards against double-show too.)
   React.useEffect(() => {
-    if (state.welcomeSeen) {
-      try {
-        window.sessionStorage.setItem(SESSION_KEY, "1");
-      } catch {
-        // ignore
-      }
+    if (!state.welcomeSeen) return;
+    try {
+      window.sessionStorage.setItem(sessionKey, "1");
+    } catch {
+      // ignore
     }
-  }, [state.welcomeSeen]);
+  }, [state.welcomeSeen, sessionKey]);
 
-  // Nudge timer: start once the welcome has been dismissed (visibleStep back to
-  // "none" with the welcome already seen but the nudge not yet). Re-firing
-  // NUDGE_READY while the welcome is up is a safe no-op in the reducer.
+  // Student view only: a little after the welcome closes, ask the judge to
+  // try reporting an incident. Not while already on a reporting page.
   React.useEffect(() => {
-    if (state.nudgeSeen) return;
-    if (!state.welcomeSeen) return; // wait until the welcome has appeared
-    if (state.visibleStep === "welcome") return; // sequenced: not while it's up
+    if (view !== "student" || suppressNudge) return;
+    if (state.nudgeSeen || !state.welcomeSeen) return;
+    if (state.visibleStep === "welcome") return;
     const id = window.setTimeout(() => dispatch({ type: "NUDGE_READY" }), nudgeDelayMs);
     return () => window.clearTimeout(id);
-  }, [state.welcomeSeen, state.nudgeSeen, state.visibleStep, nudgeDelayMs]);
+  }, [view, suppressNudge, state.welcomeSeen, state.nudgeSeen, state.visibleStep, nudgeDelayMs]);
 
-  function switchToStaff() {
-    const staff = users.find((u) => u.role === "responder");
-    if (staff) setActiveUserId(staff.id);
-    dispatch({ type: "DISMISS" });
-  }
+  const copy =
+    view === "student"
+      ? {
+          title: "You're in the student view",
+          body: "This is what a student at MIT sees: a live feed and map of what's broken on campus. Students report problems in plain language, upvote (co-sign) ones they also hit, and follow each one from Received to Fixed. The staff who fix them use a separate view.",
+          tip: "Use the Student menu at the top right to switch between Ana, Ben and Cam.",
+        }
+      : {
+          title: "You're in the staff view",
+          body: "This is what campus staff see: their team's queue, ranked by severity × how many students are affected, plus a private inbox for sensitive reports. Staff update the status and every student on the report is notified.",
+          tip: "Use the Staff member menu at the top right to switch teams. Every team and office has reports waiting.",
+        };
 
   return (
     <>
-      <Dialog
-        open={state.visibleStep === "welcome"}
-        onClose={() => dispatch({ type: "DISMISS" })}
-        title="You're in the student view"
-        description="This is what a student sees — a live feed of campus reports they can upvote (co-sign) and add to. You can switch to the staff view any time from the header."
-      >
-        <div className="flex flex-wrap justify-end gap-2">
-          <Button variant="ghost" onClick={() => dispatch({ type: "DISMISS" })}>
-            Keep exploring
-          </Button>
-          <Button variant="primary" onClick={switchToStaff}>
-            Switch to staff view
-          </Button>
+      <Dialog open={state.visibleStep === "welcome"} onClose={dismiss} title={copy.title} className="max-w-lg">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-start gap-4">
+            <AriRobot size={72} className="shrink-0" />
+            <div className="flex flex-col gap-2 text-sm">
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground">Ari</p>
+              <p>{copy.body}</p>
+              <p className="text-muted-foreground">{copy.tip}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="ghost" onClick={dismiss}>
+              {view === "student" ? "Keep exploring" : "Got it"}
+            </Button>
+            {view === "student" ? (
+              <Link href={DEMO_ENTRY.staff} onClick={dismiss} className={`${linkButton} bg-staff text-staff-foreground`}>
+                Switch to staff view
+              </Link>
+            ) : (
+              <Link href={DEMO_ENTRY.student} onClick={dismiss} className={`${linkButton} bg-primary text-primary-foreground`}>
+                Back to student view
+              </Link>
+            )}
+          </div>
         </div>
       </Dialog>
 
-      {state.visibleStep === "nudge" ? (
+      {state.visibleStep === "nudge" && !suppressNudge ? (
         <div
           role="status"
           aria-live="polite"
-          className="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-full max-w-md items-start gap-3 rounded-[--radius] border border-border bg-card p-4 text-card-foreground shadow-[var(--shadow-md)]"
+          className="fixed inset-x-0 bottom-4 z-50 mx-auto flex w-[calc(100%-2rem)] max-w-md items-start gap-3 rounded-[--radius] border border-border bg-card p-4 text-card-foreground shadow-[var(--shadow-md)]"
         >
+          <AriRobot size={48} className="shrink-0" />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium">Try it yourself</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Want to see the core flow? File a quick report — it takes under a minute.
+              Want to see the core flow? Report an incident, like a broken printer or a
+              leaking ceiling. It takes under a minute.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href="/report"
-                onClick={() => dispatch({ type: "DISMISS" })}
+                onClick={dismiss}
                 className="inline-flex h-8 items-center justify-center gap-2 rounded-[--radius] bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
               >
-                Report an issue
+                Report an incident
               </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => dispatch({ type: "DISMISS" })}
-              >
+              <Button variant="ghost" size="sm" onClick={dismiss}>
                 Not now
               </Button>
             </div>
@@ -127,8 +175,8 @@ export function Onboarding({ nudgeDelayMs = DEFAULT_NUDGE_DELAY_MS }: Onboarding
           <button
             type="button"
             aria-label="Dismiss"
-            onClick={() => dispatch({ type: "DISMISS" })}
-            className="shrink-0 rounded-[--radius] p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none"
+            onClick={dismiss}
+            className="shrink-0 rounded-[--radius] p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <span aria-hidden>×</span>
           </button>

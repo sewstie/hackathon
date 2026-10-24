@@ -253,6 +253,39 @@ function mitReports(): Report[] {
     { id: "rep-exit", category: "Safety", item: "exit sign", title: "Emergency exit sign unlit", tier: "Urgent", status: "Assigned", buildingId: "bldg-26", days: 2 },
     { id: "rep-extinguisher", category: "Safety", item: "fire extinguisher", title: "Fire extinguisher past inspection date", tier: "High", status: "Received", buildingId: "bldg-maseeh", days: 5 },
     { id: "rep-alarm", category: "Safety", item: "smoke alarm", title: "Smoke alarm chirping low battery", tier: "Medium", status: "Fixed", buildingId: "bldg-mccormick", days: 4 },
+
+    // --- More variety so every staff queue looks like a real, busy day ---
+    // Facilities
+    { id: "rep-sink", category: "Facilities", item: "sink", title: "Bathroom sink clogged and overflowing", tier: "Medium", status: "Received", buildingId: "bldg-10", days: 1, reporterId: "bg-student-31" },
+    { id: "rep-lights-class", category: "Facilities", item: "lights", title: "Flickering lights in classroom", tier: "Medium", status: "Assigned", buildingId: "bldg-e25", days: 4, reporterId: "bg-student-32" },
+    { id: "rep-fountain", category: "Facilities", item: "water fountain", title: "Water bottle filler not working", tier: "Low", status: "Fixed", buildingId: "bldg-w34", days: 2, reporterId: "bg-student-33" },
+    { id: "rep-window-latch", category: "Facilities", item: "window", title: "Window latch broken, won't lock", tier: "Low", status: "Received", buildingId: "bldg-library", days: 6, reporterId: "bg-student-34" },
+    // Dining
+    { id: "rep-microwave", category: "Dining", item: "microwave", title: "Microwave sparking when used", tier: "Urgent", status: "Received", buildingId: "bldg-w20", days: 0, reporterId: "bg-student-35" },
+    { id: "rep-salad-fridge", category: "Dining", item: "refrigerator", title: "Salad bar fridge feels warm", tier: "High", status: "Assigned", buildingId: "bldg-mccormick", days: 1, reporterId: "bg-student-36" },
+    { id: "rep-card-reader", category: "Dining", item: "card reader", title: "TechCASH card reader at register down", tier: "Medium", status: "In progress", buildingId: "bldg-baker", days: 2, reporterId: "bg-student-37" },
+    { id: "rep-registers", category: "Dining", item: "register", title: "Only one register open at lunch rush", tier: "Low", status: "Won't fix", buildingId: "bldg-next", days: 12, reporterId: "bg-student-38", resolutionNote: "Staffing is set by meal-plan volume; added a self-checkout instead." },
+    // Housing
+    { id: "rep-mold", category: "Housing", item: "mold", title: "Mold spreading on bathroom ceiling", tier: "High", status: "Received", buildingId: "bldg-maseeh", days: 1, reporterId: "bg-student-39" },
+    { id: "rep-dorm-window", category: "Housing", item: "window", title: "Dorm window won't close, cold air coming in", tier: "Medium", status: "In progress", buildingId: "bldg-next", days: 3, reporterId: "bg-student-40" },
+    { id: "rep-pests", category: "Housing", item: "pests", title: "Mice in the floor kitchen", tier: "High", status: "Assigned", buildingId: "bldg-baker", days: 2, reporterId: "bg-student-25" },
+    { id: "rep-carpet", category: "Housing", item: "carpet", title: "Torn hallway carpet is a trip hazard", tier: "Medium", status: "Received", buildingId: "bldg-mccormick", days: 5, reporterId: "bg-student-26" },
+    { id: "rep-lounge-tv", category: "Housing", item: "tv", title: "Common room TV broken", tier: "Low", status: "Won't fix", buildingId: "bldg-maseeh", days: 18, reporterId: "bg-student-27", resolutionNote: "Lounge AV is owned by the house government, not Housing." },
+    // IT
+    { id: "rep-class-pc", category: "IT", item: "computer", title: "Classroom lectern computer won't boot", tier: "Medium", status: "In progress", buildingId: "bldg-10", days: 1, reporterId: "bg-student-28" },
+    { id: "rep-print-login", category: "IT", item: "print release", title: "Print release station rejects Kerberos login", tier: "Medium", status: "Received", buildingId: "bldg-e52", days: 2, reporterId: "bg-student-29" },
+    { id: "rep-zoom-mic", category: "IT", item: "microphone", title: "Zoom room ceiling mic not picking up", tier: "Low", status: "Assigned", buildingId: "bldg-e25", days: 4, reporterId: "bg-student-30" },
+    { id: "rep-cluster-monitor", category: "IT", item: "monitor", title: "Athena cluster monitors flickering", tier: "Low", status: "Fixed", buildingId: "bldg-library", days: 3, reporterId: "bg-student-11" },
+    // Grounds
+    { id: "rep-branch", category: "Grounds", item: "tree branch", title: "Fallen tree branch blocking the path", tier: "High", status: "Assigned", buildingId: "bldg-10", days: 1, reporterId: "bg-student-12" },
+    { id: "rep-trash", category: "Grounds", item: "trash can", title: "Trash cans overflowing by the entrance", tier: "Medium", status: "Received", buildingId: "bldg-w20", days: 1, reporterId: "bg-student-13" },
+    { id: "rep-bike-rack", category: "Grounds", item: "bike rack", title: "Bike rack bent and unusable", tier: "Low", status: "Received", buildingId: "bldg-library", days: 6, reporterId: "bg-student-14" },
+    { id: "rep-sprinkler", category: "Grounds", item: "sprinkler", title: "Sprinkler flooding the walkway", tier: "Medium", status: "Fixed", buildingId: "bldg-e52", days: 2, reporterId: "bg-student-15" },
+    // Safety
+    { id: "rep-bluelight", category: "Safety", item: "emergency phone", title: "Blue-light emergency phone has no dial tone", tier: "Urgent", status: "Received", buildingId: "bldg-w34", days: 1, reporterId: "bg-student-16" },
+    { id: "rep-propped-door", category: "Safety", item: "exterior door", title: "Exterior door propped open after hours", tier: "High", status: "In progress", buildingId: "bldg-32", days: 1, reporterId: "bg-student-17" },
+    { id: "rep-glass", category: "Safety", item: "broken glass", title: "Broken glass on the stairwell landing", tier: "High", status: "Received", buildingId: "bldg-e25", days: 0, reporterId: "bg-student-18" },
+    { id: "rep-eyewash", category: "Safety", item: "eyewash station", title: "Lab hallway eyewash station dry", tier: "Urgent", status: "Assigned", buildingId: "bldg-26", days: 2, reporterId: "bg-student-19" },
   ];
   for (const e of extras) {
     reports.push(
@@ -312,6 +345,17 @@ function mitCoSigns(): CoSign[] {
     { reportId: "rep-light-dup", count: 3 },
     { reportId: "rep-dishwasher", count: 2 },
     { reportId: "rep-lock", count: 2 },
+    { reportId: "rep-microwave", count: 8 },
+    { reportId: "rep-bluelight", count: 4 },
+    { reportId: "rep-mold", count: 6 },
+    { reportId: "rep-branch", count: 5 },
+    { reportId: "rep-trash", count: 9 },
+    { reportId: "rep-print-login", count: 7 },
+    { reportId: "rep-salad-fridge", count: 3 },
+    { reportId: "rep-pests", count: 4 },
+    { reportId: "rep-glass", count: 2 },
+    { reportId: "rep-sink", count: 3 },
+    { reportId: "rep-class-pc", count: 2 },
   ];
   for (const { reportId, count } of spread) {
     for (let i = 1; i <= count; i++) {
@@ -348,6 +392,47 @@ function mitPrivateReports(): PrivateReport[] {
       dontShareName: true,
       createdAt: daysAgo(5),
     },
+    // One or more direct reports for EVERY office, so each office's private
+    // inbox has something real to open in the staff view.
+    ...(
+      [
+        { id: "priv-facilities-lock", reporterId: "user-ben", office: "Facilities", title: "Lab storage room lock is broken", body: "The lock on our lab's chemical storage room (26-310) doesn't latch. Anyone can walk in.", status: "Received", dontShareName: false, days: 1 },
+        { id: "priv-housing-smoke", reporterId: "bg-student-5", office: "Housing", title: "Neighbor smoking indoors every night", body: "The resident in room 412 smokes in their room nightly; the smell comes into mine and I have asthma.", status: "Reviewing", dontShareName: true, days: 3 },
+        { id: "priv-dean-conflict", reporterId: "user-ben", office: "Dean of Students", title: "Roommate conflict is escalating", body: "My roommate and I can't be in the room together anymore. It's affecting my sleep and classes.", status: "Received", dontShareName: false, days: 2 },
+        { id: "priv-dean-extension", reporterId: "bg-student-6", office: "Dean of Students", title: "Professor refused extension despite doctor's note", body: "I was hospitalized for a week and my professor won't accept the note from MIT Medical.", status: "Referred", dontShareName: false, days: 8, resolutionNote: "Referred to Student Support Services, who will contact the instructor directly." },
+        { id: "priv-titleix-ta", reporterId: "bg-student-7", office: "Title IX", title: "Unwanted messages from a TA", body: "A TA in one of my classes keeps messaging me late at night about non-class things.", status: "Received", dontShareName: true, days: 1 },
+        { id: "priv-police-followed", reporterId: "user-ana", office: "Campus Police", title: "Someone followed me near Building 10 at night", body: "Around 11pm a man followed me from the Infinite Corridor exit to Mass Ave.", status: "Reviewing", dontShareName: false, days: 2 },
+        { id: "priv-police-bike", reporterId: "bg-student-8", office: "Campus Police", title: "Bike stolen from the dorm rack", body: "My locked bike was taken from the rack outside Next House overnight. Lock was cut.", status: "Resolved", dontShareName: false, days: 9 },
+        { id: "priv-access-elevator", reporterId: "user-cam", office: "Accessibility Services", title: "Dorm elevator out, I use a wheelchair", body: "The only elevator in my building has been out for two days and I can't get to my room on floor 3.", status: "Received", dontShareName: false, days: 1 },
+        { id: "priv-access-captions", reporterId: "bg-student-9", office: "Accessibility Services", title: "No captions in my lecture recordings", body: "My accommodation letter says recordings should be captioned, but none have been this term.", status: "Reviewing", dontShareName: false, days: 6 },
+        { id: "priv-itsec-login", reporterId: "bg-student-10", office: "IT Security", title: "Someone logged into my account", body: "I got a Duo push I didn't request, then an email saying my password was changed.", status: "Received", dontShareName: false, days: 0 },
+        { id: "priv-itsec-phish", reporterId: "user-ana", office: "IT Security", title: "Phishing email pretending to be MIT IST", body: "An email asked me to 'verify my Kerberos' on a non-MIT site. A few friends got it too.", status: "Resolved", dontShareName: false, days: 7 },
+      ] satisfies Array<{
+        id: string;
+        reporterId: string;
+        office: PrivateReport["office"];
+        title: string;
+        body: string;
+        status: PrivateReport["status"];
+        dontShareName: boolean;
+        days: number;
+        resolutionNote?: string;
+      }>
+    ).map(
+      (p): PrivateReport => ({
+        id: p.id,
+        campusId: MIT_CAMPUS_ID,
+        reporterId: p.reporterId,
+        office: p.office,
+        currentOffice: p.office,
+        title: p.title,
+        body: p.body,
+        status: p.status,
+        dontShareName: p.dontShareName,
+        resolutionNote: "resolutionNote" in p ? p.resolutionNote : undefined,
+        createdAt: daysAgo(p.days),
+      }),
+    ),
   ];
 }
 
@@ -360,6 +445,30 @@ function mitPrivateMessages(): PrivateMessage[] {
       authorId: "office-titleix",
       body: "Thank you for reporting. We're reviewing and will follow up.",
       createdAt: daysAgo(5),
+    },
+    {
+      id: "pm-police-1",
+      reportId: "priv-police-followed",
+      authorRole: "office",
+      authorId: "staff-safety",
+      body: "Thanks for telling us. We've added patrols on that route tonight. Can you describe the person?",
+      createdAt: daysAgo(2),
+    },
+    {
+      id: "pm-police-2",
+      reportId: "priv-police-followed",
+      authorRole: "student",
+      authorId: "user-ana",
+      body: "Tall, dark jacket, grey backpack. He turned off near the 77 Mass Ave steps.",
+      createdAt: daysAgo(1),
+    },
+    {
+      id: "pm-access-1",
+      reportId: "priv-access-captions",
+      authorRole: "office",
+      authorId: "office-accessibility",
+      body: "We've contacted the course team; captioned versions should be up by Friday.",
+      createdAt: daysAgo(4),
     },
   ];
 }

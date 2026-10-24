@@ -19,7 +19,6 @@ import { getCampusView } from "@/packages/campuses";
 import { buildMapData } from "@/packages/campuses/map";
 import type { MapData } from "@/packages/campuses/map";
 import { CampusMap } from "@/components/map";
-import { Onboarding } from "@/components/onboarding";
 import { CampusFeed } from "./campus-feed";
 
 // Opt this route out of Cache Components' instant / static-shell validation.
@@ -52,9 +51,8 @@ export default async function CampusHomePage({
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Demo onboarding: welcome pop-up + sequenced try-reporting nudge. Shown
-          only on the seeded demo campus a judge lands on, once per session. */}
-      {seeded ? <Onboarding /> : null}
+      {/* Demo onboarding (welcome pop-up + try-reporting nudge) is mounted
+          once in the root layout so it covers every student-view page. */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="text-sm font-medium text-primary">Campus home</p>

@@ -28,7 +28,9 @@ export interface CampusMapProps {
 /** Renders the campus report map (clusters + legend + heat layer) client-side only. */
 export function CampusMap({ data, ariaLabel }: CampusMapProps) {
   return (
-    <div className="h-80 w-full overflow-hidden rounded-[--radius] border border-border">
+    // `isolate` keeps Leaflet's z-indexed panes (400–1000) inside the map, so
+    // they never paint over the sticky header, dialogs, or the Ari nudge.
+    <div className="isolate h-80 w-full overflow-hidden rounded-[--radius] border border-border">
       <MapErrorBoundary>
         <CampusMapInner data={data} ariaLabel={ariaLabel} />
       </MapErrorBoundary>

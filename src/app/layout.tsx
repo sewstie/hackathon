@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ActiveUserProvider, Header } from "@/components/layout";
+import { Onboarding } from "@/components/onboarding";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,6 +29,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <ActiveUserProvider>
           <Header />
+          {/* Demo onboarding: a "which view am I in" pop-up per demo view, and
+              the try-reporting nudge in the student view. Nothing on "/". */}
+          <Onboarding />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
         </ActiveUserProvider>
       </body>

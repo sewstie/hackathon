@@ -5,20 +5,22 @@ import { Select } from "@/components/ui";
 import { useActiveUser } from "./active-user";
 
 /**
- * "Viewing as: Ana (student)" — the demo role switcher. Selecting a user sets
- * the active seeded identity; the rest of the app re-reads that user's context
- * (notifications, office-scoped access) from the switch.
+ * "Viewing as" — the demo role switcher. In the student view it lists only
+ * students; in the staff view it lists only staff, so each view's roster is its
+ * own. Selecting a user sets the active seeded identity; the rest of the app
+ * re-reads that user's context (notifications, office-scoped access).
  */
-export function RoleSwitcher() {
+export function RoleSwitcher({ view = "student" }: { view?: "student" | "staff" }) {
   const { users, activeUser, setActiveUserId, loading } = useActiveUser();
   const selectId = React.useId();
-
-  const students = users.filter((u) => u.role === "student");
-  const staff = users.filter((u) => u.role === "responder");
 
   if (loading) {
     return <span className="text-sm text-muted-foreground">Loading…</span>;
   }
+
+  const students = users.filter((u) => u.role === "student" && !u.id.startsWith("bg-"));
+  const staff = users.filter((u) => u.role === "responder");
+  const options = view === "staff" ? staff : students;
 
   const roleLabel = activeUser
     ? activeUser.role === "student"
@@ -29,7 +31,7 @@ export function RoleSwitcher() {
   return (
     <div className="flex items-center gap-2">
       <label htmlFor={selectId} className="hidden text-sm text-muted-foreground sm:inline">
-        Viewing as:
+        {view === "staff" ? "Staff member:" : "Student:"}
       </label>
       <Select
         id={selectId}
@@ -38,23 +40,11 @@ export function RoleSwitcher() {
         onChange={(e) => setActiveUserId(e.target.value)}
         className="h-9 w-auto min-w-44"
       >
-        <optgroup label="Students">
-          {/* Keep the scripted trio first, then background students. */}
-          {students
-            .filter((u) => !u.id.startsWith("bg-"))
-            .map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name} (student)
-              </option>
-            ))}
-        </optgroup>
-        <optgroup label="Staff">
-          {staff.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </optgroup>
+        {options.map((u) => (
+          <option key={u.id} value={u.id}>
+            {view === "staff" ? u.name : `${u.name} (student)`}
+          </option>
+        ))}
       </Select>
       {activeUser ? (
         <span className="sr-only" aria-live="polite">

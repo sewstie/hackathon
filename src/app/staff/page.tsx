@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import {
   changeReportStatus,
@@ -303,11 +304,14 @@ export default function StaffPage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Staff dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          Viewing as {activeUser.name}.
+          Viewing as {activeUser.name}
+          {tabs.team ? ` · ${tabs.team} team` : ""}
+          {tabs.office ? ` · ${tabs.office} office` : ""}. Highest priority first
+          (severity × students affected).
         </p>
       </header>
 
-      <Tabs defaultValue="team">
+      <Tabs key={activeUser.id} defaultValue={tabs.team ? "team" : "private"}>
         <TabsList>
           {tabs.team && <TabsTrigger value="team">{tabs.team} queue</TabsTrigger>}
           {tabs.hasPrivateInbox && (
@@ -316,7 +320,7 @@ export default function StaffPage() {
         </TabsList>
 
         <TabsContent value="team">
-          {selected ? (
+          {!tabs.team ? null : selected ? (
             <ReportDetail row={selected} onClose={() => setSelected(null)} onChanged={refresh} />
           ) : (
             <div className="flex flex-col gap-4">
@@ -390,15 +394,17 @@ export default function StaffPage() {
                   </p>
                 ) : (
                   privates.map((pr) => (
-                    <div
+                    <Link
                       key={pr.id}
-                      className="rounded-[--radius] border border-border bg-card p-3"
+                      href="/staff-private"
+                      className="block rounded-[--radius] border border-border bg-card p-3 transition-colors hover:bg-muted"
                     >
                       <div className="font-medium">{pr.title}</div>
                       <div className="mt-1 text-sm text-muted-foreground">
                         {pr.status} · {pr.currentOffice}
+                        {pr.dontShareName ? " · name withheld" : ""}
                       </div>
-                    </div>
+                    </Link>
                   ))
                 )}
               </CardContent>

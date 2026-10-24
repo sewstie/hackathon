@@ -30,6 +30,28 @@
   --tier-urgent-bg: #fee2e2; /* red-100 */
   --tier-urgent-fg: #991b1b; /* red-800 */
 
+  /* Demo view identity: the student view is indigo (primary), the staff view
+     is teal, so a judge always knows which side of the product they're on. */
+  --staff: #0f766e; /* teal-700, >= 4.5:1 on white */
+  --staff-foreground: #ffffff;
+  --staff-muted: #ccfbf1; /* teal-100 */
+
+  /* Ari the robot (matches github.com/NicolasNabhan/ari): glossy white shell,
+     dark visor, glowing cyan eyes. */
+  --ari-shell-hi: #ffffff;
+  --ari-shell-mid: #f3f4f8;
+  --ari-shell-lo: #d3d7e1;
+  --ari-shell-line: #c4c9d6;
+  --ari-shade: #5a6380;
+  --ari-visor-top: #222a3d;
+  --ari-visor-bottom: #04060b;
+  --ari-dark-hi: #3b4152;
+  --ari-dark-lo: #0c0e14;
+  --ari-eye: #a5f3fc;
+  --ari-glow: #67e8f9;
+  --ari-antenna: #7dd3fc;
+  --ari-core: #cffafe;
+
   /* Radii — refined scale. */
   --radius-sm: 0.375rem;
   --radius: 0.625rem;
@@ -69,6 +91,9 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
+  --color-staff: var(--staff);
+  --color-staff-foreground: var(--staff-foreground);
+  --color-staff-muted: var(--staff-muted);
   --radius-sm: var(--radius-sm);
   --radius-lg: var(--radius-lg);
   --shadow-sm: var(--shadow-sm);
@@ -88,6 +113,31 @@ body {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* Ari the robot: hover, blink, a wave every few seconds (with happy eyes).
+   Ported from the Ari project (github.com/NicolasNabhan/ari). */
+@keyframes robot-hover { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-9px) rotate(1.2deg); } }
+@keyframes robot-shadow { 0%, 100% { transform: scaleX(1); opacity: .55; } 50% { transform: scaleX(.75); opacity: .3; } }
+@keyframes robot-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.08); } }
+@keyframes robot-antenna { 0%, 100% { opacity: .7; } 50% { opacity: 1; } }
+@keyframes ra-arm-l { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(20deg); } }
+@keyframes ra-up { 0%, 56%, 96%, 100% { transform: rotate(-16deg); } 64%, 88% { transform: rotate(-98deg); } }
+@keyframes ra-fore { 0%, 56%, 96%, 100% { transform: rotate(8deg); } 64% { transform: rotate(-82deg); } 68% { transform: rotate(-64deg); } 72% { transform: rotate(-96deg); } 76% { transform: rotate(-64deg); } 80% { transform: rotate(-96deg); } 84%, 88% { transform: rotate(-82deg); } }
+@keyframes ra-happy { 0%, 60%, 92%, 100% { opacity: 0; } 63%, 89% { opacity: 1; } }
+@keyframes ra-open { 0%, 60%, 92%, 100% { opacity: 1; } 63%, 89% { opacity: 0; } }
+@keyframes ra-thruster { 0%, 100% { opacity: .55; transform: scaleX(1); } 50% { opacity: .25; transform: scaleX(.7); } }
+.robot-ari svg * { transform-box: view-box; }
+.robot-hover { animation: robot-hover 3.4s ease-in-out infinite; }
+.robot-shadow { animation: robot-shadow 3.4s ease-in-out infinite; }
+.robot-blink { animation: robot-blink 4.6s infinite; }
+.robot-antenna { animation: robot-antenna 2s ease-in-out infinite; }
+.ra-arm-l-up { transform-origin: 64px 150px; animation: ra-arm-l 3.4s ease-in-out infinite; }
+.ra-arm-l-fore { transform-origin: 64px 180px; transform: rotate(-8deg); }
+.ra-arm-r-up { transform-origin: 136px 150px; animation: ra-up 8s ease-in-out infinite; }
+.ra-arm-r-fore { transform-origin: 136px 180px; animation: ra-fore 8s ease-in-out infinite; }
+.ra-eyes-happy { animation: ra-happy 8s ease-in-out infinite; }
+.ra-eyes-open { animation: ra-open 8s ease-in-out infinite; }
+.ra-thruster { transform-origin: 100px 224px; animation: ra-thruster 1.7s ease-in-out infinite; }
 
 /* Honor reduced-motion: suppress animations and transitions. */
 @media (prefers-reduced-motion: reduce) {
