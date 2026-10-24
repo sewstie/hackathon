@@ -1,0 +1,19 @@
+Design insipred with
+https://wisprflow.ai
+
+## Features
+A delete post buttom 
+Add photo thing made it better (a pretty tab)
+notification buttom doesnt work in the header
+Points on the map of the problem cluster  should be more prettier and understandable.
+Add a like/dislike system for the issues, making it more or less popular.
+The website is too ugly 
+change the CF logo 
+when you click Open the MIT demo it brokes 
+No direct chat implemented
+Make sure uni name is seperated in header
+So the list of the problems that all the students posted is not there and there is no way of up voting it(this is like very important because like thats the first page that should show up in a student demo view, like a long scroll of all the repots by the other students so that the student and scroll a little and up vote stuff, also on the top right there should still be a button for starting a report)
+
+Also the page explaining what are website is is different from the demo website, also the demo website showing the student view is separated from the the demo website showing the staff view (like its the same website but on different pages and a obvious distinction), like also when opening the demo a pop up should explain what that is, like what you are seeing the student view or you are seeing the staff view, also many of the staff dont have any reports, cause its good to see multiple different types of reports, maybe also after a little bit after opening the demo website, it can ask the judge to try to report a incident
+also make sure ai ari is line in this github
+https://github.com/NicolasNabhan/ari

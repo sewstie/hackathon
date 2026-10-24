@@ -1,74 +1,63 @@
-# UniFix — Gantt Roadmap (3-Stream Parallel Plan)
+# UniFix v1 — Demo Polish Roadmap
 
-Wave 1 (`01-shared-foundation.md`, `Track: SHARED`) is built on `main` and pushed before anyone
-branches. Then Tracks A / B / C run in parallel on separate branches/laptops; each ticket is only
-blocked by `01` or tickets in its own track. Integration merges the three branches at the end.
+One shared prefactor on `main`, then three strictly file-isolated tracks run in parallel on separate branches, then merge + demo.
 
 ```mermaid
 gantt
-    title UniFix — 3-Stream Parallel Build
+    title UniFix v1 Demo Polish — 3-Stream Parallel Plan
     dateFormat YYYY-MM-DD
-    axisFormat %m-%d
 
     section Wave 1 (Shared Foundation)
-    01 Shared foundation (schema, types, stores, UI, seed) :done_shared, 2026-10-24, 1d
+    01 Prefactor — delete seam, theme tokens, header slots :done01, 2026-10-24, 1d
 
-    section Track A (Stream 1)
-    02 AI classifier + fallback            :a2, after done_shared, 1d
-    03 Free-text reporting + confirm card  :a3, after a2, 1d
-    04 Smart follow-ups (chips, max 3)     :a4, after a3, 1d
-    05 Emergency takeover + safety note    :a5, after a3, 1d
-    06 Names-a-person block                :a6, after a3, 1d
+    section Track A (Stream 1 — Feed / Map / Onboarding)
+    02 Student feed + upvote + delete        :a1, after done01, 1d
+    03 Clustered map + MIT-demo fix          :a2, after a1, 1d
+    04 Entry routing + About + onboarding    :a3, after a2, 1d
 
-    section Track B (Stream 2)
-    07 Priority ordering                   :b7, after done_shared, 1d
-    08 Duplicate detection + co-sign       :b8, after done_shared, 1d
-    09 Status lifecycle + notifications     :b9, after done_shared, 1d
-    10 Routing + city handoff              :b10, after done_shared, 1d
-    11 Abuse protection (rate limit/spam)  :b11, after b8, 1d
-    12 Staff dashboard                     :b12, after b7, 1d
+    section Track B (Stream 2 — Report flow / Header / Branding)
+    05 Tabbed report flow + photo step       :b1, after done01, 1d
+    06 Notifications dropdown + branding      :b2, after done01, 1d
 
-    section Track C (Stream 3)
-    13 Landing + MA impact + search        :c13, after done_shared, 1d
-    14 Campus home map                     :c14, after c13, 1d
-    15 Private report routing + review     :c15, after done_shared, 1d
-    16 Private thread + access + log       :c16, after c15, 1d
-    17 Ari history + quick fixes           :c17, after done_shared, 1d
+    section Track C (Stream 3 — Chat / Seed / Ari)
+    07 Two-way direct chat                    :c1, after done01, 1d
+    08 Enriched MIT seed                      :c2, after done01, 1d
+    09 Ari persona alignment                  :c3, after done01, 1d
 
     section Integration
-    Merge A + B + C, verify lint/test/build :integ, after a4, 1d
+    Merge A + B + C, verify, demo             :integ, after a3, 1d
 ```
 
-## Track file ownership (strict isolation — no shared feature files)
+## Track ownership (strict file isolation — zero-conflict merge)
 
-| Track | Owns (folders / files) | Tickets |
+| Track | Owns (folders/files it may create or edit) | Tickets |
 | --- | --- | --- |
-| **SHARED** | `supabase/`, `src/types/`, `src/lib/store/`, `src/lib/supabase/`, `src/components/ui/`, `src/components/layout/`, `src/components/ari/` (shell), `src/app/layout.tsx`, `src/app/globals.css`, `database.types.ts`, `.env.example`, `src/test/` | 01 |
-| **A — intake / AI / safety** | `src/modules/ai/`, `src/modules/reporting/`, `src/modules/emergency/`, `src/app/report/`, `src/app/api/classify/` | 02–06 |
-| **B — triage / staff / lifecycle** | `src/modules/priority/`, `src/modules/duplicates/`, `src/modules/notifications/`, `src/modules/routing/`, `src/modules/abuse/`, `src/modules/staff/`, `src/app/staff/`, `src/app/report-detail/`, `src/app/my-reports/`, `src/app/campus-home/`, `src/components/notifications/`, `src/components/city-handoff/` | 07–12 |
-| **C — private / discovery / presentation** | `src/modules/private/`, `src/modules/campuses/`, `src/modules/ari/` (logic), `src/app/(landing)/`, `src/app/campus/[campusId]/`, `src/app/private/`, `src/app/staff-private/`, `src/components/map/`, `src/data/` | 13–17 |
+| **SHARED** (on `main`, first) | `src/lib/store/*` (adds `deleteReport`), `src/app/globals.css`, `src/components/ui/*`, `src/components/layout/header.tsx` (slots), `supabase/schema.sql` (cascade only if needed) | 01 |
+| **A** | `src/app/campus/[campusId]/`, `src/app/(landing)/`, `src/app/about/`, `src/components/map/`, `src/packages/campuses/map/`, `src/packages/priority/`, `src/components/onboarding/` | 02 → 03 → 04 |
+| **B** | `src/app/report/`, `src/modules/reporting/`, `src/components/layout/notification-bell.tsx`, `src/components/layout/university-name.tsx`, `public/logo.png`, `src/app/favicon.ico`, `design/` | 05, 06 |
+| **C** | `src/app/staff-private/`, `src/app/private/thread/`, `src/packages/private/`, `src/lib/store/seed.ts`, `tools/gen-seed-sql.ts`, `supabase/seed.sql`, `src/components/ari/` | 07, 08, 09 |
 
-> Track A owns `src/app/report/` (the report screen and its Public/Private entry point live there).
-> Track C's private screens live at top-level routes `src/app/private/` and `src/app/staff-private/`
-> so they never nest inside A's `src/app/report/` or B's `src/app/staff/`. If a real collision shows
-> up during the build, fix it on `main` and have every track `git merge main` (per the README).
+Notes:
+- No A/B/C ticket is `Blocked By` a ticket in another track — only by `01` or a ticket in its own track. Track A is a linear chain (the three stack on the same feed page/route); B and C tickets are independent within their track.
+- The header is split into slots by `01` so Track B fills the university-name and bell slots without re-editing `header.tsx`.
 
 ## Commands
 
 ```sh
-# Wave 1 — PC #1 on main, before branching
-TRACK=SHARED ./ralph/once.sh
+# Wave 1 — on main, PC #1, before branching:
+TRACK=SHARED ./ralph/once.sh          # ticket 01
 npm run lint && npm run test && npm run build
 git push origin main
 
-# Wave 2+ — one track per PC
-git checkout main && git pull && npm install
-git checkout -b track-a   # (track-b / track-c on the other PCs)
-TRACK=A ./ralph/once.sh   # watch the first ticket
-TRACK=A ./ralph/afk.sh 10 # then let it loop   (TRACK=B / TRACK=C elsewhere)
-git push -u origin track-a
+# Wave 2 — one track per PC, each on its own branch:
+# PC #1
+git checkout -b track-a && TRACK=A ./ralph/afk.sh 10
+# PC #2
+git checkout -b track-b && TRACK=B ./ralph/afk.sh 10
+# PC #3
+git checkout -b track-c && TRACK=C ./ralph/afk.sh 10
 
-# Integration — PC #1, stop loops ~1h before deadline
+# Integration — PC #1, after the loops stop:
 git checkout main && git pull
 git merge origin/track-a && npm run lint && npm run test && npm run build
 git merge origin/track-b && npm run lint && npm run test && npm run build
