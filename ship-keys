@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# Shortcut so anyone on the team can run ./ship-keys from the repo root.
+exec node "$(dirname "$0")/tools/ship-keys.mjs" "$@"

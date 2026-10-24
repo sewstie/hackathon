@@ -1,0 +1,3 @@
+interface:
+  display_name: "Ship Keys"
+  short_description: "Move .env keys into Vercel + Supabase and deploy, values never shown"
