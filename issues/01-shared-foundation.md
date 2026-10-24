@@ -1,6 +1,6 @@
 # 01: Shared Foundation (schema, types, stores, UI, layout, seed)
 
-Status: OPEN
+Status: DONE
 Track: SHARED
 Blocked By: None
 Files Touched: supabase/ (migrations, seed.sql, config), src/types/, src/lib/store/ (interfaces + supabase impl + in-memory impl), src/lib/supabase/, src/components/ui/, src/components/layout/ (header, nav, role switcher, bell shell), src/components/ari/ (shell only), src/app/layout.tsx, src/app/globals.css (tier tokens, reduced-motion), src/app/page.tsx (placeholder), database.types.ts, .env.example, src/test/ (in-memory store + mock-model helpers)

@@ -10,12 +10,16 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "lint:boundaries": "depcruise src",
+    "gen:seed": "tsx tools/gen-seed-sql.ts",
     "check": "npm run typecheck && npm run lint:boundaries && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.58.0",
+    "clsx": "^2.1.1",
     "next": "16.4.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

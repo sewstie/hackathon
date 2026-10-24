@@ -1,0 +1,146 @@
+-- CampusFix seed data (MIT demo campus).
+-- GENERATED from src/lib/store/seed.ts by tools/gen-seed-sql.ts — do not edit by hand.
+-- Regenerate with: npm run gen:seed
+
+insert into campuses (id, name, city, state, latitude, longitude, city_service_name, city_service_url, city_service_phone, campus_police_name, campus_police_phone, counseling_name, counseling_url) values
+  ('mit', 'MIT', 'Cambridge', 'MA', 42.3601, -71.0942, 'Cambridge SeeClickFix', 'https://www.cambridgema.gov/SeeClickFix', '617-349-4300', 'MIT Police', '617-253-1212', 'MIT Health Counseling', 'https://health.mit.edu')
+on conflict (id) do nothing;
+
+insert into buildings (id, campus_id, name, latitude, longitude, floors, dining_halls) values
+  ('bldg-w20', 'mit', 'Stratton Student Center (W20)', 42.3592, -71.0954, ARRAY['1', '2', '3'], ARRAY['Lobdell Dining']),
+  ('bldg-maseeh', 'mit', 'Maseeh Hall (W1)', 42.357, -71.0935, ARRAY['1', '2', '3', '4'], ARRAY['Maseeh Dining']),
+  ('bldg-mccormick', 'mit', 'McCormick Hall (W4)', 42.3567, -71.0944, ARRAY['1', '2', '3'], ARRAY['McCormick Dining']),
+  ('bldg-next', 'mit', 'Next House (W71)', 42.3558, -71.101, ARRAY['1', '2', '3', '4'], ARRAY['Next Dining']),
+  ('bldg-baker', 'mit', 'Baker House (W7)', 42.3564, -71.0952, ARRAY['1', '2', '3', '4'], ARRAY['Baker Dining']),
+  ('bldg-10', 'mit', 'Building 10 (Great Dome)', 42.3601, -71.092, ARRAY['1', '2', '3', '4'], '{}'),
+  ('bldg-26', 'mit', 'Building 26', 42.3607, -71.0907, ARRAY['1', '2', '3', '4', '5'], '{}'),
+  ('bldg-32', 'mit', 'Stata Center (32)', 42.362, -71.0902, ARRAY['1', '2', '3', '4'], '{}'),
+  ('bldg-e25', 'mit', 'Health Sciences (E25)', 42.3618, -71.0875, ARRAY['1', '2', '3'], '{}'),
+  ('bldg-e52', 'mit', 'Samberg / Sloan (E52)', 42.3608, -71.082, ARRAY['1', '2', '3'], '{}'),
+  ('bldg-w34', 'mit', 'Johnson Athletic Center (W34)', 42.3585, -71.093, ARRAY['1', '2'], '{}'),
+  ('bldg-library', 'mit', 'Hayden Library (14)', 42.3585, -71.09, ARRAY['1', '2', '3'], '{}')
+on conflict (id) do nothing;
+
+insert into users (id, name, email, role, public_team, private_office) values
+  ('user-ana', 'Ana', 'ana@mit.edu', 'student', null, null),
+  ('user-ben', 'Ben', 'ben@mit.edu', 'student', null, null),
+  ('user-cam', 'Cam', 'cam@mit.edu', 'student', null, null),
+  ('staff-facilities', 'Fiona (Facilities)', 'fiona@mit.edu', 'responder', 'Facilities', 'Facilities'),
+  ('staff-dining', 'Diego (Dining)', 'diego@mit.edu', 'responder', 'Dining', null),
+  ('staff-housing', 'Hana (Housing)', 'hana@mit.edu', 'responder', 'Housing', 'Housing'),
+  ('staff-it', 'Ivan (IT)', 'ivan@mit.edu', 'responder', 'IT', 'IT Security'),
+  ('staff-grounds', 'Grace (Grounds)', 'grace@mit.edu', 'responder', 'Grounds', null),
+  ('staff-safety', 'Sam (Safety)', 'sam@mit.edu', 'responder', 'Safety', 'Campus Police'),
+  ('office-dean', 'Dana (Dean of Students)', 'dean@mit.edu', 'responder', null, 'Dean of Students'),
+  ('office-titleix', 'Tess (Title IX)', 'titleix@mit.edu', 'responder', null, 'Title IX'),
+  ('office-accessibility', 'Alex (Accessibility)', 'access@mit.edu', 'responder', null, 'Accessibility Services'),
+  ('bg-student-1', 'Student 1', 'student1@mit.edu', 'student', null, null),
+  ('bg-student-2', 'Student 2', 'student2@mit.edu', 'student', null, null),
+  ('bg-student-3', 'Student 3', 'student3@mit.edu', 'student', null, null),
+  ('bg-student-4', 'Student 4', 'student4@mit.edu', 'student', null, null),
+  ('bg-student-5', 'Student 5', 'student5@mit.edu', 'student', null, null),
+  ('bg-student-6', 'Student 6', 'student6@mit.edu', 'student', null, null),
+  ('bg-student-7', 'Student 7', 'student7@mit.edu', 'student', null, null),
+  ('bg-student-8', 'Student 8', 'student8@mit.edu', 'student', null, null),
+  ('bg-student-9', 'Student 9', 'student9@mit.edu', 'student', null, null),
+  ('bg-student-10', 'Student 10', 'student10@mit.edu', 'student', null, null),
+  ('bg-student-11', 'Student 11', 'student11@mit.edu', 'student', null, null),
+  ('bg-student-12', 'Student 12', 'student12@mit.edu', 'student', null, null),
+  ('bg-student-13', 'Student 13', 'student13@mit.edu', 'student', null, null),
+  ('bg-student-14', 'Student 14', 'student14@mit.edu', 'student', null, null),
+  ('bg-student-15', 'Student 15', 'student15@mit.edu', 'student', null, null),
+  ('bg-student-16', 'Student 16', 'student16@mit.edu', 'student', null, null),
+  ('bg-student-17', 'Student 17', 'student17@mit.edu', 'student', null, null),
+  ('bg-student-18', 'Student 18', 'student18@mit.edu', 'student', null, null),
+  ('bg-student-19', 'Student 19', 'student19@mit.edu', 'student', null, null),
+  ('bg-student-20', 'Student 20', 'student20@mit.edu', 'student', null, null),
+  ('bg-student-21', 'Student 21', 'student21@mit.edu', 'student', null, null),
+  ('bg-student-22', 'Student 22', 'student22@mit.edu', 'student', null, null),
+  ('bg-student-23', 'Student 23', 'student23@mit.edu', 'student', null, null),
+  ('bg-student-24', 'Student 24', 'student24@mit.edu', 'student', null, null),
+  ('bg-student-25', 'Student 25', 'student25@mit.edu', 'student', null, null),
+  ('bg-student-26', 'Student 26', 'student26@mit.edu', 'student', null, null),
+  ('bg-student-27', 'Student 27', 'student27@mit.edu', 'student', null, null),
+  ('bg-student-28', 'Student 28', 'student28@mit.edu', 'student', null, null),
+  ('bg-student-29', 'Student 29', 'student29@mit.edu', 'student', null, null),
+  ('bg-student-30', 'Student 30', 'student30@mit.edu', 'student', null, null),
+  ('bg-student-31', 'Student 31', 'student31@mit.edu', 'student', null, null),
+  ('bg-student-32', 'Student 32', 'student32@mit.edu', 'student', null, null),
+  ('bg-student-33', 'Student 33', 'student33@mit.edu', 'student', null, null),
+  ('bg-student-34', 'Student 34', 'student34@mit.edu', 'student', null, null),
+  ('bg-student-35', 'Student 35', 'student35@mit.edu', 'student', null, null),
+  ('bg-student-36', 'Student 36', 'student36@mit.edu', 'student', null, null),
+  ('bg-student-37', 'Student 37', 'student37@mit.edu', 'student', null, null),
+  ('bg-student-38', 'Student 38', 'student38@mit.edu', 'student', null, null),
+  ('bg-student-39', 'Student 39', 'student39@mit.edu', 'student', null, null),
+  ('bg-student-40', 'Student 40', 'student40@mit.edu', 'student', null, null)
+on conflict (id) do nothing;
+
+insert into reports (id, campus_id, building_id, reporter_id, category, item, title, tier, status, location, incomplete, location_unverified, photo_url, resolution_note, created_at) values
+  ('rep-icecream', 'mit', 'bldg-w20', 'user-ben', 'Dining', 'ice cream machine', 'Ice cream machine is broken', 'Medium', 'Received', 'Stratton Student Center (W20), Lobdell Dining', false, false, null, null, '2026-10-22T12:00:00.000Z'),
+  ('rep-handrail', 'mit', 'bldg-26', 'user-cam', 'Facilities', 'handrail', 'Broken handrail on the stairwell', 'High', 'Received', 'Building 26, Floor 3 stairwell', false, false, null, null, '2026-10-21T12:00:00.000Z'),
+  ('rep-wifi', 'mit', 'bldg-library', 'user-ana', 'IT', 'wifi', 'Wi-Fi keeps dropping', 'Medium', 'Received', 'Hayden Library (14), Floor 2', false, false, null, null, '2026-10-23T12:00:00.000Z'),
+  ('rep-wifi-hist-1', 'mit', 'bldg-maseeh', 'bg-student-1', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Maseeh Hall (W1), Floor 1', false, false, null, null, '2026-10-11T12:00:00.000Z'),
+  ('rep-wifi-hist-2', 'mit', 'bldg-mccormick', 'bg-student-2', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'McCormick Hall (W4), Floor 1', false, false, null, null, '2026-10-08T12:00:00.000Z'),
+  ('rep-wifi-hist-3', 'mit', 'bldg-next', 'bg-student-3', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Next House (W71), Floor 1', false, false, null, null, '2026-10-05T12:00:00.000Z'),
+  ('rep-wifi-hist-4', 'mit', 'bldg-baker', 'bg-student-4', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Baker House (W7), Floor 1', false, false, null, null, '2026-10-02T12:00:00.000Z'),
+  ('rep-wifi-hist-5', 'mit', 'bldg-10', 'bg-student-5', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Building 10 (Great Dome), Floor 1', false, false, null, null, '2026-09-29T12:00:00.000Z'),
+  ('rep-wifi-hist-6', 'mit', 'bldg-26', 'bg-student-6', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Building 26, Floor 1', false, false, null, null, '2026-09-26T12:00:00.000Z'),
+  ('rep-wifi-hist-7', 'mit', 'bldg-32', 'bg-student-7', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Stata Center (32), Floor 1', false, false, null, null, '2026-09-23T12:00:00.000Z'),
+  ('rep-wifi-hist-8', 'mit', 'bldg-e25', 'bg-student-8', 'IT', 'wifi', 'Wi-Fi dropping', 'Medium', 'Fixed', 'Health Sciences (E25), Floor 1', false, false, null, null, '2026-09-20T12:00:00.000Z'),
+  ('rep-heater', 'mit', 'bldg-maseeh', 'bg-student-20', 'Facilities', 'heater', 'Heater not working', 'High', 'In progress', 'Maseeh Hall (W1)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-door', 'mit', 'bldg-10', 'bg-student-20', 'Facilities', 'door opener', 'Automatic door opener broken', 'High', 'Assigned', 'Building 10 (Great Dome)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-vending', 'mit', 'bldg-w20', 'bg-student-20', 'Dining', 'vending machine', 'Vending machine ate my money', 'Low', 'Fixed', 'Stratton Student Center (W20)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-light', 'mit', 'bldg-32', 'bg-student-20', 'Grounds', 'pathway light', 'Pathway light out', 'Medium', 'Fixed', 'Stata Center (32)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-leak', 'mit', 'bldg-library', 'bg-student-20', 'Facilities', 'ceiling leak', 'Ceiling leaking in hallway', 'High', 'Received', 'Hayden Library (14)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-shower', 'mit', 'bldg-baker', 'bg-student-20', 'Housing', 'shower', 'Shower stuck on cold', 'Medium', 'Assigned', 'Baker House (W7)', false, false, null, null, '2026-10-09T12:00:00.000Z'),
+  ('rep-printer', 'mit', 'bldg-32', 'bg-student-20', 'IT', 'printer', 'Printer jammed on floor 2', 'Low', 'Fixed', 'Stata Center (32)', false, false, null, null, '2026-10-09T12:00:00.000Z')
+on conflict (id) do nothing;
+
+insert into co_signs (id, report_id, user_id, created_at) values
+  ('cosign-rep-icecream-user-ben', 'rep-icecream', 'user-ben', '2026-10-22T12:00:00.000Z'),
+  ('cosign-rep-handrail-user-cam', 'rep-handrail', 'user-cam', '2026-10-21T12:00:00.000Z'),
+  ('cosign-rep-wifi-user-ana', 'rep-wifi', 'user-ana', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-1', 'rep-icecream', 'bg-student-1', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-2', 'rep-icecream', 'bg-student-2', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-3', 'rep-icecream', 'bg-student-3', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-4', 'rep-icecream', 'bg-student-4', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-5', 'rep-icecream', 'bg-student-5', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-6', 'rep-icecream', 'bg-student-6', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-7', 'rep-icecream', 'bg-student-7', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-8', 'rep-icecream', 'bg-student-8', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-9', 'rep-icecream', 'bg-student-9', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-10', 'rep-icecream', 'bg-student-10', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-11', 'rep-icecream', 'bg-student-11', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-12', 'rep-icecream', 'bg-student-12', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-icecream-bg-student-13', 'rep-icecream', 'bg-student-13', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-handrail-bg-student-14', 'rep-handrail', 'bg-student-14', '2026-10-22T12:00:00.000Z'),
+  ('cosign-rep-handrail-bg-student-15', 'rep-handrail', 'bg-student-15', '2026-10-22T12:00:00.000Z'),
+  ('cosign-rep-handrail-bg-student-16', 'rep-handrail', 'bg-student-16', '2026-10-22T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-17', 'rep-wifi', 'bg-student-17', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-18', 'rep-wifi', 'bg-student-18', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-19', 'rep-wifi', 'bg-student-19', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-20', 'rep-wifi', 'bg-student-20', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-21', 'rep-wifi', 'bg-student-21', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-22', 'rep-wifi', 'bg-student-22', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-23', 'rep-wifi', 'bg-student-23', '2026-10-23T12:00:00.000Z'),
+  ('cosign-rep-wifi-bg-student-24', 'rep-wifi', 'bg-student-24', '2026-10-23T12:00:00.000Z')
+on conflict (id) do nothing;
+
+insert into private_reports (id, campus_id, reporter_id, office, current_office, title, body, status, dont_share_name, resolution_note, created_at) values
+  ('priv-housing', 'mit', 'user-ana', 'Housing', 'Housing', 'Roommate keeps leaving the door unlocked', 'My roommate keeps leaving our door unlocked overnight and I don''t feel safe.', 'Received', false, null, '2026-10-20T12:00:00.000Z'),
+  ('priv-titleix', 'mit', 'user-cam', 'Title IX', 'Title IX', 'Harassing comments', 'Someone in my lab keeps making comments about my race.', 'Reviewing', true, null, '2026-10-19T12:00:00.000Z')
+on conflict (id) do nothing;
+
+insert into private_messages (id, report_id, author_role, author_id, body, created_at) values
+  ('pm-titleix-1', 'priv-titleix', 'office', 'office-titleix', 'Thank you for reporting. We''re reviewing and will follow up.', '2026-10-19T12:00:00.000Z')
+on conflict (id) do nothing;
+
+insert into quick_fixes (id, campus_id, category, item, text) values
+  ('qf-wifi-1', 'mit', 'IT', 'wifi', 'Forget the MIT network and reconnect, then re-accept the certificate.'),
+  ('qf-wifi-2', 'mit', 'IT', 'wifi', 'Toggle Wi-Fi off and on; move within 10 m of an access point.'),
+  ('qf-printer', 'mit', 'IT', 'printer', 'Open the front tray and clear any jammed sheet, then retry.'),
+  ('qf-vending', 'mit', 'Dining', 'vending machine', 'Note the machine ID on the front panel for a refund request.'),
+  ('qf-heater', 'mit', 'Facilities', 'heater', 'Check the thermostat is set above room temp and the vent isn''t blocked.')
+on conflict (id) do nothing;
+
