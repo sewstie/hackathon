@@ -1,6 +1,6 @@
 # 13: Landing page + MA impact + school search
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 01-shared-foundation.md
 Files Touched: src/app/(landing)/ (landing page), src/modules/campuses/ (index.ts, internals, tests), src/data/ipeds-ma.* (IPEDS MA subset)

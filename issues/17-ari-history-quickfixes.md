@@ -1,6 +1,6 @@
 # 17: Ari — history line + quick fixes
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/ari/ (index.ts, internals, tests), src/components/ari/ (popup behavior — not the shell)
