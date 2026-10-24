@@ -48,7 +48,7 @@ export function ReportSteps({ current }: ReportStepsProps) {
             <span
               aria-current={active ? "step" : undefined}
               className={cn(
-                "flex items-center gap-2 rounded-[--radius] px-2.5 py-1 font-medium transition-colors",
+                "flex items-center gap-2 rounded-(--radius) px-2.5 py-1 font-medium transition-colors",
                 active && "bg-primary text-primary-foreground",
                 done && "bg-muted text-foreground",
                 !active && !done && "text-muted-foreground",

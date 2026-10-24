@@ -177,7 +177,7 @@ function ClusterMarker({ cluster }: { cluster: MapCluster }) {
 function TierLegend() {
   return (
     <div
-      className="absolute bottom-2 right-2 z-[1000] flex flex-col gap-1 rounded-[--radius] border border-border bg-background/90 p-2 text-xs shadow-sm backdrop-blur"
+      className="absolute bottom-2 right-2 z-[1000] flex flex-col gap-1 rounded-(--radius) border border-border bg-background/90 p-2 text-xs shadow-sm backdrop-blur"
       aria-label="Severity legend"
     >
       <span className="font-medium text-foreground">Severity</span>

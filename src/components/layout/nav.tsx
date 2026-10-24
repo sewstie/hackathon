@@ -30,12 +30,13 @@ export function Nav({ view = "student" }: { view?: Exclude<DemoView, "landing"> 
             key={link.href}
             href={link.href}
             aria-current={active ? "page" : undefined}
+            data-spot={`nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
             className={cn(
-              "rounded-[--radius] px-3 py-1.5 text-sm font-medium transition-colors",
+              "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               active
                 ? view === "staff"
                   ? "bg-staff-muted text-foreground"
-                  : "bg-muted text-foreground"
+                  : "bg-primary/10 text-primary"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >

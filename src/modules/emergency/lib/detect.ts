@@ -47,6 +47,30 @@ const EMERGENCY_PATTERNS: ReadonlyArray<readonly [RegExp, string]> = [
   [/\bbleeding (badly|out|heavily)\b|\bwon'?t stop bleeding\b/i, "Serious injury"],
   [/\b(being |getting )?(assault(ed|ing)?|attacked|stabbed|strangl)\b/i, "Possible violence in progress"],
   [/\bchoking\b|\bdrowning\b|\belectrocut/i, "Possible medical emergency"],
+  // Death / dying — about a PERSON ("my laptop died" must not trigger).
+  [
+    /\b(some ?(one|body)|a (person|student|man|woman|guy|girl|kid|child)|my (friend|roommate)|he|she|they)\b[^.!?]{0,30}\b(died|is dead|are dead|dying|not moving|killed)\b|\bdead (body|person)\b|\b(found|there'?s) a body\b|\bkilled\b/i,
+    "Someone may be seriously hurt or dead",
+  ],
+  // Self-harm — always get help now (988 is the US crisis line).
+  [
+    /\b(suicid(e|al)|kill (my|him|her|them)sel(f|ves)|end (my|his|her) life|want to die|hurt (my|him|her)self|self[- ]harm|overdos)/i,
+    "Someone may be in crisis. You can also call or text 988",
+  ],
+  // Weapons, shootings, stabbings, threats, intruders.
+  [
+    /\b(gun|guns|firearm|knife|knives|weapon|(got|was|been|getting) shot|shot (at|him|her|them|someone|somebody)|stabb?(ed|ing)?|stabs|bomb|explosi(on|ve)|threaten(ed|ing)? to (kill|hurt|shoot))\b/i,
+    "Possible weapon or threat",
+  ],
+  [/\b(intruder|break[- ]?in|broke in|breaking in|kidnap|abduct|rape|raped|sexual(ly)? assault)/i, "Possible crime in progress"],
+  [/\b(fight|fighting|beating (him|her|them|someone|somebody) up|punch(ed|ing) (him|her|them|someone|somebody))\b/i, "Possible violence in progress"],
+  // Serious injury.
+  [
+    /\b(bleeding|blood everywhere|badly hurt|seriously (hurt|injured)|hit by a (car|bus|truck|bike)|fell (down|off)[^.!?]{0,30}(hurt|can'?t move|not moving|unconscious)|broke (his|her|their|my) (neck|back|leg|arm)|can'?t move (his|her|their|my) (legs?|arms?|body)|allergic reaction|anaphyla)/i,
+    "Someone may be seriously hurt",
+  ],
+  // Someone explicitly asking for emergency help.
+  [/\b(call 911|need an ambulance|call an ambulance|(this is an?|it'?s an?|we have an?|there'?s an?) emergency|help me|send help|life or death)\b/i, "You asked for emergency help"],
 ];
 
 /**

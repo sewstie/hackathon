@@ -6,7 +6,7 @@ import { getStore } from "@/lib/store";
 import { orderForFeed, type PrioritizableReport } from "@/packages/priority";
 import type { Report } from "@/types";
 import { useActiveUser } from "@/components/layout";
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Dialog } from "@/components/ui";
+import { Badge, Button, Dialog } from "@/components/ui";
 
 /** Statuses that keep a report visible in the feed. */
 const OPEN_STATUSES: ReadonlySet<Report["status"]> = new Set([
@@ -125,20 +125,24 @@ export function CampusFeed({ campusId }: { campusId: string }) {
   }
 
   if (loading || userLoading) {
-    return <p className="text-sm text-muted-foreground">Loading reports…</p>;
+    return (
+      <ul aria-busy="true" aria-label="Loading reports" className="flex flex-col gap-3">
+        {[0, 1, 2].map((i) => (
+          <li key={i} className="h-28 animate-pulse rounded-3xl border border-border bg-card" />
+        ))}
+      </ul>
+    );
   }
 
   if (ordered.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-10 text-center text-sm text-muted-foreground">
-          No reports here yet — be the first to{" "}
-          <Link href="/report" className="text-primary underline underline-offset-2">
-            report an issue
-          </Link>
-          .
-        </CardContent>
-      </Card>
+      <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-14 text-center text-sm text-muted-foreground">
+        No reports here yet — be the first to{" "}
+        <Link href="/report" className="font-semibold text-primary underline underline-offset-2">
+          report an issue
+        </Link>
+        .
+      </div>
     );
   }
 
@@ -146,74 +150,78 @@ export function CampusFeed({ campusId }: { campusId: string }) {
 
   return (
     <>
-      <ul className="flex flex-col gap-2">
-        {ordered.map((item) => {
+      <ul className="cx-stagger flex flex-col gap-3">
+        {ordered.map((item, index) => {
           const { report, signers, signedByMe } = item;
           const busy = pending.has(report.id);
           return (
             <li key={report.id}>
-              <Card>
-                <CardHeader className="flex flex-row items-start justify-between gap-3">
-                  <CardTitle className="text-base font-medium">{report.title}</CardTitle>
-                  <Badge tier={report.tier} />
-                </CardHeader>
-                <CardContent className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-                    <span>{report.location}</span>
-                    <span aria-hidden>·</span>
-                    <span>{report.status}</span>
+              <article className="cx-lift group flex flex-col gap-4 rounded-3xl border border-border bg-card p-5 text-card-foreground sm:flex-row sm:items-center sm:gap-6 sm:p-6">
+                {/* Rank in the priority order. */}
+                <span
+                  aria-hidden
+                  className="hidden w-8 shrink-0 text-sm font-semibold tabular-nums text-muted-foreground sm:block"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tier={report.tier} />
+                    <span className="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                      {report.status}
+                    </span>
                     {report.incomplete && (
-                      <>
-                        <span aria-hidden>·</span>
-                        <span>incomplete</span>
-                      </>
+                      <span className="text-xs font-medium text-muted-foreground">· incomplete</span>
                     )}
                     {report.locationUnverified && (
-                      <>
-                        <span aria-hidden>·</span>
-                        <span>location unverified</span>
-                      </>
+                      <span className="text-xs font-medium text-muted-foreground">· location unverified</span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <Button
-                      variant={signedByMe ? "primary" : "secondary"}
-                      size="sm"
-                      onClick={() => toggleUpvote(item)}
-                      disabled={!activeUser || busy}
-                      aria-pressed={signedByMe}
-                      aria-label={
-                        signedByMe
-                          ? `Remove your upvote — ${signers} ${signers === 1 ? "signer" : "signers"}`
-                          : `Upvote — ${signers} ${signers === 1 ? "signer" : "signers"}`
-                      }
+                  <h3 className="text-lg font-semibold leading-snug tracking-tight">{report.title}</h3>
+                  <p className="text-sm text-muted-foreground">{report.location}</p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end">
+                  <Button
+                    variant={signedByMe ? "primary" : "secondary"}
+                    size="sm"
+                    onClick={() => toggleUpvote(item)}
+                    disabled={!activeUser || busy}
+                    aria-pressed={signedByMe}
+                    aria-label={
+                      signedByMe
+                        ? `Remove your upvote — ${signers} ${signers === 1 ? "signer" : "signers"}`
+                        : `Upvote — ${signers} ${signers === 1 ? "signer" : "signers"}`
+                    }
+                    className="h-9 rounded-full px-4 tabular-nums"
+                  >
+                    <span aria-hidden>▲</span>
+                    <span>
+                      {signers} {signers === 1 ? "signer" : "signers"}
+                    </span>
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Link
+                      href={{ pathname: "/report-detail", query: { id: report.id } }}
+                      className="inline-flex h-9 items-center gap-1 rounded-full px-3 text-sm font-semibold text-primary transition-colors hover:bg-muted"
                     >
-                      <span aria-hidden>▲</span>
-                      <span>
-                        {signers} {signers === 1 ? "signer" : "signers"}
-                      </span>
-                    </Button>
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={{ pathname: "/report-detail", query: { id: report.id } }}
-                        className="text-sm text-primary underline underline-offset-2"
+                      View <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+                    </Link>
+                    {canDelete(report) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConfirmId(report.id)}
+                        aria-label={`Delete report: ${report.title}`}
+                        className="h-9 rounded-full"
                       >
-                        View
-                      </Link>
-                      {canDelete(report) && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setConfirmId(report.id)}
-                          aria-label={`Delete report: ${report.title}`}
-                        >
-                          Delete
-                        </Button>
-                      )}
-                    </div>
+                        Delete
+                      </Button>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </article>
             </li>
           );
         })}

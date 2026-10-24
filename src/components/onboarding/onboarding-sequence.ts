@@ -27,6 +27,7 @@ export interface OnboardingState {
  */
 export type OnboardingEvent =
   | { type: "ENTER" }
+  | { type: "REOPEN" }
   | { type: "DISMISS" }
   | { type: "NUDGE_READY" };
 
@@ -51,6 +52,11 @@ export function onboardingReducer(
     case "ENTER": {
       // Show the welcome only on the first entry of the session.
       if (state.welcomeSeen) return state;
+      return { ...state, visibleStep: "welcome", welcomeSeen: true };
+    }
+
+    case "REOPEN": {
+      // Explicit "Demo guide" click: show the welcome again, on demand.
       return { ...state, visibleStep: "welcome", welcomeSeen: true };
     }
 

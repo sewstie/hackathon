@@ -46,7 +46,7 @@ export function TabsList({ className, children, ...props }: React.HTMLAttributes
   return (
     <div
       role="tablist"
-      className={cn("inline-flex gap-1 rounded-[--radius] bg-muted p-1", className)}
+      className={cn("inline-flex flex-wrap gap-1 rounded-full border border-border bg-muted/70 p-1", className)}
       {...props}
     >
       {children}
@@ -71,7 +71,7 @@ export function TabsTrigger({ value, className, ...props }: TabsTriggerProps) {
       tabIndex={selected ? 0 : -1}
       onClick={() => setValue(value)}
       className={cn(
-        "rounded-[calc(var(--radius)-2px)] px-3 py-1.5 text-sm font-medium transition-colors",
+        "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
         selected ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
         className,
       )}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MA_IMPACT } from "@/packages/campuses";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { Reveal } from "@/components/ui";
 import { AriRobot } from "@/components/ari";
 import { DEMO_ENTRY } from "@/components/layout";
 import { SchoolSearch } from "./school-search";
@@ -11,161 +11,221 @@ export const metadata = {
     "What UniFix is, why campus upkeep matters in Massachusetts, and two live demos: the student view and the staff view.",
 };
 
+const STEPS = [
+  { n: "01", title: "Report", body: "Say what's wrong in your own words. Add a photo if you like." },
+  { n: "02", title: "Routed", body: "AI sorts it, asks only what's missing, and sends it to the right team." },
+  { n: "03", title: "Fixed", body: "Follow it from Received to Fixed. You're notified at every change." },
+];
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">{children}</span>
+  );
+}
+
 /**
  * The explainer site: what UniFix is and why it matters. It is deliberately
- * NOT the demo. Two clearly separate doors lead into the demo, one per view:
- * the student view (indigo) and the staff view (teal).
+ * NOT the demo. The STUDENT view is the main door (big, first, indigo); the
+ * staff view is there for anyone curious, but quieter.
  */
 export default function LandingPage() {
   return (
-    <div className="flex flex-col gap-12">
-      {/* Pitch */}
-      <section className="flex flex-col gap-4">
-        <p className="text-sm font-medium text-primary">
-          UniFix · the student-friendly front door to campus repairs
-        </p>
-        <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
-          Report what&apos;s broken on campus in plain language, and watch it get fixed.
-        </h1>
-        <p className="max-w-prose text-muted-foreground">
-          Describe the problem in your own words. UniFix classifies it, asks only the
-          few details still missing, merges duplicates into one co-signed ticket, ranks
-          it by severity × reach, routes it to the right team, and keeps every reporter
-          posted from Received to Fixed.
-        </p>
-      </section>
+    <div className="cx-theme flex flex-col gap-20 pb-10 sm:gap-28">
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
+      <section className="cx-hero cx-rise rounded-[2rem] px-6 py-12 sm:rounded-[2.5rem] sm:px-12 sm:py-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_1fr]">
+          <div className="flex flex-col items-start gap-6">
+            <span className="cx-glass inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold text-muted-foreground">
+              <span className="relative flex size-2">
+                <span aria-hidden className="cx-ring absolute inset-0 rounded-full bg-primary" />
+                <span className="relative size-2 rounded-full bg-primary" />
+              </span>
+              The student-friendly front door to campus repairs
+            </span>
 
-      {/* The two demo doors */}
-      <section className="flex flex-col gap-4" aria-labelledby="demos-heading">
-        <div className="flex flex-col gap-1">
-          <h2 id="demos-heading" className="text-2xl font-semibold tracking-tight">
-            Try the live demo
-          </h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
-            The demo runs on a seeded MIT campus. It has two sides, on separate pages:
-            the student who reports a problem and the staff who fix it. You can switch
-            between them any time from the banner at the top.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card className="flex flex-col border-t-4 border-t-primary">
-            <CardHeader>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Student view
-              </p>
-              <CardTitle>Report a problem</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
-              <p>
-                Browse the campus feed and map, co-sign issues you also hit, file a
-                report in plain language (Ari helps), or send a private report to a
-                single office.
-              </p>
+            <h1 className="text-4xl font-bold leading-[1.04] tracking-[-0.035em] sm:text-6xl">
+              Report what&apos;s broken.{" "}
+              <span className="cx-gradient-text">Watch it get fixed.</span>
+            </h1>
+
+            <p className="max-w-lg text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Say it in plain words. UniFix sorts it, merges duplicates, sends it to the
+              right team, and keeps you posted until it&apos;s fixed.
+            </p>
+
+            <div className="flex flex-col items-start gap-3">
               <Link
                 href={DEMO_ENTRY.student}
-                className="mt-auto inline-flex h-10 items-center justify-center rounded-[--radius] bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
+                className="group inline-flex h-14 items-center justify-center gap-3 rounded-full bg-primary pl-7 pr-2 text-base font-semibold text-primary-foreground shadow-[0_22px_50px_-18px_var(--cx-glow)] transition-transform hover:-translate-y-0.5"
               >
-                Open the student view
+                Start the student demo
+                <span
+                  aria-hidden
+                  className="flex size-10 items-center justify-center rounded-full bg-primary-foreground/15 transition-transform group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
               </Link>
-            </CardContent>
-          </Card>
-          <Card className="flex flex-col border-t-4 border-t-staff">
-            <CardHeader>
-              <p className="text-xs font-semibold uppercase tracking-wide text-staff">
-                Staff view
+              <p className="text-sm text-muted-foreground">
+                Runs on a live MIT demo campus · no sign-up · 1 minute
               </p>
-              <CardTitle>Fix what matters first</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col gap-4 text-sm text-muted-foreground">
-              <p>
-                See a team&apos;s queue ranked by severity × reach, update statuses that
-                notify every co-signer, and handle sensitive reports in an
-                office-only private inbox.
-              </p>
-              <Link
-                href={DEMO_ENTRY.staff}
-                className="mt-auto inline-flex h-10 items-center justify-center rounded-[--radius] bg-staff px-4 text-sm font-medium text-staff-foreground transition-colors hover:opacity-90"
-              >
-                Open the staff view
-              </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          {/* Product glimpse: one report, from words to Fixed. */}
+          <div aria-hidden className="relative mx-auto w-full max-w-sm">
+            <div className="absolute -inset-6 rounded-[2.5rem] bg-[radial-gradient(circle,var(--cx-glow)_0%,transparent_70%)]" />
+            <div className="cx-glass relative flex flex-col gap-4 rounded-[1.75rem] p-5 shadow-[0_30px_80px_-40px_var(--cx-glow)]">
+              <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm">
+                “the printer on the 2nd floor of Hayden is jammed again”
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">IT</span>
+                <span className="rounded-full bg-[var(--tier-medium-bg)] px-3 py-1 text-[var(--tier-medium-fg)]">Medium</span>
+                <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">Hayden · 2F</span>
+                <span className="rounded-full border border-border px-3 py-1 text-muted-foreground">▲ 9 co-signed</span>
+              </div>
+              <ol className="flex items-center gap-2 text-[11px] font-semibold">
+                {["Received", "Assigned", "In progress", "Fixed"].map((s, i) => (
+                  <li key={s} className="flex flex-1 flex-col gap-1.5">
+                    <span className={`h-1.5 rounded-full ${i < 3 ? "bg-primary" : "bg-border"}`} />
+                    <span className={i < 3 ? "text-foreground" : "text-muted-foreground"}>{s}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="flex items-center gap-3 rounded-2xl bg-muted/70 px-3 py-2.5 text-xs text-muted-foreground">
+                <AriRobot variant="head" size={30} className="shrink-0" />
+                9 similar reports this semester · usually fixed in ~2 days
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Meet Ari */}
-      <section className="flex flex-col items-center gap-6 rounded-[--radius] border border-border bg-card p-6 sm:flex-row">
-        <AriRobot size={110} label="Ari, the UniFix assistant" className="shrink-0" />
+      {/* ── The demo doors: student first, staff quieter ─────────────── */}
+      <Reveal className="flex flex-col gap-6" aria-labelledby="demos-heading">
         <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-semibold tracking-tight">Meet Ari</h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
-            Ari is the little assistant inside UniFix. When you report something, Ari
-            tells you how often it has happened before and how long it usually takes to
-            fix, and suggests safe quick fixes so you might not need to file at all. In
-            an emergency Ari steps aside: the screen switches to a one-tap Call 911
-            button before any AI runs.
-          </p>
+          <Eyebrow>
+            <span className="text-primary">01</span> — Live demo
+          </Eyebrow>
+          <h2 id="demos-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Start as a student
+          </h2>
         </div>
-      </section>
 
-      {/* How it works */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
-        <ol className="grid gap-4 sm:grid-cols-3">
-          {[
-            { step: "1 · Report", body: "Say what's wrong in your own words. Add a photo if you like." },
-            { step: "2 · Routed", body: "AI classifies it, asks only the few missing details, and sends it to the right team." },
-            { step: "3 · Fixed", body: "Follow a visible status from Received to Fixed. You're notified at every change." },
-          ].map((s) => (
-            <li key={s.step}>
-              <Card className="h-full">
-                <CardHeader>
-                  <CardTitle>{s.step}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground">{s.body}</CardContent>
-              </Card>
+        <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+          <Link
+            href={DEMO_ENTRY.student}
+            className="cx-lift group relative flex flex-col gap-6 overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,var(--primary),color-mix(in_oklab,var(--primary)_60%,var(--ari-glow)))] p-7 text-primary-foreground sm:p-9"
+          >
+            <span
+              aria-hidden
+              className="absolute -right-16 -top-16 size-64 rounded-full bg-primary-foreground/10 blur-2xl"
+            />
+            <span className="w-fit rounded-full bg-primary-foreground/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em]">
+              Recommended · Student view
+            </span>
+            <span className="flex flex-col gap-2">
+              <span className="text-2xl font-bold tracking-tight sm:text-3xl">Report a problem in under a minute</span>
+              <span className="max-w-md text-sm leading-relaxed opacity-85">
+                Browse the campus map and feed, co-sign what you also hit, file a report in
+                plain words, or send one privately to a single office.
+              </span>
+            </span>
+            <span className="mt-auto inline-flex w-fit items-center gap-2 rounded-full bg-primary-foreground px-6 py-3 text-sm font-bold text-primary">
+              Open the student view
+              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+
+          <div className="flex flex-col justify-between gap-6 rounded-[2rem] border border-border bg-card p-7 sm:p-9">
+            <span className="flex flex-col gap-2">
+              <span className="w-fit text-xs font-bold uppercase tracking-[0.16em] text-staff">Also: staff view</span>
+              <span className="text-lg font-bold tracking-tight">See the other side</span>
+              <span className="text-sm leading-relaxed text-muted-foreground">
+                The team queue ranked by severity × reach, status updates that notify every
+                co-signer, and a private inbox.
+              </span>
+            </span>
+            <Link
+              href={DEMO_ENTRY.staff}
+              className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-staff underline-offset-4 hover:underline"
+            >
+              Open the staff view <span aria-hidden>→</span>
+            </Link>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          You can switch between the two any time from the banner at the top.
+        </p>
+      </Reveal>
+
+      {/* ── How it works ─────────────────────────────────────────────── */}
+      <Reveal className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Eyebrow>
+            <span className="text-primary">02</span> — How it works
+          </Eyebrow>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Three steps, no forms</h2>
+        </div>
+        <ol className="cx-stagger grid gap-4 sm:grid-cols-3">
+          {STEPS.map((s) => (
+            <li key={s.n} className="cx-lift flex flex-col gap-4 rounded-3xl border border-border bg-card p-6">
+              <span className="cx-gradient-text text-4xl font-bold tabular-nums">{s.n}</span>
+              <span className="flex flex-col gap-1">
+                <span className="text-lg font-bold tracking-tight">{s.title}</span>
+                <span className="text-sm leading-relaxed text-muted-foreground">{s.body}</span>
+              </span>
             </li>
           ))}
         </ol>
-      </section>
 
-      {/* Massachusetts economic impact (AICUM 2025) */}
-      <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-semibold tracking-tight">Why campuses matter in Massachusetts</h2>
-          <p className="max-w-prose text-sm text-muted-foreground">
+        {/* Ari, as the little helper it is. */}
+        <div className="flex items-center gap-4 rounded-3xl border border-border bg-card/70 p-5">
+          <AriRobot size={64} label="Ari, the UniFix assistant" className="shrink-0" />
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            <span className="font-semibold text-foreground">Ari</span> rides along: it shows how
+            often an issue happened before, suggests safe quick fixes, and in an emergency
+            puts a one-tap <span className="font-semibold text-danger">Call 911</span> button
+            first — before any AI runs.
+          </p>
+        </div>
+      </Reveal>
+
+      {/* ── Massachusetts economic impact (AICUM 2025) ───────────────── */}
+      <Reveal className="flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <Eyebrow>
+            <span className="text-primary">03</span> — Why it matters
+          </Eyebrow>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Why campuses matter in Massachusetts</h2>
+          <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
             The Commonwealth&apos;s {MA_IMPACT.memberInstitutions} independent, nonprofit
             colleges and universities are an economic engine. Keeping their campuses
             working well keeps that engine running.
           </p>
         </div>
-        <dl className="grid gap-4 sm:grid-cols-3">
+        <dl className="cx-stagger grid gap-4 sm:grid-cols-3">
           {[
             { label: "Annual economic impact", value: MA_IMPACT.economicImpact },
             { label: "Tax revenue to the Commonwealth", value: MA_IMPACT.taxRevenue },
             { label: "Jobs supported", value: MA_IMPACT.jobsSupported },
           ].map((stat) => (
-            <Card key={stat.label}>
-              <CardHeader>
-                <CardTitle className="text-3xl font-bold tabular-nums">{stat.value}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <dt className="text-sm text-muted-foreground">{stat.label}</dt>
-              </CardContent>
-            </Card>
+            <div key={stat.label} className="flex flex-col-reverse gap-2 rounded-3xl border border-border bg-card p-6">
+              <dt className="text-sm text-muted-foreground">{stat.label}</dt>
+              <dd className="cx-gradient-text text-4xl font-bold tabular-nums tracking-tight">{stat.value}</dd>
+            </div>
           ))}
         </dl>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-3">
           {MA_IMPACT.regions.map((region) => (
-            <Card key={region.name}>
-              <CardHeader>
-                <CardTitle className="text-base">{region.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-1">
-                <span className="text-xl font-semibold tabular-nums">{region.impact}</span>
-                <span className="text-xs text-muted-foreground">{region.note}</span>
-              </CardContent>
-            </Card>
+            <div key={region.name} className="flex flex-col gap-1 rounded-2xl border border-border bg-card/70 px-5 py-4">
+              <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                {region.name}
+              </span>
+              <span className="text-xl font-bold tabular-nums">{region.impact}</span>
+              <span className="text-xs text-muted-foreground">{region.note}</span>
+            </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
@@ -180,16 +240,47 @@ export default function LandingPage() {
           </a>{" "}
           ({MA_IMPACT.year}).
         </p>
-      </section>
+      </Reveal>
 
-      {/* Campus-agnostic: any school */}
-      <section className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold tracking-tight">Works for any campus</h2>
-        <p className="max-w-prose text-sm text-muted-foreground">
-          MIT is the richly seeded demo, but UniFix opens for any Massachusetts school.
-        </p>
+      {/* ── Campus-agnostic: any school ──────────────────────────────── */}
+      <Reveal className="flex flex-col gap-6 rounded-[2rem] border border-border bg-card p-7 sm:p-10">
+        <div className="flex flex-col gap-2">
+          <Eyebrow>
+            <span className="text-primary">04</span> — Any campus
+          </Eyebrow>
+          <h2 className="text-3xl font-bold tracking-tight">Works for any campus</h2>
+          <p className="max-w-prose text-sm text-muted-foreground">
+            MIT is the richly seeded demo, but UniFix opens for any Massachusetts school.
+          </p>
+        </div>
         <SchoolSearch />
-      </section>
+      </Reveal>
+
+      {/* ── Closing CTA with the gradient wave ───────────────────────── */}
+      <Reveal
+        as="div"
+        className="relative overflow-hidden rounded-[2rem] bg-foreground px-6 pb-32 pt-12 text-background sm:rounded-[2.5rem] sm:px-12"
+      >
+        <div className="relative z-10 flex flex-col items-start gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <p className="max-w-md text-3xl font-bold leading-tight tracking-tight">
+            See it the way a student does.
+          </p>
+          <Link
+            href={DEMO_ENTRY.student}
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-background px-6 text-sm font-bold text-foreground transition-transform hover:-translate-y-0.5"
+          >
+            Start the student demo <span aria-hidden>→</span>
+          </Link>
+        </div>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 text-primary">
+          <svg className="cx-wave-slow absolute bottom-0 h-full w-[200%] opacity-40" viewBox="0 0 1600 120" preserveAspectRatio="none">
+            <path fill="currentColor" d="M0 60 C200 10 400 110 800 60 C1000 10 1200 110 1600 60 V120 H0Z" />
+          </svg>
+          <svg className="cx-wave absolute bottom-0 h-3/4 w-[200%] opacity-70" viewBox="0 0 1600 120" preserveAspectRatio="none">
+            <path fill="currentColor" d="M0 70 C200 120 600 20 800 70 C1000 120 1400 20 1600 70 V120 H0Z" />
+          </svg>
+        </div>
+      </Reveal>
     </div>
   );
 }

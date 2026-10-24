@@ -9,6 +9,7 @@ import {
   routeOffice,
 } from "@/packages/private";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
+import { detectEmergency } from "@/modules/emergency";
 import { useActiveUser } from "@/components/layout";
 import type { Campus, Office } from "@/types";
 import { Button, Card, CardContent, CardHeader, CardTitle, Select } from "@/components/ui";
@@ -50,7 +51,9 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
   function onContinue() {
     const decision = routeOffice({ text });
     setOffice(decision.office);
-    if (decision.emergency) {
+    // Prototype R5.9: the takeover applies inside Direct reports too. Same
+    // instant keyword check as the public flow; a false alarm costs one tap.
+    if (decision.emergency || detectEmergency(text).isEmergency) {
       setEmergency(true);
       return;
     }
@@ -116,7 +119,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-1">
           <p className="text-sm font-medium text-primary">Direct (private) report</p>
-          <h1 className="text-2xl font-semibold tracking-tight">Review and send</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Review and send</h1>
         </header>
 
         <Card>
@@ -157,7 +160,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
             </label>
 
             <p
-              className="rounded-[--radius] border border-border bg-muted p-3 text-sm"
+              className="rounded-(--radius) border border-border bg-muted p-3 text-sm"
               role="note"
             >
               {privacyNotice(office)}
@@ -196,7 +199,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
         <p className="text-sm font-medium text-primary">Direct (private) report</p>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           Report something sensitive, privately
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -216,7 +219,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
           rows={6}
           maxLength={MAX_CHARS}
           placeholder="Describe what happened. You can include names, rooms, and times."
-          className="w-full rounded-[--radius] border border-border bg-background p-3 text-sm"
+          className="w-full rounded-(--radius) border border-border bg-background p-3 text-sm"
           aria-describedby="private-char-count"
         />
         <p id="private-char-count" className="text-xs text-muted-foreground">
@@ -262,13 +265,13 @@ function EmergencyTakeover({
       <a
         ref={call911Ref}
         href="tel:911"
-        className="flex h-16 w-full max-w-xs items-center justify-center rounded-[--radius] bg-background text-lg font-bold text-danger"
+        className="flex h-16 w-full max-w-xs items-center justify-center rounded-(--radius) bg-background text-lg font-bold text-danger"
       >
         Call 911
       </a>
       <a
         href={`tel:${policePhone}`}
-        className="flex h-14 w-full max-w-xs items-center justify-center rounded-[--radius] border border-danger-foreground text-base font-semibold"
+        className="flex h-14 w-full max-w-xs items-center justify-center rounded-(--radius) border border-danger-foreground text-base font-semibold"
       >
         Call {policeName}
       </a>

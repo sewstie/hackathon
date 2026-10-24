@@ -36,6 +36,7 @@ export function SchoolSearch() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-describedby="school-search-hint"
+        className="h-14 rounded-full px-6 text-base shadow-[var(--shadow-sm)]"
       />
       <p id="school-search-hint" className="text-xs text-muted-foreground">
         Try &ldquo;MIT&rdquo;, &ldquo;Harvard&rdquo;, or a city like
@@ -45,7 +46,7 @@ export function SchoolSearch() {
 
       {query.trim().length > 0 && (
         <ul
-          className="flex flex-col gap-1 rounded-[--radius] border border-border bg-card p-1"
+          className="cx-pop flex flex-col gap-1 rounded-3xl border border-border bg-card p-2 shadow-[var(--shadow-md)]"
           aria-label="Search results"
         >
           {results.length === 0 ? (
@@ -58,7 +59,7 @@ export function SchoolSearch() {
                 <button
                   type="button"
                   onClick={() => open(campus)}
-                  className="flex w-full items-center justify-between gap-3 rounded-[--radius] px-3 py-2 text-left text-sm transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
+                  className="flex w-full items-center justify-between gap-3 rounded-2xl px-4 py-2.5 text-left text-sm transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
                 >
                   <span className="flex flex-col">
                     <span className="font-medium">{campus.name}</span>

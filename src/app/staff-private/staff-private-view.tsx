@@ -91,7 +91,7 @@ export function StaffPrivateView() {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
         <p className="text-sm font-medium text-primary">Private inbox</p>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {activeUser?.privateOffice}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export function StaffPrivateView() {
                       type="button"
                       onClick={() => setSelectedId(r.id)}
                       className={
-                        "w-full rounded-[--radius] px-3 py-2 text-left text-sm " +
+                        "w-full rounded-(--radius) px-3 py-2 text-left text-sm " +
                         (selectedId === r.id ? "bg-muted font-medium" : "hover:bg-muted")
                       }
                     >
@@ -320,7 +320,7 @@ function PrivateReportDetail({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Why is this being referred?"
-              className="h-10 w-full rounded-[--radius] border border-border bg-background px-3 text-sm"
+              className="h-10 w-full rounded-(--radius) border border-border bg-background px-3 text-sm"
             />
           </div>
         </CardContent>
@@ -368,8 +368,8 @@ function PrivateReportDetail({
                   key={m.id}
                   className={
                     m.authorRole === "office"
-                      ? "self-end rounded-[--radius] bg-primary px-3 py-2 text-sm text-primary-foreground"
-                      : "self-start rounded-[--radius] bg-muted px-3 py-2 text-sm"
+                      ? "self-end rounded-(--radius) bg-primary px-3 py-2 text-sm text-primary-foreground"
+                      : "self-start rounded-(--radius) bg-muted px-3 py-2 text-sm"
                   }
                 >
                   <span className="mb-1 block text-xs opacity-70">
@@ -389,7 +389,7 @@ function PrivateReportDetail({
               value={reply}
               onChange={(e) => setReply(e.target.value)}
               rows={3}
-              className="w-full rounded-[--radius] border border-border bg-background p-3 text-sm"
+              className="w-full rounded-(--radius) border border-border bg-background p-3 text-sm"
             />
             <div>
               <Button onClick={onReply} disabled={busy || reply.trim().length === 0}>

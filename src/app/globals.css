@@ -53,9 +53,9 @@
   --ari-core: #cffafe;
 
   /* Radii — refined scale. */
-  --radius-sm: 0.375rem;
-  --radius: 0.625rem;
-  --radius-lg: 0.875rem;
+  --radius-sm: 0.5rem;
+  --radius: 0.875rem;
+  --radius-lg: 1.25rem;
 
   /* Typographic scale. */
   --text-xs: 0.75rem;
@@ -77,6 +77,7 @@
   --shadow-sm: 0 1px 2px 0 rgb(24 24 27 / 0.05);
   --shadow: 0 1px 3px 0 rgb(24 24 27 / 0.08), 0 1px 2px -1px rgb(24 24 27 / 0.08);
   --shadow-md: 0 4px 12px -2px rgb(24 24 27 / 0.10), 0 2px 6px -2px rgb(24 24 27 / 0.08);
+  --shadow-lg: 0 30px 80px -30px rgb(67 56 202 / 0.35), 0 8px 24px -12px rgb(24 24 27 / 0.12);
 }
 
 @theme inline {
@@ -98,15 +99,25 @@
   --radius-lg: var(--radius-lg);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope), var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
+  /* A whisper of color: soft indigo + Ari-cyan glows behind every page. */
+  background:
+    radial-gradient(900px 480px at 100% -8%, color-mix(in oklab, var(--primary) 9%, transparent) 0%, transparent 65%),
+    radial-gradient(760px 420px at -8% 4%, color-mix(in oklab, var(--ari-glow) 12%, transparent) 0%, transparent 60%),
+    var(--background);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-feature-settings: "ss01", "cv11";
 }
+
+h1, h2, h3 { letter-spacing: -0.02em; text-wrap: balance; }
+p { text-wrap: pretty; }
+::selection { background: color-mix(in oklab, var(--primary) 22%, transparent); }
 
 /* Keyboard focus is always visible. */
 :focus-visible {
@@ -139,6 +150,88 @@ body {
 .ra-eyes-open { animation: ra-open 8s ease-in-out infinite; }
 .ra-thruster { transform-origin: 100px 224px; animation: ra-thruster 1.7s ease-in-out infinite; }
 
+/* ───────────────────────── Campus home (cx-*) ─────────────────────────
+   Visual language after Roveia Health (clinical white, one saturated glow,
+   faint grid, pill actions, big soft-cornered cards, scroll-led reveals,
+   gradient-wave footer) combined with Ari's motion kit (rise / stagger /
+   lift / ring / gradient text). Every color derives from the tokens above. */
+.cx-theme {
+  --cx-glass: color-mix(in oklab, var(--card) 78%, transparent);
+  --cx-glass-line: color-mix(in oklab, var(--foreground) 9%, transparent);
+  --cx-grid: color-mix(in oklab, var(--foreground) 5%, transparent);
+  --cx-glow: color-mix(in oklab, var(--primary) 24%, transparent);
+  --cx-glow-soft: color-mix(in oklab, var(--primary) 10%, transparent);
+  --cx-accent-2: color-mix(in oklab, var(--primary) 55%, var(--ari-glow));
+  font-family: var(--font-manrope), var(--font-sans), system-ui, sans-serif;
+}
+
+/* Hero: soft radial glow over a faint grid that fades out at the edges. */
+.cx-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--cx-glass-line);
+  background:
+    radial-gradient(60% 80% at 85% 0%, var(--cx-glow) 0%, transparent 70%),
+    radial-gradient(50% 60% at 0% 100%, var(--cx-glow-soft) 0%, transparent 70%),
+    var(--card);
+}
+.cx-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--cx-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cx-grid) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(70% 70% at 60% 40%, black 30%, transparent 85%);
+}
+
+.cx-glass {
+  background: var(--cx-glass);
+  border: 1px solid var(--cx-glass-line);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.cx-gradient-text {
+  background-image: linear-gradient(120deg, var(--foreground) 10%, var(--primary) 55%, var(--cx-accent-2) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Ari motion kit, ported from github.com/NicolasNabhan/ari. */
+@keyframes cx-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+.cx-rise { animation: cx-rise .6s cubic-bezier(.2,.8,.2,1) both; }
+.cx-stagger > * { animation: cx-rise .5s cubic-bezier(.2,.8,.2,1) both; }
+.cx-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.cx-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.cx-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.cx-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.cx-stagger > *:nth-child(n+6) { animation-delay: 300ms; }
+.cx-lift { transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease; }
+.cx-lift:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -18px var(--cx-glow); border-color: color-mix(in oklab, var(--primary) 25%, transparent); }
+
+/* Scroll-led reveal: <Reveal> flips data-shown when the block enters view. */
+.cx-reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1); }
+.cx-reveal[data-shown="true"] { opacity: 1; transform: none; }
+
+/* Live dot + Ari's pulse ring. */
+@keyframes cx-ring { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(2.2); opacity: 0; } }
+.cx-ring { animation: cx-ring 1.8s ease-out infinite; }
+.cx-ring-delay { animation-delay: .9s; }
+
+/* Gradient-wave footer. */
+@keyframes cx-wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.cx-wave { animation: cx-wave 14s linear infinite; }
+.cx-wave-slow { animation: cx-wave 22s linear infinite; }
+
+/* Ari helper pop. */
+@keyframes cx-pop { from { opacity: 0; transform: translateY(12px) scale(.96); } to { opacity: 1; transform: none; } }
+.cx-pop { animation: cx-pop .28s cubic-bezier(.2,.8,.2,1) both; transform-origin: bottom right; }
+
 /* Honor reduced-motion: suppress animations and transitions. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -149,4 +242,5 @@ body {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .cx-reveal { opacity: 1; transform: none; }
 }

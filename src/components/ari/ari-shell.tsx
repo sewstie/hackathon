@@ -20,7 +20,7 @@ export function AriShell({ message, children, className }: AriShellProps) {
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-[--radius] border border-border bg-muted/50 p-3",
+        "flex items-start gap-3 rounded-(--radius) border border-border bg-muted/50 p-3",
         className,
       )}
     >
