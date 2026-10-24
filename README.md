@@ -189,6 +189,19 @@ push if a keys file was ever committed, and adds a `.vercelignore` so `.env.loca
 
 ---
 
+## Turn on the AI (Claude Opus 5.5)
+
+The app works without a key (a keyword fallback sorts reports). To use the real AI:
+
+| Step | Command |
+|---|---|
+| 1. Add your Anthropic key (hidden while you paste) | `./ship-keys add ANTHROPIC_API_KEY` |
+| 2. Restart the app | `Ctrl+C`, then `npm run dev` |
+| 3. Check it's on | `npm run ai:check` → every line says `[ai]` |
+
+The model defaults to `claude-opus-5-5` (`AI_MODEL` overrides it). For the live site, `./ship-keys push`
+sends the key to Vercel, and `./ship-keys schema` adds the new `report_comments` table.
+
 ## Cheat sheet
 
 ```sh

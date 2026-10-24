@@ -27,8 +27,11 @@ import {
 } from "./lib/rate-limit";
 import {
   type ClassificationVerdict,
+  type CommentScreenResult,
   type ScreenInput,
   type ScreenResult,
+  looksLikeSpam,
+  screenCommentImpl,
   screenReportImpl,
 } from "./lib/screen";
 
@@ -39,7 +42,21 @@ export type {
   ClassificationVerdict,
   ScreenInput,
   ScreenResult,
+  CommentScreenResult,
 };
+
+/** True for spam, scams, jokes or keyboard noise — not a campus report. Pure. */
+export function isSpam(text: string): boolean {
+  return looksLikeSpam(text);
+}
+
+/**
+ * Screen a comment before it is posted: no spam / jokes / noise, and PUBLIC
+ * comments can't name a person (direct staff ↔ reporter messages may). Pure.
+ */
+export function screenComment(text: string, visibility: "public" | "direct"): CommentScreenResult {
+  return screenCommentImpl(text, visibility);
+}
 
 /**
  * Decide whether a user may file another public report right now. Counts the

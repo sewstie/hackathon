@@ -30,7 +30,7 @@ export function CampusMap({ data, ariaLabel }: CampusMapProps) {
   return (
     // `isolate` keeps Leaflet's z-indexed panes (400–1000) inside the map, so
     // they never paint over the sticky header, dialogs, or the Ari nudge.
-    <div className="isolate h-80 w-full overflow-hidden rounded-(--radius) border border-border">
+    <div className="isolate h-[26rem] w-full overflow-hidden rounded-(--radius) border border-border">
       <MapErrorBoundary>
         <CampusMapInner data={data} ariaLabel={ariaLabel} />
       </MapErrorBoundary>

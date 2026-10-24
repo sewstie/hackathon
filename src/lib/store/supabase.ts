@@ -26,6 +26,7 @@ import type {
   PublicTeam,
   QuickFix,
   Report,
+  ReportComment,
   Role,
   SelfResolution,
   Status,
@@ -38,6 +39,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import type {
   NewPrivateReport,
   NewReport,
+  NewReportComment,
   PrivateAccess,
   Store,
 } from "./types";
@@ -156,6 +158,17 @@ export class SupabaseStore implements Store {
       reportId: r.report_id,
       authorRole: r.author_role as MessageAuthorRole,
       authorId: r.author_id,
+      body: r.body,
+      createdAt: r.created_at,
+    };
+  }
+  private toReportComment(r: Row<"report_comments">): ReportComment {
+    return {
+      id: r.id,
+      reportId: r.report_id,
+      authorId: r.author_id,
+      authorRole: r.author_role as ReportComment["authorRole"],
+      visibility: r.visibility as ReportComment["visibility"],
       body: r.body,
       createdAt: r.created_at,
     };
@@ -406,6 +419,29 @@ export class SupabaseStore implements Store {
       await this.addNotification(r.reporterId, `New reply on your private report "${r.title}"`);
     }
     return { allowed: true, data: this.toPrivateMessage(data) };
+  }
+
+  // --- report comments ---
+  async listReportComments(reportId: string, viewer: User | null): Promise<ReportComment[]> {
+    const report = await this.getReport(reportId);
+    const canSeeDirect =
+      viewer !== null && (viewer.role === "responder" || report?.reporterId === viewer.id);
+    let q = this.sb.from("report_comments").select("*").eq("report_id", reportId);
+    if (!canSeeDirect) q = q.eq("visibility", "public");
+    const data = this.unwrap(await q.order("created_at").returns<Row<"report_comments">[]>(), "listReportComments");
+    return data.map((c) => this.toReportComment(c));
+  }
+  async addReportComment(comment: NewReportComment): Promise<ReportComment> {
+    const row: Insert<"report_comments"> = {
+      id: this.id("comment"),
+      report_id: comment.reportId,
+      author_id: comment.authorId,
+      author_role: comment.authorRole,
+      visibility: comment.visibility,
+      body: comment.body,
+    };
+    const data = this.unwrap(await this.sb.from("report_comments").insert(row).select().single<Row<"report_comments">>(), "addReportComment");
+    return this.toReportComment(data);
   }
 
   // --- access log ---

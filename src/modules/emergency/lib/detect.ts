@@ -69,6 +69,32 @@ const EMERGENCY_PATTERNS: ReadonlyArray<readonly [RegExp, string]> = [
     /\b(bleeding|blood everywhere|badly hurt|seriously (hurt|injured)|hit by a (car|bus|truck|bike)|fell (down|off)[^.!?]{0,30}(hurt|can'?t move|not moving|unconscious)|broke (his|her|their|my) (neck|back|leg|arm)|can'?t move (his|her|their|my) (legs?|arms?|body)|allergic reaction|anaphyla)/i,
     "Someone may be seriously hurt",
   ],
+  // More medical emergencies.
+  [
+    /\b(chest pain|heart (stopped|attack)|no pulse|cpr|faint(ed|ing)|blacked out|lost consciousness|seizing|convuls|asthma attack|can'?t stop (shaking|vomiting)|vomiting blood|coughing (up )?blood|diabetic|insulin|low blood sugar|head injury|hit (his|her|their|my) head|concussion|broken bone|bone (is )?sticking out|badly burn|severe(ly)? burn|burned (badly|bad)|hypotherm|frostbite|heat ?stroke)\b/i,
+    "Possible medical emergency",
+  ],
+  // Drugs / alcohol.
+  [
+    /\b(alcohol poisoning|too drunk|passed out drunk|blackout drunk|won'?t wake up|drugged|roofied|spiked (my|her|his|their)? ?drinks?|drinks? (was|were|got|is) spiked|od'?(ed|ing)?|took too many (pills|drugs))\b/i,
+    "Possible overdose or poisoning",
+  ],
+  // Trapped / falls / structural.
+  [
+    /\b(trapped|stuck (in|inside) (the|an?) (elevator|room|stairwell|building)|can'?t get out|locked in|fell (from|off) (a|the) (roof|balcony|window|stairs)|jump(ed|ing)? (off|from)|ceiling (fell|collapsed) on|collapsed on (him|her|them|someone|somebody|me)|building (is )?collapsing|power lines? (down|on the ground)|downed (power )?line|live wire)\b/i,
+    "Someone may be trapped or in danger",
+  ],
+  // Gas / fumes / smoke smell.
+  [/\b(smell(s|ing)? (of |like )?gas|gas smell|smells like (something )?burning|burning smell|fumes|can'?t breathe in here)\b/i, "Possible gas leak or fire"],
+  // Water emergencies.
+  [/\b(drown|under ?water and|flood(ing)? with (people|someone)|water (touching|near) (the )?(outlet|wires|electric))/i, "Possible water or electrical danger"],
+  // Threats, stalking, people in danger.
+  [
+    /\b(hostage|riot|stalk(er|ing|ed)|following me|chasing me|someone is outside my (door|room)|domestic violence|hitting (her|him|me|them)|choking (her|him|me|them)|threatening (me|us|her|him|them)|said (he|she|they)'?(d| would| will) (kill|hurt|shoot)|bomb threat|shooter|armed)\b/i,
+    "Possible threat to someone's safety",
+  ],
+  [/\b(missing (person|student|child|friend)|can'?t find (my|our) (friend|roommate|child|kid)|been missing)\b/i, "Someone may be missing"],
+  [/\b(car (crash|accident)|crashed|hit and run|run over)\b/i, "Possible crash or injury"],
   // Someone explicitly asking for emergency help.
   [/\b(call 911|need an ambulance|call an ambulance|(this is an?|it'?s an?|we have an?|there'?s an?) emergency|help me|send help|life or death)\b/i, "You asked for emergency help"],
 ];

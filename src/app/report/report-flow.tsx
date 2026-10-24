@@ -22,8 +22,10 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { AriShell } from "@/components/ari";
+import { AriPopup, AriShell } from "@/components/ari";
+import { ariHistoryLine, ariIntro, ariQuickFixes, ariSuppressed, thatFixedIt } from "@/packages/ari";
 import { stopReportTour } from "@/components/onboarding";
+import { isSpam, screenReport } from "@/packages/abuse";
 import { useActiveUser } from "@/components/layout/active-user";
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Dialog, Input, Select } from "@/components/ui";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
@@ -41,7 +43,7 @@ import {
   teamForCategory,
   type ReportDraft,
 } from "@/modules/reporting";
-import type { Building, Campus, Report } from "@/types";
+import type { Building, Campus, QuickFix, Report } from "@/types";
 import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
 
 import { EmergencyTakeover } from "./emergency-takeover";
@@ -59,6 +61,7 @@ type Phase =
   | "emergency"
   | "blocked"
   | "followups"
+  | "ari"
   | "photo"
   | "confirm"
   | "filing"
@@ -89,6 +92,10 @@ export function ReportFlow() {
   const [draft, setDraft] = React.useState<ReportDraft | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [filed, setFiled] = React.useState<FiledSummary | null>(null);
+  /** Ari's look-back: history line + curated quick fixes; null while loading. */
+  const [ari, setAri] = React.useState<{ intro: string; history: string; fixes: QuickFix[] } | null>(null);
+  /** "That fixed it" was tapped: nothing is filed. */
+  const [selfFixed, setSelfFixed] = React.useState(false);
   /** The "your report was rated X and sent to Y" pop-up after posting. */
   const [sentOpen, setSentOpen] = React.useState(false);
   const [followUp, setFollowUp] = React.useState<FollowUpState | null>(null);
@@ -169,6 +176,22 @@ export function ReportFlow() {
       });
       if (!res.ok) throw new Error("Classification failed.");
       const c = (await res.json()) as Classification;
+
+      // Not a real report (spam, a prize/money claim, a joke, keyboard noise,
+      // or nothing about campus): block it, keep the text, persist nothing.
+      const screen = screenReport({
+        text: trimmed,
+        classification: {
+          rejected: c.rejected || isSpam(trimmed),
+          reason: c.rejectionReason ?? undefined,
+        },
+      });
+      if (screen.rejected) {
+        setError(screen.reason ?? "This doesn't look like a campus repair report.");
+        setPhase("compose");
+        return;
+      }
+
       const nextDraft: ReportDraft = {
         text: trimmed,
         category: c.category,
@@ -211,7 +234,7 @@ export function ReportFlow() {
         setFollowUp({ plan, buildings });
         setPhase("followups");
       } else {
-        setPhase("photo");
+        void showAri(nextDraft);
       }
     } catch {
       setError("We couldn't read your report just now. Please try again.");
@@ -276,7 +299,46 @@ export function ReportFlow() {
       buildingId: answers.buildingId,
       locationUnverified: answers.locationUnverified,
     }));
-    setPhase("photo");
+    if (draft) void showAri({ ...draft, location: answers.location });
+    else setPhase("photo");
+  }
+
+  /**
+   * Ari's step (prototype R11): before filing, Ari says how often this has
+   * happened and how fast it usually gets fixed, and offers up to two safe
+   * quick fixes. Never for hazards. Bounded: if anything is slow or fails we
+   * move straight on to the photo step, so this can never hang the flow.
+   */
+  async function showAri(d: ReportDraft) {
+    if (ariSuppressed({ safetyHazard: !!hazardReason }) || d.category === "Safety") {
+      setPhase("photo");
+      return;
+    }
+    setAri(null);
+    setPhase("ari");
+    const store = getStore();
+    const ctx = { campusId: MIT_CAMPUS_ID, category: d.category, item: d.item };
+    try {
+      const [history, fixes] = await Promise.race([
+        Promise.all([ariHistoryLine(store, ctx), ariQuickFixes(store, ctx)]),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error("slow")), 4000)),
+      ]);
+      setAri({ intro: ariIntro(d.category), history, fixes });
+    } catch {
+      setPhase("photo");
+    }
+  }
+
+  async function handleThatFixedIt() {
+    if (draft && activeUser) {
+      await thatFixedIt(getStore(), {
+        campusId: MIT_CAMPUS_ID,
+        category: draft.category,
+        item: draft.item,
+        userId: activeUser.id,
+      }).catch(() => {});
+    }
+    setSelfFixed(true);
   }
 
   async function handleFile() {
@@ -308,6 +370,8 @@ export function ReportFlow() {
 
   function reset() {
     setPhase("compose");
+    setAri(null);
+    setSelfFixed(false);
     setText("");
     setPhoto(null);
     setDraft(null);
@@ -380,8 +444,9 @@ export function ReportFlow() {
               </div>
             </dl>
             <p className="text-muted-foreground">
-              It&apos;s now in the {team} staff queue, ranked by severity × how many
-              students hit it. You&apos;ll be notified every time its status changes.
+              It&apos;s now in the {team} staff queue — only {team} staff see it, ranked by
+              severity × how many students hit it. You&apos;ll be notified every time its
+              status changes.
             </p>
             <div className="flex flex-wrap justify-end gap-2">
               <Button variant="ghost" onClick={() => setSentOpen(false)}>
@@ -430,6 +495,38 @@ export function ReportFlow() {
     );
   }
 
+  if (phase === "ari") {
+    if (selfFixed) {
+      return (
+        <div className="flex flex-col gap-4" data-tour="done">
+          <AriShell message="Glad it's sorted! Nothing was filed." />
+          <div>
+            <Button variant="secondary" onClick={() => { setSelfFixed(false); reset(); }}>
+              Report something else
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <StepFrame phase={phase}>
+        <div data-tour="ari">
+          {ari ? (
+            <AriPopup
+              message={ari.intro}
+              historyLine={ari.history}
+              quickFixes={ari.fixes}
+              onThatFixedIt={handleThatFixedIt}
+              onStillBroken={() => setPhase("photo")}
+            />
+          ) : (
+            <AriShell message="Checking past reports like this one…" />
+          )}
+        </div>
+      </StepFrame>
+    );
+  }
+
   if (phase === "photo") {
     return (
       <StepFrame phase={phase}>
@@ -439,6 +536,7 @@ export function ReportFlow() {
             onChange={setPhoto}
             onNext={() => setPhase("confirm")}
             onBack={() => setPhase(followUp ? "followups" : "compose")}
+
           />
         </div>
       </StepFrame>
@@ -493,9 +591,13 @@ export function ReportFlow() {
           </div>
 
           {error ? (
-            <p role="alert" className="text-sm text-danger">
-              {error}
-            </p>
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-2xl border border-[var(--tier-urgent-fg)]/20 bg-[var(--tier-urgent-bg)] px-4 py-3 text-sm text-[var(--tier-urgent-fg)]"
+            >
+              <span aria-hidden className="font-bold">!</span>
+              <span>{error}</span>
+            </div>
           ) : null}
 
           <div>

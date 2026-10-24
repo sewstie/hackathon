@@ -23,6 +23,7 @@ import type {
   PrivateStatus,
   QuickFix,
   Report,
+  ReportComment,
   SelfResolution,
   Status,
   User,
@@ -39,6 +40,9 @@ export type NewPrivateReport = Omit<
 > & {
   status?: PrivateStatus;
 };
+
+/** A new comment; id + timestamp are assigned by the store. */
+export type NewReportComment = Omit<ReportComment, "id" | "createdAt">;
 
 /** Result of an office-scoped private read: denied carries no data. */
 export type PrivateAccess<T> =
@@ -117,6 +121,14 @@ export interface Store {
     body: string,
     actor: User,
   ): Promise<PrivateAccess<PrivateMessage>>;
+
+  // --- report comments (public thread + staff ↔ reporter direct messages) ---
+  /**
+   * Comments the viewer may read: every "public" one, plus "direct" ones when
+   * the viewer is staff or the report's reporter. A null viewer sees public only.
+   */
+  listReportComments(reportId: string, viewer: User | null): Promise<ReportComment[]>;
+  addReportComment(comment: NewReportComment): Promise<ReportComment>;
 
   // --- access log (append-only audit trail) ---
   listAccessLog(reportId: string): Promise<AccessLogEntry[]>;

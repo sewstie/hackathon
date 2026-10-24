@@ -132,6 +132,21 @@ create table if not exists private_messages (
 create index if not exists private_messages_report_idx on private_messages (report_id);
 
 -- ---------------------------------------------------------------------------
+-- Report comments: a public thread on each report, plus "direct" staff <->
+-- reporter messages (readable only by the reporter and staff).
+-- ---------------------------------------------------------------------------
+create table if not exists report_comments (
+  id           text primary key,
+  report_id    text not null references reports (id) on delete cascade,
+  author_id    text not null,
+  author_role  text not null check (author_role in ('student', 'staff')),
+  visibility   text not null check (visibility in ('public', 'direct')),
+  body         text not null,
+  created_at   timestamptz not null default now()
+);
+create index if not exists report_comments_report_idx on report_comments (report_id);
+
+-- ---------------------------------------------------------------------------
 -- Access log (append-only audit trail for private reports + safety taps)
 -- ---------------------------------------------------------------------------
 create table if not exists access_log (

@@ -120,19 +120,19 @@ function ViewOnboarding({
         points: [
           { icon: "✍️", label: "Report in plain words", hint: "Ari sorts it and asks only what's missing" },
           { icon: "▲", label: "Upvote what you also hit", hint: "Co-signs push it up the queue" },
-          { icon: "✓", label: "Follow it to Fixed", hint: "You're notified at every step" },
+          { icon: "✓", label: "Follow it to Fixed", hint: "It goes only to the team that fixes it; you're notified at every step" },
         ],
         tip: "Switch between Ana, Ben and Cam from the Student menu, top right.",
       }
     : {
         title: "You're in the staff view",
-        intro: "This is what campus staff see when they fix what students report.",
+        intro: "This is what campus staff see when they fix what students report. Each staff member only sees their own area.",
         points: [
-          { icon: "☰", label: "Your team's queue", hint: "Ranked by severity × how many are affected" },
+          { icon: "☰", label: "Only your team's reports", hint: "Facilities staff see Facilities only, IT sees IT only — ranked by severity × reach" },
           { icon: "↻", label: "Update the status", hint: "Every student on the report is notified" },
           { icon: "🔒", label: "Private inbox", hint: "Sensitive reports, for one office only" },
         ],
-        tip: "Switch teams from the Staff member menu, top right. Every team has reports waiting.",
+        tip: "Switch staff members from the menu, top right, to see another team's queue. Every team has reports waiting.",
       };
   // One accent per view: indigo for students, teal for staff.
   const accent = { "--v": student ? "var(--primary)" : "var(--staff)" } as React.CSSProperties;

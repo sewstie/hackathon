@@ -19,6 +19,7 @@ import type {
   PrivateReport,
   QuickFix,
   Report,
+  ReportComment,
   SelfResolution,
   User,
 } from "@/types";
@@ -35,6 +36,7 @@ export interface Seed {
   accessLog: AccessLogEntry[];
   quickFixes: QuickFix[];
   selfResolutions: SelfResolution[];
+  reportComments: ReportComment[];
 }
 
 export const MIT_CAMPUS_ID = "mit";
@@ -108,7 +110,7 @@ function mitUsers(): User[] {
     { id: "user-ana", name: "Ana", email: "ana@mit.edu", role: "student" },
     { id: "user-ben", name: "Ben", email: "ben@mit.edu", role: "student" },
     { id: "user-cam", name: "Cam", email: "cam@mit.edu", role: "student" },
-    { id: "staff-facilities", name: "Fiona (Facilities)", email: "fiona@mit.edu", role: "responder", publicTeam: "Facilities", privateOffice: "Facilities" },
+    { id: "staff-facilities", name: "Rosa (Facilities)", email: "rosa@mit.edu", role: "responder", publicTeam: "Facilities", privateOffice: "Facilities" },
     { id: "staff-dining", name: "Diego (Dining)", email: "diego@mit.edu", role: "responder", publicTeam: "Dining" },
     { id: "staff-housing", name: "Hana (Housing)", email: "hana@mit.edu", role: "responder", publicTeam: "Housing", privateOffice: "Housing" },
     { id: "staff-it", name: "Ivan (IT)", email: "ivan@mit.edu", role: "responder", publicTeam: "IT", privateOffice: "IT Security" },
@@ -498,5 +500,6 @@ export function buildSeed(): Seed {
     accessLog: [],
     quickFixes: mitQuickFixes(),
     selfResolutions: [],
+    reportComments: [],
   };
 }

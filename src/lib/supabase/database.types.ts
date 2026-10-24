@@ -266,6 +266,36 @@ export interface Database {
         };
         Relationships: [];
       };
+      report_comments: {
+        Row: {
+          id: string;
+          report_id: string;
+          author_id: string;
+          author_role: string;
+          visibility: string;
+          body: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          report_id: string;
+          author_id: string;
+          author_role: string;
+          visibility: string;
+          body: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          report_id?: string;
+          author_id?: string;
+          author_role?: string;
+          visibility?: string;
+          body?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       private_messages: {
         Row: {
           id: string;
