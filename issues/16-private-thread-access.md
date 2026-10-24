@@ -1,6 +1,6 @@
 # 16: Private thread + office access control + access log
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 15-private-report-routing.md
 Files Touched: src/modules/private/ (access-control + thread internals + tests), src/app/private/ (student thread view), src/app/staff-private/ (staff private report view)
