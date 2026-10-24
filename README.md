@@ -36,20 +36,16 @@ end we merge the 3 branches.
 | `codebase-design` | Deep-module vocabulary (module, interface, seam, depth). Other skills pull it in. |
 | `setup-ts-deep-modules` | Installs dependency-cruiser so code can only import a module's root files. |
 | `improve-codebase-architecture` | After the hackathon (or between waves): find shallow modules worth deepening. |
-| `loop-me` | Unrelated to the hackathon flow (it specs personal workflows). Ignore it tomorrow. |
 
-How to call one: in Claude Code type `/to-spec`. In Kiro, say "use the to-spec skill" (or type `/` and pick
-it if your version lists skills). `to-spec`, `to-tickets`, `setup-ts-deep-modules` and
-`improve-codebase-architecture` only run when you ask for them by name.
+How to call one: in Claude Code or Kiro type `/to-spec`.
 
 ---
 
-## Step 0: Tonight (everyone, 10 min)
+## Step 0
 
 1. Install and log in:
    - Kiro: `kiro-cli login`, then `kiro-cli chat --list-models`.
      Choose a model: in `kiro-cli chat` run `/model`, then `/model set-current-as-default`.
-     Ralph's headless runs use that default. Check its credit cost, because a loop burns a lot of credits.
    - Claude Code (optional): run `claude` once and log in.
    - Node 20+, `git`, `gh auth login`.
 2. Clone the repo and confirm the skills load:
@@ -59,20 +55,18 @@ it if your version lists skills). `to-spec`, `to-tickets`, `setup-ts-deep-module
    ```
    You should get 8 skills and `# Project Rules & Architecture`.
    > Windows: the skill folders are symlinks. Use WSL, or run `git config --global core.symlinks true` before cloning.
-3. Everyone needs push access to the GitHub repo.
 
 ---
 
-## Step 1: Mob planning on PC #1 (all 3 teammates together, ~25 min)
+## Step 1: Mob planning together
 
-All 3 of you sit around Teammate 1's laptop, so everyone agrees on the architecture and features.
+All 3 of you sit around one laptop, so everyone agrees on the architecture and features.
 Work on `main` in an interactive session (`kiro-cli chat` or `claude`).
 
 **1a. Scaffold the app (do it first, ~5 min).** Ralph only counts a ticket as done when
 `npm run lint && npm run test && npm run build` pass, so those scripts have to exist.
 
 ```sh
-# example for Next.js + Vitest; swap for whatever you choose
 npx create-next-app@latest . --ts --tailwind --eslint --app --src-dir --use-npm
 npm i -D vitest @vitejs/plugin-react jsdom @testing-library/react
 npm pkg set scripts.test="vitest run"
@@ -114,7 +108,6 @@ and global store interfaces exist before anyone branches.
 ```sh
 TRACK=SHARED ./ralph/once.sh           # Kiro (default); or: AGENT=claude TRACK=SHARED ./ralph/once.sh
 ```
-- Watch this run together. All three tracks build on it, so a mistake here costs you three times.
 - Make sure Ralph marked `01-shared-foundation.md` as `Status: DONE` and committed it.
 - Then check and push:
 
@@ -149,9 +142,6 @@ TRACK=A ./ralph/afk.sh 10                  # then let it loop
 - If you need a change in shared code, **don't** make it on your branch. Make it on `main`, push,
   and everyone runs `git merge main`.
 - Finished early? Add more `Status: OPEN` tickets for your own track and rerun.
-
-> Permissions: Ralph is headless, so it auto-approves tools. Kiro runs with `--trust-all-tools`. Claude
-> runs with `acceptEdits` plus `npm`/`npx`/`node`/`git`/`ls`/`mkdir` allowed. Only run it inside this repo.
 
 ---
 
