@@ -1,6 +1,6 @@
 # 07: Priority ordering (severity × reach)
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/priority/ (index.ts, internals, tests)
