@@ -207,6 +207,7 @@ export interface Database {
           body: string;
           read: boolean;
           created_at: string;
+          link: string | null;
         };
         Insert: {
           id: string;
@@ -214,6 +215,7 @@ export interface Database {
           body: string;
           read: boolean;
           created_at?: string;
+          link?: string | null;
         };
         Update: {
           id?: string;
@@ -221,6 +223,7 @@ export interface Database {
           body?: string;
           read?: boolean;
           created_at?: string;
+          link?: string | null;
         };
         Relationships: [];
       };

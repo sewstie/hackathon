@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { getStore } from "@/lib/store";
 import type { Notification } from "@/types";
 import { useActiveUser } from "./active-user";
@@ -135,11 +136,31 @@ export function NotificationBell() {
           ) : (
             <ul className="max-h-80 divide-y divide-border overflow-y-auto">
               {notifications.map((n) => (
-                <li key={n.id} role="menuitem" className="px-4 py-3 text-sm">
-                  <p className="text-card-foreground">{n.body}</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {formatWhen(n.createdAt)}
-                  </p>
+                <li key={n.id} role="none">
+                  {n.link ? (
+                    // Click a notification to jump straight to that report / chat.
+                    <Link
+                      href={n.link}
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                      className="group flex items-start gap-3 px-4 py-3 text-sm transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none"
+                    >
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-card-foreground">{n.body}</span>
+                        <span className="mt-0.5 block text-xs text-muted-foreground">
+                          {formatWhen(n.createdAt)} · <span className="font-medium text-primary">Open</span>
+                        </span>
+                      </span>
+                      <span aria-hidden className="mt-0.5 text-muted-foreground transition-transform group-hover:translate-x-0.5">
+                        →
+                      </span>
+                    </Link>
+                  ) : (
+                    <div role="menuitem" className="px-4 py-3 text-sm">
+                      <p className="text-card-foreground">{n.body}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">{formatWhen(n.createdAt)}</p>
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

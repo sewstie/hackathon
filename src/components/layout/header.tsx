@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { getStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { useActiveUser } from "./active-user";
+import { rememberedUserId, useActiveUser } from "./active-user";
 import { demoViewFor, DEMO_ENTRY, type DemoView } from "./demo-view";
 import { Nav } from "./nav";
 import { NotificationBell } from "./notification-bell";
@@ -69,10 +69,14 @@ function useViewIdentity(view: Exclude<DemoView, "landing">) {
     if (loading || users.length === 0) return;
     const wantRole = view === "staff" ? "responder" : "student";
     if (activeUser?.role === wantRole) return;
+    // Whoever you last viewed as in this view, else the scripted default.
+    const remembered = rememberedUserId(wantRole);
+    const last = users.find((u) => u.id === remembered && u.role === wantRole);
     const pick =
-      view === "staff"
+      last ??
+      (view === "staff"
         ? users.find((u) => u.id === "staff-facilities") ?? users.find((u) => u.role === "responder")
-        : users.find((u) => u.name === "Ana") ?? users.find((u) => u.role === "student");
+        : users.find((u) => u.name === "Ana") ?? users.find((u) => u.role === "student"));
     if (pick) setActiveUserId(pick.id);
   }, [view, users, activeUser, setActiveUserId, loading]);
 }

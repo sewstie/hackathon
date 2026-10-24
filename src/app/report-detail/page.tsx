@@ -61,6 +61,7 @@ function StatusTimeline({ status }: { status: Status }) {
 function ReportDetailInner() {
   const params = useSearchParams();
   const reportId = params.get("id");
+  const chat = params.get("chat") === "direct" ? "direct" : "public";
   const { activeUser } = useActiveUser();
 
   const [report, setReport] = React.useState<Report | null>(null);
@@ -91,6 +92,12 @@ function ReportDetailInner() {
         !!activeUser && coSigns.some((c) => c.userId === activeUser.id),
       );
       setLoading(false);
+      // Opened from a notification: jump to the conversation once it renders.
+      if (window.location.hash === "#conversation") {
+        requestAnimationFrame(() =>
+          document.getElementById("conversation")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        );
+      }
     })();
     return () => {
       cancelled = true;
@@ -162,7 +169,7 @@ function ReportDetailInner() {
 
       <Card>
         <CardContent className="pt-5">
-          <ReportThread report={report} viewer={activeUser} />
+          <ReportThread key={`${report.id}-${chat}`} report={report} viewer={activeUser} initialTab={chat} />
         </CardContent>
       </Card>
 

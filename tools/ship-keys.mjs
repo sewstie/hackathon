@@ -547,7 +547,8 @@ async function cmdSchema() {
   if (!ref) fail('No Supabase project yet. Run: ship-keys supabase');
   if (!supabaseLoggedIn()) fail('Supabase isn\'t logged in on this computer. Run: ship-keys login');
   if (!(await confirm(`Run ${path.relative(projectDir, file)} on Supabase project ${ref}? This changes the real database.`))) return say('Stopped. Nothing ran.');
-  const r = run('supabase', ['db', 'query', '--project-ref', ref, '-f', file], { show: true });
+  // Supabase CLI 2.12x: --project-ref must be paired with --linked (Management API, uses the login token).
+  const r = run('supabase', ['db', 'query', '--linked', '--project-ref', ref, '-f', file], { show: true });
   if (r.status !== 0) fail('The database said no (see above). Nothing else was changed.');
   say(`✓ Ran ${path.basename(file)} on ${ref}.`);
 }

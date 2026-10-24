@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import {
@@ -88,10 +89,12 @@ function QueueRow({
 /** The detail view: full context plus the actions a responder can take. */
 function ReportDetail({
   row,
+  initialChat = "public",
   onClose,
   onChanged,
 }: {
   row: StaffQueueRow;
+  initialChat?: "public" | "direct";
   onClose: () => void;
   onChanged: () => void;
 }) {
@@ -295,7 +298,7 @@ function ReportDetail({
         </div>
 
         <div className="border-t border-border pt-5">
-          <ReportThread report={report} viewer={activeUser} />
+          <ReportThread report={report} viewer={activeUser} initialTab={initialChat} />
         </div>
 
         <div>
@@ -310,7 +313,19 @@ function ReportDetail({
 
 /** Staff dashboard: a team queue for the active responder and, if they hold an
  * office, a private inbox. Owned folder: src/app/staff. */
+/** ?report=<id>&chat=direct (from a notification) opens that report's chat. */
 export default function StaffPage() {
+  return (
+    <React.Suspense fallback={<p className="text-muted-foreground">Loading dashboard…</p>}>
+      <StaffDashboard />
+    </React.Suspense>
+  );
+}
+
+function StaffDashboard() {
+  const search = useSearchParams();
+  const wantReport = search.get("report");
+  const wantChat = search.get("chat") === "direct" ? "direct" : "public";
   const { activeUser, loading: userLoading } = useActiveUser();
   const tabs = visibleTabs(activeUser);
 
@@ -337,7 +352,14 @@ export default function StaffPage() {
           status: (statusFilter || undefined) as Status | undefined,
           buildingId: buildingFilter || undefined,
         });
-        if (!cancelled) setRows(queue);
+        if (!cancelled) {
+          setRows(queue);
+          // Opened from a notification: go straight to that report.
+          if (wantReport) {
+            const hit = queue.find((row) => row.report.id === wantReport);
+            if (hit) setSelected(hit);
+          }
+        }
       } else if (!cancelled) {
         setRows([]);
       }
@@ -354,7 +376,7 @@ export default function StaffPage() {
     return () => {
       cancelled = true;
     };
-  }, [activeUser, tabs.team, tabs.hasPrivateInbox, statusFilter, buildingFilter, reloadKey]);
+  }, [activeUser, tabs.team, tabs.hasPrivateInbox, statusFilter, buildingFilter, reloadKey, wantReport]);
 
   function refresh() {
     setSelected(null);
@@ -419,7 +441,13 @@ export default function StaffPage() {
 
         <TabsContent value="team">
           {!tabs.team ? null : selected ? (
-            <ReportDetail row={selected} onClose={() => setSelected(null)} onChanged={refresh} />
+            <ReportDetail
+              key={`${selected.report.id}-${wantChat}`}
+              row={selected}
+              initialChat={wantReport === selected.report.id ? wantChat : "public"}
+              onClose={() => setSelected(null)}
+              onChanged={refresh}
+            />
           ) : (
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-end gap-4" data-spot="filters">

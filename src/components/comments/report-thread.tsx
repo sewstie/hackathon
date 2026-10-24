@@ -25,12 +25,21 @@ function timeAgo(iso: string): string {
   return `${Math.round(h / 24)}d ago`;
 }
 
-export function ReportThread({ report, viewer }: { report: Report; viewer: User | null }) {
+export function ReportThread({
+  report,
+  viewer,
+  initialTab = "public",
+}: {
+  report: Report;
+  viewer: User | null;
+  /** Which tab to open on (a notification link can ask for the direct chat). */
+  initialTab?: CommentVisibility;
+}) {
   const isStaff = viewer?.role === "responder";
   const isReporter = !!viewer && viewer.id === report.reporterId;
   const canDirect = isStaff || isReporter;
 
-  const [tab, setTab] = React.useState<CommentVisibility>("public");
+  const [tab, setTab] = React.useState<CommentVisibility>(initialTab);
   const [comments, setComments] = React.useState<ReportComment[]>([]);
   const [names, setNames] = React.useState<Map<string, User>>(new Map());
   const [text, setText] = React.useState("");
@@ -91,7 +100,7 @@ export function ReportThread({ report, viewer }: { report: Report; viewer: User 
         : "Add a comment — does it still happen? Any detail that helps?";
 
   return (
-    <section aria-labelledby={`${inputId}-h`} className="flex flex-col gap-4">
+    <section id="conversation" aria-labelledby={`${inputId}-h`} className="flex scroll-mt-28 flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id={`${inputId}-h`} className="text-lg font-bold tracking-tight">
           Conversation

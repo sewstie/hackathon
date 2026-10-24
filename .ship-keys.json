@@ -1,0 +1,6 @@
+{
+  "skip": [
+    "SUPABASE_DB_PASSWORD"
+  ],
+  "supabaseRef": "qhlcxeskxovtxdzqfgpb"
+}

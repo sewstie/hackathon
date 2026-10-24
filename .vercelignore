@@ -1,0 +1,5 @@
+# keys never get uploaded with the code (added by ship-keys)
+.env
+.env.*
+!.env.example
+.ship-keys-tmp*
