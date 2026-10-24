@@ -1,6 +1,6 @@
 # 15: Direct (private) report — routing, review, notice, file
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/private/ (index.ts, routing internals, tests), src/app/private/ (Private report screen + review screen)
