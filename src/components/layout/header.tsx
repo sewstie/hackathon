@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getStore } from "@/lib/store";
 import { Nav } from "./nav";
 import { NotificationBell } from "./notification-bell";
@@ -28,8 +29,14 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-2">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Logo />
-          <span>UniFix</span>
+          <Image
+            src="/logo.png"
+            alt="UniFix"
+            width={86}
+            height={48}
+            priority
+            className="h-8 w-auto"
+          />
           {campusName ? (
             <span className="text-sm font-normal text-muted-foreground">· {campusName}</span>
           ) : null}
@@ -46,16 +53,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-function Logo() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground"
-    >
-      CF
-    </span>
   );
 }
