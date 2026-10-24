@@ -214,3 +214,37 @@ export function verifyDeviceLocation(
 
 /** The ordered required details for a category (location first). */
 export { requiredDetailsFor };
+
+// --- ticket 06: names-a-person block (public path) -------------------------
+//
+// A PUBLIC report must never name a specific person (constraint 2). The guard
+// is exposed here so the public report screen can gate filing on it; nothing is
+// ever persisted when blocked. The private path deliberately does NOT call this
+// (it is allowed to name people), so the block applies only to the public path.
+import {
+  evaluateNamesPerson,
+  NAMES_PERSON_BLOCK_MESSAGE,
+} from "./lib/names-person";
+
+/** The result of the public names-a-person check. */
+export interface NamesPersonCheck {
+  /** True when the public submission must be blocked (nothing persisted). */
+  blocked: boolean;
+  /** The exact block copy to show (Rephrase / Send privately offered by UI). */
+  message: string;
+}
+
+/**
+ * Decide whether a PUBLIC submission is blocked for naming a person. Reads the
+ * classifier's `namesPerson` flag off the draft and OR-s in a pure keyword
+ * fallback (honorifics like "Professor Smith", relationship/accusation
+ * phrases), so the guard holds even when the AI is off. Call this on the public
+ * path BEFORE filing; when `blocked` is true, persist nothing and offer the
+ * student Rephrase or Send privately.
+ */
+export function checkNamesPerson(draft: ReportDraft): NamesPersonCheck {
+  return evaluateNamesPerson(draft.text, draft.namesPerson);
+}
+
+/** Re-export the exact block copy for any non-draft caller (e.g. UI tests). */
+export { NAMES_PERSON_BLOCK_MESSAGE };

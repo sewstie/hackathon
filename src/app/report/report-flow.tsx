@@ -19,6 +19,7 @@
 // the report to Safety as Urgent. A softer detectSafetyHazard drives a non-
 // takeover red note on the confirm card (no quick fixes).
 import * as React from "react";
+import { useRouter } from "next/navigation";
 
 import { AriShell } from "@/components/ari";
 import { useActiveUser } from "@/components/layout/active-user";
@@ -33,6 +34,7 @@ import {
 } from "@/modules/emergency";
 import {
   buildFollowUpPlan,
+  checkNamesPerson,
   fileReport,
   teamForCategory,
   type ReportDraft,
@@ -42,6 +44,7 @@ import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
 
 import { EmergencyTakeover } from "./emergency-takeover";
 import { FollowUpStep, type FollowUpAnswers } from "./follow-up-step";
+import { NamesPersonBlock } from "./names-person-block";
 import { SafetyNote } from "./safety-note";
 
 const MAX_CHARS = 500;
@@ -50,6 +53,7 @@ type Phase =
   | "compose"
   | "classifying"
   | "emergency"
+  | "blocked"
   | "followups"
   | "confirm"
   | "filing"
@@ -67,6 +71,7 @@ interface FollowUpState {
 
 export function ReportFlow() {
   const { activeUser, loading } = useActiveUser();
+  const router = useRouter();
 
   const [phase, setPhase] = React.useState<Phase>("compose");
   const [text, setText] = React.useState("");
@@ -144,6 +149,15 @@ export function ReportFlow() {
       };
       setDraft(nextDraft);
 
+      // Ticket 06: PUBLIC reports must never name a specific person. The guard
+      // OR-s the AI flag with a pure keyword fallback, so it holds with the AI
+      // off. On a block we persist NOTHING — the student's text stays in the
+      // form and the block dialog offers Rephrase or Send privately.
+      if (checkNamesPerson(nextDraft).blocked) {
+        setPhase("blocked");
+        return;
+      }
+
       // The AI may independently RAISE an emergency (life-safety Urgent) that
       // the keyword check missed — but it can NEVER close one. Show the takeover.
       if (c.category === "Safety" && c.tier === "Urgent") {
@@ -203,8 +217,27 @@ export function ReportFlow() {
     setPhase("confirm");
   }
 
-  function handleFollowUpsDone(answers: FollowUpAnswers) {
-    setDraft((d) => (d ? { ...d, location: answers.location } : d));
+  /**
+   * Block dialog — "Rephrase": return to the preserved text and re-validate.
+   * Nothing was persisted; the student's text is still in the box, so we just
+   * drop back to compose where re-submitting runs the guard again.
+   */
+  function handleRephrase() {
+    setDraft(null);
+    setPhase("compose");
+  }
+
+  /**
+   * Block dialog — "Send privately": carry the SAME text into the Private tab
+   * (the private path is allowed to name people). The private screen (Track C,
+   * ticket 15) reads the text from the query param. Nothing was persisted here.
+   */
+  function handleSendPrivately() {
+    const carried = draft?.text ?? text.trim();
+    router.push(`/private?text=${encodeURIComponent(carried)}`);
+  }
+
+  function handleFollowUpsDone(answers: FollowUpAnswers) {    setDraft((d) => (d ? { ...d, location: answers.location } : d));
     setFileFlags((f) => ({
       ...f,
       buildingId: answers.buildingId,
@@ -266,6 +299,22 @@ export function ReportFlow() {
         onContinue={handleNotAnEmergency}
         onCall={handleEmergencyCall}
       />
+    );
+  }
+
+  // Names-a-person block (public path): nothing was persisted; the student's
+  // text is preserved in state (Rephrase returns straight to the compose box).
+  // The dialog is modal and traps focus while open.
+  if (phase === "blocked") {
+    return (
+      <div className="flex flex-col gap-4">
+        <AriShell message="Reading your report…" />
+        <NamesPersonBlock
+          open
+          onRephrase={handleRephrase}
+          onSendPrivately={handleSendPrivately}
+        />
+      </div>
     );
   }
 

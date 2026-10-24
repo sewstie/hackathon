@@ -1,6 +1,6 @@
 # 06: Names-a-person block (public path)
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 03-free-text-reporting.md
 Files Touched: src/modules/reporting/ (names-person internals + tests), src/app/report/ (block dialog component)
