@@ -8,6 +8,7 @@
 - **Deep Modules Only:** Do NOT create many tiny shallow helper files. Group domain/feature logic into Deep Modules (`src/modules/<feature>/index.ts`) that expose a small, simple public interface and hide all complex internal logic inside their folder.
 - **No Pass-Through Wrappers:** Every module must hide real complexity behind a simpler function signature.
 - **The Interface is the Test Surface:** Write Vitest tests strictly against the public interface of a Deep Module. Never test private helpers or mock internal functions.
+- **Enforced boundaries:** Packages are deep modules: see [src/packages/README.md](./src/packages/README.md) before adding or importing one. `dependency-cruiser` enforces that you import only through a package's entry points (its root files); run `npm run lint:boundaries` (also part of `npm run check`).
 
 ## 3. Shared Boundaries (3-Track Parallel Safety)
 - **Shared Foundation (`Wave 1 / Track: SHARED`):** Shared types, database schema, global state/store, and base UI primitives (`components/ui`) belong in `issues/01-shared-foundation.md`.
