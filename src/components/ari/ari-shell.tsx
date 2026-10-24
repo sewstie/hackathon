@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { AriAvatar, ARI_NAME } from "./ari-avatar";
 
 export interface AriShellProps {
   /** The one-line message Ari shows. */
@@ -10,9 +11,10 @@ export interface AriShellProps {
 }
 
 /**
- * Ari shell — purely PRESENTATIONAL. A small assistant card with an avatar and
- * a message slot. All behavior (history lines, quick fixes, emergency takeover)
- * is wired by feature tracks; this is just the consistent frame.
+ * Ari shell — purely PRESENTATIONAL. A small assistant card with Ari's
+ * consistent friendly avatar, its name, and a warm chat-style message slot.
+ * All behavior (history lines, quick fixes, emergency takeover) is wired by
+ * feature tracks; this is just the consistent frame and identity.
  */
 export function AriShell({ message, children, className }: AriShellProps) {
   return (
@@ -24,20 +26,14 @@ export function AriShell({ message, children, className }: AriShellProps) {
     >
       <AriAvatar />
       <div className="min-w-0 flex-1">
-        {message ? <p className="text-sm font-medium">{message}</p> : null}
+        <p className="text-xs font-semibold tracking-wide text-muted-foreground">
+          {ARI_NAME}
+        </p>
+        {message ? (
+          <p className="mt-0.5 text-sm font-medium">{message}</p>
+        ) : null}
         {children}
       </div>
     </div>
-  );
-}
-
-function AriAvatar() {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground"
-    >
-      Ari
-    </span>
   );
 }
