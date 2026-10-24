@@ -1,6 +1,6 @@
 # 12: Staff dashboard (team queue + private inbox)
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 07-priority-ordering.md, 09-status-notifications.md
 Files Touched: src/app/staff/ (dashboard + detail view), src/modules/staff/ (index.ts, internals, tests)

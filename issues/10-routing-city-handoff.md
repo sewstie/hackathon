@@ -1,6 +1,6 @@
 # 10: Routing + city handoff (campus-configured)
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/routing/ (index.ts, internals, tests), src/components/city-handoff/ (city-handoff card component)

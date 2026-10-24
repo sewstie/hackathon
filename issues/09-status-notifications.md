@@ -1,6 +1,6 @@
 # 09: Status lifecycle + notifications + bell + Fixed this week
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/notifications/ (index.ts, internals, tests), src/app/campus-home/ (Fixed this week list), src/components/notifications/ (bell dropdown wiring)
