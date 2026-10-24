@@ -1,0 +1,95 @@
+1
+00:00:00,000 --> 00:00:08,400
+Every day, students walk past broken things on campus — Wi-Fi that drops, heaters that die, railings that wobble. This is UniFix.
+
+2
+00:00:08,500 --> 00:00:17,400
+Today, reporting a problem means hunting for the right office, filling out a form, and never hearing back. So most problems just never get reported.
+
+3
+00:00:17,500 --> 00:00:26,700
+UniFix fixes that. Students say what's wrong in plain words, and it goes straight to the one team that can fix it.
+
+4
+00:00:26,800 --> 00:00:33,300
+We built it for the Hackachusetts Civic Action challenge V4, better college experiences. Here's the student view.
+
+5
+00:00:33,400 --> 00:00:38,100
+The campus feed shows what's open, what's urgent, and what's already fixed.
+
+6
+00:00:38,200 --> 00:00:42,200
+The live map shows where problems cluster, colored by severity.
+
+7
+00:00:42,300 --> 00:00:48,700
+Click any bubble to see every report inside it.
+
+8
+00:00:48,800 --> 00:01:01,400
+First, quality. Spam, jokes, and claims like “I won a million dollars” are blocked before they reach staff — so every report in the queue is real.
+
+9
+00:01:01,500 --> 00:01:05,300
+But safety beats everything. Ari reads as you type.
+
+10
+00:01:05,400 --> 00:01:14,700
+The moment something sounds like an emergency, UniFix shows Call 911 and campus police instantly — before any AI runs. It never dials for you.
+
+11
+00:01:14,800 --> 00:01:18,400
+Now a real report. Just say what's wrong.
+
+12
+00:01:18,500 --> 00:01:21,600
+AI picks the team, then asks only what's missing.
+
+13
+00:01:21,700 --> 00:01:23,900
+Wi-Fi is everywhere — so, no specific place.
+
+14
+00:01:24,000 --> 00:01:30,000
+Ari checks the past: nine similar reports, usually fixed in about three days — and suggests quick fixes first.
+
+15
+00:01:30,100 --> 00:01:32,400
+Add a photo if you like,
+
+16
+00:01:32,500 --> 00:01:35,700
+check the card, and post.
+
+17
+00:01:35,800 --> 00:01:41,500
+It's rated Medium and sent to the IT team — and only IT staff can see it.
+
+18
+00:01:41,600 --> 00:01:51,300
+On the staff side, each team sees only its own area, ranked by severity times how many students are affected — not by who complains loudest.
+
+19
+00:01:51,400 --> 00:01:57,000
+If something's unclear, staff can message the reporter directly.
+
+20
+00:01:57,100 --> 00:02:03,700
+They can post public updates, then mark it solved. Everyone who co-signed is notified automatically.
+
+21
+00:02:03,800 --> 00:02:14,300
+The student gets a notification. One click opens the conversation, and they answer right there — no emails, no forms, no lost tickets.
+
+22
+00:02:14,400 --> 00:02:17,800
+A misunderstanding becomes a two-minute chat.
+
+23
+00:02:17,900 --> 00:02:24,300
+We built UniFix with Kiro: specs, steering, hooks, skills and Kiro Crew — backed by over three hundred tests.
+
+24
+00:02:24,400 --> 00:02:30,300
+UniFix works for any Massachusetts campus. Try it yourself — no login needed.

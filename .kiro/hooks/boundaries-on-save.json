@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Check deep-module boundaries after edits to modules/packages",
+      "trigger": "PostFileSave",
+      "matcher": "src/(modules|packages)/.*\\.ts$",
+      "action": { "type": "command", "command": "npm run -s lint:boundaries" }
+    }
+  ]
+}

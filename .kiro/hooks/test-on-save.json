@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Run related tests after the agent edits source",
+      "trigger": "PostFileSave",
+      "matcher": "src/.*\\.(ts|tsx)$",
+      "action": { "type": "command", "command": "npx vitest run --changed --passWithNoTests" }
+    }
+  ]
+}

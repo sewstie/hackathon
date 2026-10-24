@@ -154,7 +154,7 @@ export function ReportTour() {
         </>
       ),
     },
-    cta: { n: 1, title: "Start a report", body: <>Click the glowing <strong>Report an issue</strong> button.</> },
+    cta: { n: 1, title: "Start a report", body: <>Click <strong>Report</strong> in the top bar.</> },
     text: {
       n: 2,
       title: "Say what's wrong",
