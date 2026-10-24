@@ -12,8 +12,13 @@
 // All grouping is precomputed by the pure `clusterPins` transform; this file is
 // a thin view over tested data.
 
-import { useEffect, useMemo, useRef } from "react";
-import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import {
+  LeafletContext,
+  createLeafletContext,
+  type LeafletContextInterface,
+} from "@react-leaflet/core";
 import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
@@ -35,6 +40,54 @@ function resolveCssVar(name: string): string {
   if (typeof window === "undefined") return "#1d4ed8";
   const styles = getComputedStyle(document.documentElement);
   return styles.getPropertyValue(name).trim() || styles.getPropertyValue("--primary").trim() || "#1d4ed8";
+}
+
+/**
+ * StrictMode-safe replacement for react-leaflet's <MapContainer>.
+ *
+ * react-leaflet v5 creates the map in a ref callback but destroys it in an
+ * effect cleanup. Under React 19 StrictMode (on in Next dev) effects run
+ * mount → cleanup → mount, so the map is removed while the same dead instance
+ * stays in context, and child layers crash with "this.getPane() is undefined".
+ * Here the map's whole lifecycle lives in one effect, so every mount gets a
+ * fresh, live map.
+ */
+function SafeMapContainer({
+  center,
+  zoom,
+  scrollWheelZoom,
+  className,
+  ariaLabel,
+  children,
+}: {
+  center: [number, number];
+  zoom: number;
+  scrollWheelZoom: boolean;
+  className?: string;
+  ariaLabel: string;
+  children: ReactNode;
+}) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [context, setContext] = useState<LeafletContextInterface | null>(null);
+
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return;
+    const map = L.map(node, { scrollWheelZoom }).setView(center, zoom);
+    setContext(createLeafletContext(map));
+    return () => {
+      setContext(null);
+      map.remove();
+    };
+    // Create once per mount; like MapContainer, later prop changes aren't re-applied.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div ref={nodeRef} className={className} role="region" aria-label={ariaLabel}>
+      {context ? <LeafletContext value={context}>{children}</LeafletContext> : null}
+    </div>
+  );
 }
 
 /** Draws the leaflet.heat density layer, softened to a quiet background signal. */
@@ -168,12 +221,12 @@ export default function CampusMapInner({ data, ariaLabel }: CampusMapInnerProps)
 
   return (
     <div className="relative h-full w-full">
-      <MapContainer
+      <SafeMapContainer
         center={center}
         zoom={DEFAULT_ZOOM}
         scrollWheelZoom={false}
         className="h-full w-full"
-        aria-label={ariaLabel ?? "Campus report map"}
+        ariaLabel={ariaLabel ?? "Campus report map"}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -185,7 +238,7 @@ export default function CampusMapInner({ data, ariaLabel }: CampusMapInnerProps)
         {clusters.map((cluster) => (
           <ClusterMarker key={cluster.id} cluster={cluster} />
         ))}
-      </MapContainer>
+      </SafeMapContainer>
 
       <TierLegend />
     </div>
