@@ -29,7 +29,7 @@ function insert(table: string, columns: string[], rows: string[][]): string {
 
 const seed = buildSeed();
 const parts: string[] = [
-  "-- CampusFix seed data (MIT demo campus).",
+  "-- UniFix seed data (MIT demo campus).",
   "-- GENERATED from src/lib/store/seed.ts by tools/gen-seed-sql.ts — do not edit by hand.",
   "-- Regenerate with: npm run gen:seed",
   "",

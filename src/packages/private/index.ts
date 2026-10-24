@@ -1,4 +1,4 @@
-// private — the direct (private) report seam for CampusFix.
+// private — the direct (private) report seam for UniFix.
 //
 // Public interface (entry point): route a sensitive report to exactly one
 // office (deterministic hard rules override the AI; Dean of Students is the

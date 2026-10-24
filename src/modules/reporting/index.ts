@@ -1,4 +1,4 @@
-// CampusFix public reporting — the module's PUBLIC INTERFACE.
+// UniFix public reporting — the module's PUBLIC INTERFACE.
 //
 // This is the core student action: type what's wrong -> the app classifies it
 // -> the student confirms (and edits) a draft -> a public report is filed.

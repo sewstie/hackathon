@@ -1,4 +1,4 @@
-// CampusFix AI classification — the module's PUBLIC INTERFACE.
+// UniFix AI classification — the module's PUBLIC INTERFACE.
 //
 // `classify(input)` turns a student's free text into one structured result and
 // NEVER blocks the app: it makes a single bounded server-side `generateObject`

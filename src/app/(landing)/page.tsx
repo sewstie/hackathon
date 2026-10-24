@@ -9,7 +9,7 @@ import {
 import { SchoolSearch } from "./school-search";
 
 /**
- * CampusFix landing page — the front door. It states the pitch, shows the
+ * UniFix landing page — the front door. It states the pitch, shows the
  * Massachusetts economic-impact numbers (AICUM 2025) with source citations,
  * explains how it works in three steps, and lets a visitor search any
  * Massachusetts campus and open it.
@@ -20,14 +20,14 @@ export default function LandingPage() {
       {/* Pitch */}
       <section className="flex flex-col gap-4">
         <p className="text-sm font-medium text-primary">
-          CampusFix · the student-friendly front door to campus repairs
+          UniFix · the student-friendly front door to campus repairs
         </p>
         <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-4xl">
           Report what&apos;s broken on campus in plain language — and watch it
           get fixed.
         </h1>
         <p className="max-w-prose text-muted-foreground">
-          Describe the problem in your own words. CampusFix classifies it, asks
+          Describe the problem in your own words. UniFix classifies it, asks
           only the few details still missing, merges duplicates into one
           co-signed ticket, and keeps every reporter posted from Received to
           Fixed.

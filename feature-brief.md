@@ -1,11 +1,11 @@
-# CampusFix — Feature Brief
+# UniFix — Feature Brief
 
 **Hackachusetts 2026 · Track 4: Civic Action · Challenge V4 "Better college experiences"**
 Deadline: 8pm, Saturday, October 24, 2026.
 
 ## 1. Summary
 
-CampusFix lets college students report what's broken on campus in plain language. AI classifies each report, asks only for the details that are missing, merges duplicates, ranks by real priority, and routes it to the right staff team. Students co-sign issues instead of re-posting them and get notified when they're fixed. A **Direct report** mode sends sensitive issues, including ones that name a person or a room, privately to the one office that handles them. **Ari**, a small robot assistant, shares history from past reports and safe quick fixes. In an emergency, Ari takes over the screen with a one-tap **Call 911** button.
+UniFix lets college students report what's broken on campus in plain language. AI classifies each report, asks only for the details that are missing, merges duplicates, ranks by real priority, and routes it to the right staff team. Students co-sign issues instead of re-posting them and get notified when they're fixed. A **Direct report** mode sends sensitive issues, including ones that name a person or a room, privately to the one office that handles them. **Ari**, a small robot assistant, shares history from past reports and safe quick fixes. In an emergency, Ari takes over the screen with a one-tap **Call 911** button.
 
 **Pitch:** *Colleges are Massachusetts's biggest economic engine, and the students inside them have no good way to say what's broken.*
 
@@ -25,7 +25,7 @@ CampusFix lets college students report what's broken on campus in plain language
 
 **Massachusetts context** (landing page and pitch): private nonprofit colleges alone account for $71.1B in economic impact, 321K+ jobs, and $2.4B in annual tax revenue (AICUM, 2025). Those 59 schools educate 285,000+ students and employ nearly 100,000 people. Boston-based members contribute $64B a year to the eastern Massachusetts economy. This excludes UMass and community colleges.
 
-**Why not existing tools:** campus work-order forms are hard to find and give no updates; city 311 / SeeClickFix doesn't cover campus property; anonymous boards (Fizz) are venting, not routing; emailing "someone" requires knowing who. CampusFix is the student-friendly front door that feeds existing campus systems, not a replacement.
+**Why not existing tools:** campus work-order forms are hard to find and give no updates; city 311 / SeeClickFix doesn't cover campus property; anonymous boards (Fizz) are venting, not routing; emailing "someone" requires knowing who. UniFix is the student-friendly front door that feeds existing campus systems, not a replacement.
 
 ## 4. Hard constraints (non-negotiable)
 

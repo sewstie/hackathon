@@ -1,4 +1,4 @@
--- CampusFix database schema.
+-- UniFix database schema.
 --
 -- Campus-agnostic civic-repair app. Applied by `./ship-keys schema` (which runs
 -- this file) and mirrored by src/lib/supabase/database.types.ts. Snake_case

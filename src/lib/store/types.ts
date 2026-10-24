@@ -1,4 +1,4 @@
-// The CampusFix data seam.
+// The UniFix data seam.
 //
 // Every track reads and writes domain data through ONE interface, `Store`.
 // There are two implementations behind it:

@@ -1,4 +1,4 @@
-# CampusFix — Spec
+# UniFix — Spec
 
 > Hackachusetts 2026 · Track 4 Civic Action · Challenge V4 "Better college experiences".
 > Demo campus: **MIT** (Cambridge, MA). Product is campus-agnostic.
@@ -21,7 +21,7 @@ like Fizz are venting, not routing; emailing "someone" requires already knowing 
 
 ## Solution
 
-CampusFix is the student-friendly front door to campus repairs that feeds existing campus
+UniFix is the student-friendly front door to campus repairs that feeds existing campus
 systems instead of replacing them. A student describes the problem in plain language. AI
 classifies it (category, item, a neutral title, a severity tier), asks only for the few
 details still missing — location first, tap-chips over typing, never more than three
@@ -84,7 +84,7 @@ campus.
 ### Routing & city handoff
 31. As a staff member, I want each report to land in its team's queue, so that the right people see it.
 32. As a staff member, I want to reassign a report to another team, so that misrouted reports still get handled.
-33. As a student reporting an off-campus public issue (pothole, public streetlight, sidewalk), I want a City handoff card with the correct city service, a copy-text button, a phone number, and a link — and nothing posted to CampusFix — so that I'm pointed to the right place.
+33. As a student reporting an off-campus public issue (pothole, public streetlight, sidewalk), I want a City handoff card with the correct city service, a copy-text button, a phone number, and a link — and nothing posted to UniFix — so that I'm pointed to the right place.
 34. As a student on the MIT demo campus, I want the City card to reference **Cambridge SeeClickFix**, not Boston BOS:311, so that it's geographically correct.
 
 ### Closed loop & notifications

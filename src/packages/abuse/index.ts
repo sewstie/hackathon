@@ -1,4 +1,4 @@
-// CampusFix — abuse protection (rate limit + spam rejection).
+// UniFix — abuse protection (rate limit + spam rejection).
 //
 // A deep module with a tiny public surface: keep the queue clean without
 // punishing honest reporters. Two independent guards sit in front of filing a

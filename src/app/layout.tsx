@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CampusFix",
+  title: "UniFix",
   description:
     "Report what's broken on campus in plain language. AI routes it, duplicates merge, and every report has a visible status.",
 };

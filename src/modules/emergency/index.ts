@@ -1,4 +1,4 @@
-// CampusFix emergency & safety — the module's PUBLIC INTERFACE.
+// UniFix emergency & safety — the module's PUBLIC INTERFACE.
 //
 // Safety beats everything. This module owns three things:
 //

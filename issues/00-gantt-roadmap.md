@@ -1,4 +1,4 @@
-# CampusFix — Gantt Roadmap (3-Stream Parallel Plan)
+# UniFix — Gantt Roadmap (3-Stream Parallel Plan)
 
 Wave 1 (`01-shared-foundation.md`, `Track: SHARED`) is built on `main` and pushed before anyone
 branches. Then Tracks A / B / C run in parallel on separate branches/laptops; each ticket is only
@@ -6,7 +6,7 @@ blocked by `01` or tickets in its own track. Integration merges the three branch
 
 ```mermaid
 gantt
-    title CampusFix — 3-Stream Parallel Build
+    title UniFix — 3-Stream Parallel Build
     dateFormat YYYY-MM-DD
     axisFormat %m-%d
 

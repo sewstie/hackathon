@@ -1,4 +1,4 @@
-// ari — the assistant seam for CampusFix.
+// ari — the assistant seam for UniFix.
 //
 // Public interface (entry point): after classification, Ari offers a one-line
 // message, a history line computed from seeded public reports, and up to two

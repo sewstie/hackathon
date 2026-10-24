@@ -1,4 +1,4 @@
-// CampusFix shared domain vocabulary.
+// UniFix shared domain vocabulary.
 //
 // This is the single source of truth for the types every track consumes.
 // Enums are modeled as string-literal union types plus a frozen value list,

@@ -1,4 +1,4 @@
-// campuses — the discovery seam for CampusFix.
+// campuses — the discovery seam for UniFix.
 //
 // Public interface (entry point): search Massachusetts institutions, resolve a
 // campus id to a usable campus home, and read the Massachusetts economic-impact

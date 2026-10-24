@@ -1,4 +1,4 @@
-// CampusFix — staff dashboard (team queue + private inbox).
+// UniFix — staff dashboard (team queue + private inbox).
 //
 // A deep module with a tiny public surface: the responder's workspace, built
 // by composing the shared seams rather than reaching into tables. It reads

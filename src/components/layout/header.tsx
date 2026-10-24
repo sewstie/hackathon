@@ -29,7 +29,7 @@ export function Header() {
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-2">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Logo />
-          <span>CampusFix</span>
+          <span>UniFix</span>
           {campusName ? (
             <span className="text-sm font-normal text-muted-foreground">· {campusName}</span>
           ) : null}

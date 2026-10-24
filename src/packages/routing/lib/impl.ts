@@ -87,7 +87,7 @@ export interface CityHandoffCard {
 /**
  * Build the city hand-off card from a campus's configured service. Pure: no
  * store, nothing persisted — the whole point is that off-campus issues bounce
- * to the city instead of being filed on CampusFix.
+ * to the city instead of being filed on UniFix.
  */
 export function cityHandoffImpl(campus: Campus): CityHandoffCard {
   const serviceName = campus.cityServiceName;

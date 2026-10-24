@@ -13,7 +13,7 @@ export interface CityHandoffCardProps {
 /**
  * The city hand-off card shown when a report turns out to be an off-campus
  * public issue (pothole, public streetlight, sidewalk). Nothing is posted to
- * CampusFix; the student is pointed at the campus's configured city service
+ * UniFix; the student is pointed at the campus's configured city service
  * (for MIT: Cambridge SeeClickFix) with a copy-text button, a phone number,
  * and a link. All copy comes from campus config, so a different campus shows a
  * different service.
@@ -71,7 +71,7 @@ export function CityHandoffCard({ campus }: CityHandoffCardProps) {
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Nothing was posted to CampusFix — city issues go to {card.serviceName}.
+          Nothing was posted to UniFix — city issues go to {card.serviceName}.
         </p>
       </CardContent>
     </Card>

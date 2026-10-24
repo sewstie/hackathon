@@ -5,7 +5,7 @@
 import { ReportFlow } from "./report-flow";
 
 export const metadata = {
-  title: "Report an issue · CampusFix",
+  title: "Report an issue · UniFix",
 };
 
 export default function ReportPage() {

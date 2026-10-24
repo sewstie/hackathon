@@ -1,4 +1,4 @@
-// CampusFix — routing + city hand-off.
+// UniFix — routing + city hand-off.
 //
 // A deep module with a tiny public surface. On-campus reports route to their
 // team's queue (category → team); staff can reassign a report to a different

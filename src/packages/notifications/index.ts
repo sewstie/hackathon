@@ -1,4 +1,4 @@
-// CampusFix — status lifecycle + notifications (the closed loop).
+// UniFix — status lifecycle + notifications (the closed loop).
 //
 // A deep module with a tiny public surface. Every public report moves through
 // visible statuses (Received → Assigned → In progress → Fixed, or Won't fix

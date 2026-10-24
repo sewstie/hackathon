@@ -1,4 +1,4 @@
-// CampusFix — priority ordering (severity × reach).
+// UniFix — priority ordering (severity × reach).
 //
 // A deep module with a tiny public surface: pure functions that order public
 // reports by *real* priority, never by popularity. Staff always see the worst

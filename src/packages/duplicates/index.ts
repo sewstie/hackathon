@@ -1,4 +1,4 @@
-// CampusFix — duplicate detection + co-signing.
+// UniFix — duplicate detection + co-signing.
 //
 // A deep module with a tiny public surface. Once a report's location is known,
 // the app checks for an existing OPEN report of the same issue in the same
