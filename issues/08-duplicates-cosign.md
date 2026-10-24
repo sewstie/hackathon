@@ -1,6 +1,6 @@
 # 08: Duplicate detection + co-signing
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/duplicates/ (index.ts, internals, tests), src/app/report-detail/ (co-sign UI), src/app/my-reports/ (my + co-signed lists)
