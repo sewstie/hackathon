@@ -50,6 +50,36 @@ describe("Store (in-memory interface)", () => {
     expect(await store.countSigners("rep-icecream")).toBe(15);
   });
 
+  it("deleting a report removes it and its co-signs; unknown id is a no-op", async () => {
+    const report = await store.createReport({
+      campusId: MIT_CAMPUS_ID,
+      reporterId: "user-ben",
+      category: "Facilities",
+      item: "light",
+      title: "Hallway light out",
+      tier: "Low",
+      location: "Building 10, Floor 2",
+      incomplete: false,
+      locationUnverified: false,
+    });
+    // A second co-signer so we prove co-signs are dropped too.
+    await store.addCoSign(report.id, "user-ana");
+    expect(await store.countSigners(report.id)).toBe(2);
+
+    await store.deleteReport(report.id);
+
+    const list = await store.listReports(MIT_CAMPUS_ID);
+    expect(list.some((r) => r.id === report.id)).toBe(false);
+    expect(await store.getReport(report.id)).toBeNull();
+    expect(await store.listCoSigns(report.id)).toHaveLength(0);
+    expect(await store.countSigners(report.id)).toBe(0);
+
+    // Unknown id is a no-op (does not throw, changes nothing).
+    const before = (await store.listReports(MIT_CAMPUS_ID)).length;
+    await expect(store.deleteReport("rep-does-not-exist")).resolves.toBeUndefined();
+    expect((await store.listReports(MIT_CAMPUS_ID)).length).toBe(before);
+  });
+
   it("filing a report auto-signs the reporter", async () => {
     const report = await store.createReport({
       campusId: MIT_CAMPUS_ID,

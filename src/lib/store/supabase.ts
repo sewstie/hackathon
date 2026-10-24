@@ -247,6 +247,12 @@ export class SupabaseStore implements Store {
     const data = this.unwrap(await this.sb.from("reports").update(patch).eq("id", reportId).select().single<Row<"reports">>(), "updateReportTier");
     return this.toReport(data);
   }
+  async deleteReport(reportId: string): Promise<void> {
+    // Co-signs are removed by the schema's `on delete cascade`; delete the
+    // report itself. Deleting a non-existent id affects zero rows (no-op).
+    const { error } = await this.sb.from("reports").delete().eq("id", reportId);
+    if (error) throw new Error(`deleteReport: ${error.message}`);
+  }
 
   // --- co-signs ---
   async listCoSigns(reportId: string): Promise<CoSign[]> {

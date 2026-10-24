@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #18181b;
 
   /* Surfaces & lines */
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #18181b;
   --border: #e4e4e7;
   --muted: #f4f4f5;
   --muted-foreground: #52525b;
 
-  /* Brand / primary action */
-  --primary: #1d4ed8; /* blue-700, contrast >= 4.5:1 on white */
+  /* Brand / primary action — refined indigo accent, contrast >= 4.5:1 on white */
+  --primary: #4338ca; /* indigo-700 */
   --primary-foreground: #ffffff;
 
   /* Emergency */
@@ -30,7 +30,31 @@
   --tier-urgent-bg: #fee2e2; /* red-100 */
   --tier-urgent-fg: #991b1b; /* red-800 */
 
-  --radius: 0.5rem;
+  /* Radii — refined scale. */
+  --radius-sm: 0.375rem;
+  --radius: 0.625rem;
+  --radius-lg: 0.875rem;
+
+  /* Typographic scale. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+
+  /* Spacing scale. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Elevation — soft, modern shadows. */
+  --shadow-sm: 0 1px 2px 0 rgb(24 24 27 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(24 24 27 / 0.08), 0 1px 2px -1px rgb(24 24 27 / 0.08);
+  --shadow-md: 0 4px 12px -2px rgb(24 24 27 / 0.10), 0 2px 6px -2px rgb(24 24 27 / 0.08);
 }
 
 @theme inline {
@@ -45,6 +69,10 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
+  --radius-sm: var(--radius-sm);
+  --radius-lg: var(--radius-lg);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

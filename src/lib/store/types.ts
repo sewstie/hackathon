@@ -65,6 +65,8 @@ export interface Store {
     resolutionNote?: string,
   ): Promise<Report>;
   updateReportTier(reportId: string, tier: Report["tier"]): Promise<Report>;
+  /** Hard-delete a report and its co-signs. Unknown id is a no-op. */
+  deleteReport(reportId: string): Promise<void>;
 
   // --- co-signs (one per user per report; reporter counts as signed) ---
   listCoSigns(reportId: string): Promise<CoSign[]>;

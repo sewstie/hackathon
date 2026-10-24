@@ -1,6 +1,6 @@
 # 01: Prefactor — shared seams for delete, theme tokens & header slots
 
-Status: OPEN
+Status: DONE
 Track: SHARED
 Blocked By: None
 Files Touched: src/lib/store/types.ts, src/lib/store/in-memory.ts, src/lib/store/supabase.ts, src/test/store.test.ts, src/app/globals.css, src/components/ui/ (shared primitives), src/components/layout/header.tsx, supabase/schema.sql (delete cascade only if needed)

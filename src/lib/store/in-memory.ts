@@ -112,6 +112,11 @@ export class InMemoryStore implements Store {
     if (!r) throw new Error(`report not found: ${reportId}`);
     return r;
   }
+  async deleteReport(reportId: string): Promise<void> {
+    // Hard delete the report and its co-signs; unknown id is a silent no-op.
+    this.db.reports = this.db.reports.filter((r) => r.id !== reportId);
+    this.db.coSigns = this.db.coSigns.filter((c) => c.reportId !== reportId);
+  }
 
   // --- co-signs ---
   async listCoSigns(reportId: string): Promise<CoSign[]> {
