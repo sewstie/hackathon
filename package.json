@@ -14,12 +14,15 @@
     "check": "npm run typecheck && npm run lint:boundaries && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.87",
     "@supabase/supabase-js": "^2.58.0",
+    "ai": "^7.0.152",
     "clsx": "^2.1.1",
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

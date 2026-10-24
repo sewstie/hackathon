@@ -1,6 +1,6 @@
 # 02: AI classifier module + keyword fallback
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 01-shared-foundation.md
 Files Touched: src/modules/ai/ (index.ts, internals, tests), src/app/api/classify/ (route handler)
