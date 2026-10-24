@@ -9,6 +9,7 @@ import { coSign } from "@/packages/duplicates";
 import { tierPresentation } from "@/packages/priority";
 import type { Report, Status } from "@/types";
 import { useActiveUser } from "@/components/layout";
+import { ReportThread } from "@/components/comments";
 import {
   Badge,
   Button,
@@ -156,6 +157,12 @@ function ReportDetailInner() {
               </Button>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="pt-5">
+          <ReportThread report={report} viewer={activeUser} />
         </CardContent>
       </Card>
 

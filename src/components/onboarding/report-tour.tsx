@@ -56,7 +56,7 @@ export function stopReportTour() {
   emit();
 }
 
-type StepId = "cta" | "text" | "submit" | "followups" | "photo" | "confirm" | "done" | "away";
+type StepId = "cta" | "text" | "submit" | "followups" | "ari" | "photo" | "confirm" | "done" | "away";
 
 interface StepCopy {
   n: number;
@@ -75,6 +75,8 @@ function detectStep(): { id: StepId; target: HTMLElement | null } {
   if (confirm) return { id: "confirm", target: confirm.querySelector<HTMLElement>("[data-tour=post]") ?? confirm };
   const photo = q("photo");
   if (photo) return { id: "photo", target: photo };
+  const ari = q("ari");
+  if (ari) return { id: "ari", target: ari };
   const followups = q("followups");
   if (followups) return { id: "followups", target: followups };
   const text = q("report-text") as HTMLTextAreaElement | null;
@@ -172,6 +174,11 @@ export function ReportTour() {
       n: 3,
       title: "Answer Ari's questions",
       body: <>Ari asks only what&apos;s missing, location first. <strong>Tap a chip</strong> to answer (at most 3).</>,
+    },
+    ari: {
+      n: 3,
+      title: "Ari checks past reports",
+      body: <>See how often this happened and how fast it gets fixed. Try a quick fix, or click <strong>Still broken — file it</strong>.</>,
     },
     photo: { n: 4, title: "Add a photo (optional)", body: <>Attach one if you like, or just click <strong>Next</strong>.</> },
     confirm: { n: 5, title: "Check and post", body: <>Edit anything on the card, then click <strong>Post report</strong>.</> },

@@ -17,6 +17,7 @@ import type {
   PrivateStatus,
   QuickFix,
   Report,
+  ReportComment,
   SelfResolution,
   Status,
   User,
@@ -25,6 +26,7 @@ import { buildSeed, type Seed } from "./seed";
 import type {
   NewPrivateReport,
   NewReport,
+  NewReportComment,
   PrivateAccess,
   Store,
 } from "./types";
@@ -116,6 +118,7 @@ export class InMemoryStore implements Store {
     // Hard delete the report and its co-signs; unknown id is a silent no-op.
     this.db.reports = this.db.reports.filter((r) => r.id !== reportId);
     this.db.coSigns = this.db.coSigns.filter((c) => c.reportId !== reportId);
+    this.db.reportComments = this.db.reportComments.filter((c) => c.reportId !== reportId);
   }
 
   // --- co-signs ---
@@ -295,6 +298,21 @@ export class InMemoryStore implements Store {
       await this.addNotification(recipientId, `New reply on your private report "${r.title}"`);
     }
     return { allowed: true, data: message };
+  }
+
+  // --- report comments ---
+  async listReportComments(reportId: string, viewer: User | null): Promise<ReportComment[]> {
+    const report = this.db.reports.find((r) => r.id === reportId);
+    const canSeeDirect =
+      viewer !== null && (viewer.role === "responder" || report?.reporterId === viewer.id);
+    return this.db.reportComments
+      .filter((c) => c.reportId === reportId && (c.visibility === "public" || canSeeDirect))
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+  async addReportComment(comment: NewReportComment): Promise<ReportComment> {
+    const created: ReportComment = { ...comment, id: this.id("comment"), createdAt: this.now() };
+    this.db.reportComments.push(created);
+    return created;
   }
 
   // --- access log ---

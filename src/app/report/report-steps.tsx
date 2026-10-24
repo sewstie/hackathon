@@ -19,6 +19,7 @@ export type ReportStep = (typeof REPORT_STEPS)[number];
 export function stepForPhase(phase: string): ReportStep {
   switch (phase) {
     case "followups":
+    case "ari":
       return "Details";
     case "photo":
       return "Photo";

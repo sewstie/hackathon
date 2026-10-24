@@ -10,6 +10,7 @@ import {
 } from "@/packages/private";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import { detectEmergency } from "@/modules/emergency";
+import { isSpam } from "@/packages/abuse";
 import { useActiveUser } from "@/components/layout";
 import type { Campus, Office } from "@/types";
 import { Button, Card, CardContent, CardHeader, CardTitle, Select } from "@/components/ui";
@@ -37,6 +38,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
   const [office, setOffice] = React.useState<Office>("Dean of Students");
   const [dontShareName, setDontShareName] = React.useState(false);
   const [emergency, setEmergency] = React.useState(false);
+  const [spamError, setSpamError] = React.useState<string | null>(null);
   const [campus, setCampus] = React.useState<Campus | null>(null);
   const [filing, setFiling] = React.useState(false);
   const [filedReportId, setFiledReportId] = React.useState<string | null>(null);
@@ -57,6 +59,11 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
       setEmergency(true);
       return;
     }
+    if (isSpam(text)) {
+      setSpamError("This doesn't look like a real report. Say what happened, and where.");
+      return;
+    }
+    setSpamError(null);
     setStep("review");
   }
 
@@ -225,6 +232,11 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
         <p id="private-char-count" className="text-xs text-muted-foreground">
           {text.length}/{MAX_CHARS}
         </p>
+        {spamError ? (
+          <p role="alert" className="rounded-2xl bg-[var(--tier-urgent-bg)] px-4 py-3 text-sm text-[var(--tier-urgent-fg)]">
+            {spamError}
+          </p>
+        ) : null}
       </div>
 
       <div>

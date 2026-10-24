@@ -31,12 +31,13 @@ export const STUDENT_SPOTS: SpotStep[] = [
 
 export const STAFF_SPOTS: SpotStep[] = [
   { spot: "switch-view", title: "You're on the staff side", body: "This is what campus staff see. Students never see this screen." },
+  { spot: "team-scope", title: "You only see your area", body: "Each staff member sees only their own team's reports. Facilities staff see Facilities only, IT sees IT only, and so on." },
   { spot: "staff-tabs", title: "Your work", body: "Your team's queue, and — if you hold an office — the private inbox." },
   { spot: "filters", title: "Filter the queue", body: "Narrow by status or building." },
   { spot: "queue", title: "The team queue", body: "Highest priority first: severity × how many students are affected. Open one to update its status — every co-signer is notified." },
   { spot: "private-tab", title: "Private inbox", body: "Sensitive reports sent privately to your office only. They never appear in the public feed; every view is logged." },
   { spot: "nav-private-inbox", title: "Private inbox page", body: "The full inbox: read the report, reply in a private thread, and mark it reviewing, resolved or referred." },
-  { spot: "role", title: "Switch staff member", body: "Each team and office has reports waiting. Try Campus Police or the Dean of Students for the private inbox." },
+  { spot: "role", title: "Switch staff member", body: "Pick someone on another team to see THEIR queue — e.g. Ivan for IT. Try Campus Police or the Dean of Students for the private inbox." },
 ];
 
 const PAD = 8;

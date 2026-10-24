@@ -13,7 +13,7 @@ export const metadata = {
 
 const STEPS = [
   { n: "01", title: "Report", body: "Say what's wrong in your own words. Add a photo if you like." },
-  { n: "02", title: "Routed", body: "AI sorts it, asks only what's missing, and sends it to the right team." },
+  { n: "02", title: "Routed", body: "AI sorts it, asks only what's missing, and sends it to the one team that fixes it — only they see it in their queue." },
   { n: "03", title: "Fixed", body: "Follow it from Received to Fixed. You're notified at every change." },
 ];
 
@@ -143,8 +143,8 @@ export default function LandingPage() {
               <span className="w-fit text-xs font-bold uppercase tracking-[0.16em] text-staff">Also: staff view</span>
               <span className="text-lg font-bold tracking-tight">See the other side</span>
               <span className="text-sm leading-relaxed text-muted-foreground">
-                The team queue ranked by severity × reach, status updates that notify every
-                co-signer, and a private inbox.
+                Each staff member sees only their own area — Facilities sees Facilities, IT
+                sees IT — ranked by severity × reach, plus a private inbox.
               </span>
             </span>
             <Link

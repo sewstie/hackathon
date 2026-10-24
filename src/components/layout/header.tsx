@@ -62,7 +62,7 @@ function LandingHeader() {
 }
 
 /** Keep the active identity inside the current view (a student in the student
- * view, a staff member in the staff view). Defaults: Ana / Fiona. */
+ * view, a staff member in the staff view). Defaults: Ana / Rosa. */
 function useViewIdentity(view: Exclude<DemoView, "landing">) {
   const { users, activeUser, setActiveUserId, loading } = useActiveUser();
   React.useEffect(() => {

@@ -24,8 +24,8 @@ const NOW = new Date("2026-10-24T12:00:00.000Z");
 
 const facilitiesStaff: User = {
   id: "staff-facilities",
-  name: "Fiona (Facilities)",
-  email: "fiona@mit.edu",
+  name: "Rosa (Facilities)",
+  email: "rosa@mit.edu",
   role: "responder",
   publicTeam: "Facilities",
   privateOffice: "Facilities",

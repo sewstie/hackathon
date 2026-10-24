@@ -174,6 +174,24 @@ export interface PrivateMessage {
   createdAt: string;
 }
 
+/**
+ * A comment on a PUBLIC report.
+ *  - "public": everyone on the campus page sees it (students and staff).
+ *  - "direct": a staff ↔ reporter conversation (e.g. a clarifying question);
+ *    only the reporter and staff can read it.
+ */
+export type CommentVisibility = "public" | "direct";
+
+export interface ReportComment {
+  id: string;
+  reportId: string;
+  authorId: string;
+  authorRole: "student" | "staff";
+  visibility: CommentVisibility;
+  body: string;
+  createdAt: string;
+}
+
 export type AccessAction = "view" | "reassign" | "status-change";
 
 /** Append-only audit trail entry for private reports and 911 taps. */

@@ -34,6 +34,9 @@ interface FollowUpStepProps {
   onDone: (answers: FollowUpAnswers) => void;
 }
 
+/** What a report says when it isn't tied to one place. */
+export const NO_PLACE = "No specific location (campus-wide)";
+
 export function FollowUpStep({ plan, buildings, campusId, onDone }: FollowUpStepProps) {
   const [index, setIndex] = React.useState(0);
   const [typed, setTyped] = React.useState("");
@@ -81,6 +84,17 @@ export function FollowUpStep({ plan, buildings, campusId, onDone }: FollowUpStep
     advance();
   }
 
+  /**
+   * "No specific place": for problems that aren't in one spot (Wi-Fi, an app,
+   * a campus-wide outage). Records that, and skips the follow-ups that only
+   * make sense for a place (floor, dining hall…), finishing straight away.
+   */
+  function noSpecificPlace() {
+    answersRef.current.location = NO_PLACE;
+    answersRef.current.buildingId = undefined;
+    onDone(answersRef.current);
+  }
+
   function submitTyped(e: React.FormEvent) {
     e.preventDefault();
     const value = typed.trim();
@@ -95,6 +109,7 @@ export function FollowUpStep({ plan, buildings, campusId, onDone }: FollowUpStep
       setGeoNote("Your device doesn't support location. Pick a building instead.");
       return;
     }
+    setGeoNote("Checking your location…");
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const buildingId = answersRef.current.buildingId;
@@ -116,6 +131,8 @@ export function FollowUpStep({ plan, buildings, campusId, onDone }: FollowUpStep
         }
       },
       () => setGeoNote("We couldn't read your location. Pick a building instead."),
+      // Never wait forever on a permission prompt or a slow GPS fix.
+      { timeout: 8000, maximumAge: 60_000 },
     );
   }
 
@@ -153,6 +170,22 @@ export function FollowUpStep({ plan, buildings, campusId, onDone }: FollowUpStep
                   {chip}
                 </Button>
               ))}
+            </div>
+          ) : null}
+
+          {question.detail === "location" ? (
+            <div className="flex flex-col gap-1">
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={noSpecificPlace}
+                className="w-fit border-dashed"
+              >
+                <span aria-hidden>🌐</span> No specific place
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                For things that aren&apos;t in one spot — like Wi-Fi, an app, or a campus-wide outage.
+              </p>
             </div>
           ) : null}
 

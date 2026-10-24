@@ -43,6 +43,16 @@ const FALLBACK_REASON =
  * reports are not caught; the AI classifier is the real judge when present.
  */
 const SPAM_PATTERNS: readonly RegExp[] = [
+  // Prizes, money, scams.
+  /\b(won|win|winning|winner)\b.{0,30}\b(million|billion|thousand|dollars|\$\s?\d|lottery|jackpot|prize|iphone|car|cash|money)\b/i,
+  /\b(lottery|jackpot|sweepstakes|giveaway|bitcoin|crypto|nft|forex|investment opportunity|make money|earn \$|work from home|cash app|venmo me|promo code|discount code|onlyfans|porn|nudes|xxx|dating site|hot singles)\b/i,
+  /\b(dm me|follow me|subscribe to|check out my|buy my|for sale|selling (my|a)|cheap (tickets|essays?))\b/i,
+  // Jokes / chit-chat / insults that aren't reports.
+  /\b(marry me|i love (you|this app|pizza)|you suck|this app sucks|who wants to|anyone want to|let'?s party|do my homework|tell me a joke)\b/i,
+  // Keyboard mash and test noise.
+  /^\s*(test(ing)?|hello|hi|hey|yo|lol|lmao|asdf\w*|qwerty\w*|blah( blah)*|idk|nothing|nvm|ok|okay|hmm+|\?+|\.+)\s*[.!?]*\s*$/i,
+  /([a-z])\1{4,}/i,
+  /\b[bcdfghjklmnpqrstvwxz]{6,}\b/i,
   /\bfree\s+(crypto|money|gift\s*cards?|prize)\b/i,
   /\bbuy\s+(cheap\s+)?(followers|likes|views)\b/i,
   /\b(click|tap)\s+(this|the)\s+link\b/i,
@@ -51,8 +61,37 @@ const SPAM_PATTERNS: readonly RegExp[] = [
   /\bhttps?:\/\/\S+/i, // bare links in a repair report are almost always spam
 ];
 
-function looksLikeSpam(text: string): boolean {
+/** True when the text is spam, a scam, a joke or keyboard noise. */
+export function looksLikeSpam(text: string): boolean {
   return SPAM_PATTERNS.some((re) => re.test(text));
+}
+
+/** Public comments can't name or single out a person (same rule as reports). */
+const PERSON_PATTERNS: readonly RegExp[] = [
+  /\b([Pp]rofessor|[Pp]rof\.?|[Dd]r\.?|[Dd]ean|[Cc]oach|RA|[Mm]rs?\.?|[Mm]s\.?)\s+[A-Z][a-z]+/,
+  /\bmy (roommate|professor|ta|coach|advisor|neighbor|classmate|teacher|boss)\b/i,
+  /\b(he|she|they) (keeps|said|did|threatened|harassed|followed)\b/i,
+];
+
+export interface CommentScreenResult {
+  ok: boolean;
+  /** Friendly reason when not ok. */
+  reason?: string;
+}
+
+export const COMMENT_SPAM_REASON =
+  "That doesn't look like a comment about this report. Keep it about the problem.";
+export const COMMENT_PERSON_REASON =
+  "Public comments can't name people. Rephrase it, or send it privately to the right office.";
+
+export function screenCommentImpl(text: string, visibility: "public" | "direct"): CommentScreenResult {
+  const t = text.trim();
+  if (!t) return { ok: false, reason: "Write something first." };
+  if (looksLikeSpam(t)) return { ok: false, reason: COMMENT_SPAM_REASON };
+  if (visibility === "public" && PERSON_PATTERNS.some((re) => re.test(t))) {
+    return { ok: false, reason: COMMENT_PERSON_REASON };
+  }
+  return { ok: true };
 }
 
 /**

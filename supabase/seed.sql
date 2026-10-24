@@ -25,7 +25,7 @@ insert into users (id, name, email, role, public_team, private_office) values
   ('user-ana', 'Ana', 'ana@mit.edu', 'student', null, null),
   ('user-ben', 'Ben', 'ben@mit.edu', 'student', null, null),
   ('user-cam', 'Cam', 'cam@mit.edu', 'student', null, null),
-  ('staff-facilities', 'Fiona (Facilities)', 'fiona@mit.edu', 'responder', 'Facilities', 'Facilities'),
+  ('staff-facilities', 'Rosa (Facilities)', 'rosa@mit.edu', 'responder', 'Facilities', 'Facilities'),
   ('staff-dining', 'Diego (Dining)', 'diego@mit.edu', 'responder', 'Dining', null),
   ('staff-housing', 'Hana (Housing)', 'hana@mit.edu', 'responder', 'Housing', 'Housing'),
   ('staff-it', 'Ivan (IT)', 'ivan@mit.edu', 'responder', 'IT', 'IT Security'),

@@ -24,6 +24,7 @@ import {
 } from "@/types";
 import { useActiveUser } from "@/components/layout";
 import { PrivateInboxHint } from "@/components/onboarding";
+import { ReportThread } from "@/components/comments";
 import {
   Badge,
   Button,
@@ -31,6 +32,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Dialog,
   Input,
   Select,
   Tabs,
@@ -94,7 +96,11 @@ function ReportDetail({
   onChanged: () => void;
 }) {
   const { report } = row;
+  const { activeUser } = useActiveUser();
   const [reporter, setReporter] = React.useState<User | null>(null);
+  /** Dismiss needs a short reason (it becomes the Won't-fix note students see). */
+  const [dismissOpen, setDismissOpen] = React.useState(false);
+  const [dismissReason, setDismissReason] = React.useState("");
   const [note, setNote] = React.useState("");
   const [busy, setBusy] = React.useState(false);
 
@@ -117,6 +123,22 @@ function ReportDetail({
     setBusy(true);
     await changeReportStatus(getStore(), report.id, status, note.trim() || undefined);
     setBusy(false);
+    onChanged();
+  }
+
+  async function handleSolved() {
+    setBusy(true);
+    await changeReportStatus(getStore(), report.id, "Fixed", note.trim() || undefined);
+    setBusy(false);
+    onChanged();
+  }
+
+  async function handleDismiss() {
+    if (!dismissReason.trim()) return;
+    setBusy(true);
+    await changeReportStatus(getStore(), report.id, "Won't fix", dismissReason.trim());
+    setBusy(false);
+    setDismissOpen(false);
     onChanged();
   }
 
@@ -160,6 +182,54 @@ function ReportDetail({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={report.photoUrl} alt="Report photo" className="max-w-full rounded-(--radius)" />
         )}
+
+        {/* The two decisions staff make most: it's fixed, or it's not worth it. */}
+        <div className="flex flex-wrap gap-2 rounded-2xl border border-border bg-muted/50 p-3">
+          <Button
+            disabled={busy || report.status === "Fixed"}
+            onClick={handleSolved}
+            className="bg-staff text-staff-foreground"
+          >
+            ✓ Mark solved
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={busy || report.status === "Won't fix"}
+            onClick={() => setDismissOpen(true)}
+          >
+            Dismiss
+          </Button>
+          <span className="self-center text-xs text-muted-foreground">
+            Everyone on the report is notified either way.
+          </span>
+        </div>
+
+        <Dialog
+          open={dismissOpen}
+          onClose={() => setDismissOpen(false)}
+          title="Dismiss this report?"
+          description="It moves to Won't fix. The reporter and co-signers see your reason."
+        >
+          <div className="flex flex-col gap-3">
+            <label htmlFor="dismiss-reason" className="text-sm font-medium">
+              Reason
+            </label>
+            <Input
+              id="dismiss-reason"
+              value={dismissReason}
+              onChange={(e) => setDismissReason(e.target.value)}
+              placeholder="e.g. Not a campus issue, or a duplicate of another report"
+            />
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={() => setDismissOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="danger" disabled={!dismissReason.trim() || busy} onClick={handleDismiss}>
+                Dismiss report
+              </Button>
+            </div>
+          </div>
+        </Dialog>
 
         <div className="flex flex-col gap-2">
           <label htmlFor="staff-note" className="text-sm text-muted-foreground">
@@ -222,6 +292,10 @@ function ReportDetail({
               ))}
             </Select>
           </div>
+        </div>
+
+        <div className="border-t border-border pt-5">
+          <ReportThread report={report} viewer={activeUser} />
         </div>
 
         <div>
@@ -312,6 +386,18 @@ export default function StaffPage() {
           {tabs.office ? ` · ${tabs.office} office` : ""}. Highest priority first
           (severity × students affected).
         </p>
+        {tabs.team ? (
+          <p
+            data-spot="team-scope"
+            className="mt-2 inline-flex w-fit items-start gap-2 rounded-2xl border border-staff/25 bg-staff-muted px-4 py-2.5 text-sm text-foreground"
+          >
+            <span aria-hidden>🔒</span>
+            <span>
+              You only see <strong>{tabs.team}</strong> reports. Reports for other areas go
+              to their own team&apos;s staff.
+            </span>
+          </p>
+        ) : null}
       </header>
 
       <PrivateInboxHint open={inboxHint} onClose={() => setInboxHint(false)} />

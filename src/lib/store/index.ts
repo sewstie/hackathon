@@ -13,6 +13,7 @@ export type {
   Store,
   NewReport,
   NewPrivateReport,
+  NewReportComment,
   PrivateAccess,
 } from "./types";
 export { InMemoryStore } from "./in-memory";

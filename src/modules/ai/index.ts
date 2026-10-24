@@ -60,7 +60,7 @@ function systemPrompt(mode: ClassifyMode): string {
     "tier is severity: Low, Medium, High, or Urgent (life-safety).",
     "missingDetails lists details still needed (location first), as short labels.",
     "namesPerson is true when the text names or clearly identifies a specific person.",
-    "rejected is true only for spam, abuse, or off-topic text; give a friendly rejectionReason then, else null.",
+    "rejected is true for spam, scams, jokes, prizes or money claims, abuse, keyboard noise, or anything that is not a real problem with something on campus; give a short friendly rejectionReason then, else null.",
     mode === "private"
       ? "suggestedOffice is the single office that should receive this private report."
       : "suggestedOffice must be null in public mode.",
