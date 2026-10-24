@@ -45,7 +45,9 @@ import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
 import { EmergencyTakeover } from "./emergency-takeover";
 import { FollowUpStep, type FollowUpAnswers } from "./follow-up-step";
 import { NamesPersonBlock } from "./names-person-block";
+import { PhotoStep } from "./photo-step";
 import { SafetyNote } from "./safety-note";
+import { ReportSteps, stepForPhase } from "./report-steps";
 
 const MAX_CHARS = 500;
 
@@ -55,6 +57,7 @@ type Phase =
   | "emergency"
   | "blocked"
   | "followups"
+  | "photo"
   | "confirm"
   | "filing"
   | "done";
@@ -178,7 +181,7 @@ export function ReportFlow() {
         setFollowUp({ plan, buildings });
         setPhase("followups");
       } else {
-        setPhase("confirm");
+        setPhase("photo");
       }
     } catch {
       setError("We couldn't read your report just now. Please try again.");
@@ -243,7 +246,7 @@ export function ReportFlow() {
       buildingId: answers.buildingId,
       locationUnverified: answers.locationUnverified,
     }));
-    setPhase("confirm");
+    setPhase("photo");
   }
 
   async function handleFile() {
@@ -338,88 +341,103 @@ export function ReportFlow() {
 
   if (phase === "followups" && followUp) {
     return (
-      <FollowUpStep
-        plan={followUp.plan}
-        buildings={followUp.buildings}
-        campusId={MIT_CAMPUS_ID}
-        onDone={handleFollowUpsDone}
-      />
+      <StepFrame phase={phase}>
+        <FollowUpStep
+          plan={followUp.plan}
+          buildings={followUp.buildings}
+          campusId={MIT_CAMPUS_ID}
+          onDone={handleFollowUpsDone}
+        />
+      </StepFrame>
+    );
+  }
+
+  if (phase === "photo") {
+    return (
+      <StepFrame phase={phase}>
+        <PhotoStep
+          photo={photo}
+          onChange={setPhoto}
+          onNext={() => setPhase("confirm")}
+          onBack={() => setPhase(followUp ? "followups" : "compose")}
+        />
+      </StepFrame>
     );
   }
 
   if (phase === "confirm" || phase === "filing") {
     return (
-      <div className="flex flex-col gap-4">
-        {hazardReason ? (
-          <SafetyNote
-            reason={hazardReason}
-            campusPoliceName={campus?.campusPoliceName ?? "Campus Police"}
-            campusPolicePhone={campus?.campusPolicePhone ?? "911"}
+      <StepFrame phase={phase}>
+        <div className="flex flex-col gap-4">
+          {hazardReason ? (
+            <SafetyNote
+              reason={hazardReason}
+              campusPoliceName={campus?.campusPoliceName ?? "Campus Police"}
+              campusPolicePhone={campus?.campusPolicePhone ?? "911"}
+            />
+          ) : null}
+          <ConfirmCard
+            draft={draft!}
+            filing={phase === "filing"}
+            error={error}
+            onChange={updateDraft}
+            onBack={reset}
+            onFile={handleFile}
           />
-        ) : null}
-        <ConfirmCard
-          draft={draft!}
-          filing={phase === "filing"}
-          error={error}
-          onChange={updateDraft}
-          onBack={reset}
-          onFile={handleFile}
-        />
-      </div>
+        </div>
+      </StepFrame>
     );
   }
 
   // compose / classifying
   return (
-    <div className="flex flex-col gap-4">
-      <form className="flex flex-col gap-3" onSubmit={handleSubmitText}>
-        <label htmlFor="report-text" className="text-sm font-medium">
-          What&apos;s broken?
-        </label>
-        <textarea
-          id="report-text"
-          value={text}
-          maxLength={MAX_CHARS}
-          onChange={(e) => setText(e.target.value)}
-          disabled={phase === "classifying"}
-          placeholder="Describe the problem in your own words — e.g. “The ice cream machine in Lobdell is broken again.”"
-          className="min-h-28 w-full rounded-[--radius] border border-border bg-background p-3 text-sm placeholder:text-muted-foreground disabled:opacity-50"
-        />
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Anonymous to students. Staff can see who filed.</span>
-          <span aria-live="polite">{remaining} left</span>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label htmlFor="report-photo" className="text-sm font-medium">
-            Add a photo (optional)
+    <StepFrame phase={phase}>
+      <div className="flex flex-col gap-4">
+        <form className="flex flex-col gap-3" onSubmit={handleSubmitText}>
+          <label htmlFor="report-text" className="text-sm font-medium">
+            What&apos;s broken?
           </label>
-          <input
-            id="report-photo"
-            type="file"
-            accept="image/*"
+          <textarea
+            id="report-text"
+            value={text}
+            maxLength={MAX_CHARS}
+            onChange={(e) => setText(e.target.value)}
             disabled={phase === "classifying"}
-            onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-            className="text-sm"
+            placeholder="Describe the problem in your own words — e.g. “The ice cream machine in Lobdell is broken again.”"
+            className="min-h-28 w-full rounded-[--radius] border border-border bg-background p-3 text-sm placeholder:text-muted-foreground disabled:opacity-50"
           />
-        </div>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>Anonymous to students. Staff can see who filed.</span>
+            <span aria-live="polite">{remaining} left</span>
+          </div>
 
-        {error ? (
-          <p role="alert" className="text-sm text-danger">
-            {error}
-          </p>
+          {error ? (
+            <p role="alert" className="text-sm text-danger">
+              {error}
+            </p>
+          ) : null}
+
+          <div>
+            <Button type="submit" disabled={!text.trim() || phase === "classifying"}>
+              {phase === "classifying" ? "Reading…" : "Continue"}
+            </Button>
+          </div>
+        </form>
+
+        {phase === "classifying" ? (
+          <AriShell message="Reading your report…" />
         ) : null}
+      </div>
+    </StepFrame>
+  );
+}
 
-        <div>
-          <Button type="submit" disabled={!text.trim() || phase === "classifying"}>
-            {phase === "classifying" ? "Reading…" : "Continue"}
-          </Button>
-        </div>
-      </form>
-
-      {phase === "classifying" ? (
-        <AriShell message="Reading your report…" />
-      ) : null}
+/** Wraps a step's content with the visible Describe → Details → Photo → Review header. */
+function StepFrame({ phase, children }: { phase: Phase; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <ReportSteps current={stepForPhase(phase)} />
+      {children}
     </div>
   );
 }

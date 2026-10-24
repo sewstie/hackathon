@@ -1,6 +1,6 @@
 # 06: Notification dropdown + university-name slot + branding
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-prefactor-shared-seams.md
 Files Touched: src/components/layout/notification-bell.tsx, src/components/layout/university-name.tsx (fills the header university-name slot), public/logo.png, src/app/favicon.ico, design/ (source assets)

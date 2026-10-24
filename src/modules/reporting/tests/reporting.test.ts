@@ -12,6 +12,7 @@ import type { LanguageModel } from "ai";
 import { InMemoryStore, MIT_CAMPUS_ID } from "@/lib/store";
 
 import { classifyReport, fileReport, type ReportDraft } from "../index";
+import { evaluatePhotoSelection, MAX_PHOTO_BYTES } from "../index";
 
 // --- mock model helpers (mirrors the ai module's test seam) -----------------
 type MockConstructorArg = NonNullable<
@@ -185,5 +186,34 @@ describe("reporting — photo upload never blocks filing", () => {
 
     const stored = await store.getReport(result.report.id);
     expect(stored?.photoUrl).toBeUndefined();
+  });
+});
+
+describe("reporting — the optional Photo step gates what may be attached", () => {
+  it("accepts no file (a photo is never required)", () => {
+    expect(evaluatePhotoSelection(null)).toEqual({ accepted: true, reason: null });
+    expect(evaluatePhotoSelection(undefined)).toEqual({ accepted: true, reason: null });
+  });
+
+  it("accepts an image within the size cap", () => {
+    const sel = evaluatePhotoSelection({ type: "image/png", size: 1024 });
+    expect(sel.accepted).toBe(true);
+    expect(sel.reason).toBeNull();
+  });
+
+  it("rejects a non-image file with a reason", () => {
+    const sel = evaluatePhotoSelection({ type: "application/pdf", size: 1024 });
+    expect(sel.accepted).toBe(false);
+    expect(sel.reason).toBeTruthy();
+  });
+
+  it("rejects an image larger than the cap", () => {
+    const sel = evaluatePhotoSelection({ type: "image/jpeg", size: MAX_PHOTO_BYTES + 1 });
+    expect(sel.accepted).toBe(false);
+    expect(sel.reason).toBeTruthy();
+  });
+
+  it("accepts an image exactly at the cap", () => {
+    expect(evaluatePhotoSelection({ type: "image/jpeg", size: MAX_PHOTO_BYTES }).accepted).toBe(true);
   });
 });

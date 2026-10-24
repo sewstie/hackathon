@@ -202,22 +202,64 @@ function mitReports(): Report[] {
     );
   }
 
-  // A handful of other varied historical reports across teams/statuses.
-  const extras: Array<Partial<Report> & { id: string; category: Report["category"]; item: string; title: string; tier: Report["tier"]; status: Report["status"]; buildingId: string }> = [
-    { id: "rep-heater", category: "Facilities", item: "heater", title: "Heater not working", tier: "High", status: "In progress", buildingId: "bldg-maseeh" },
-    { id: "rep-door", category: "Facilities", item: "door opener", title: "Automatic door opener broken", tier: "High", status: "Assigned", buildingId: "bldg-10" },
-    { id: "rep-vending", category: "Dining", item: "vending machine", title: "Vending machine ate my money", tier: "Low", status: "Fixed", buildingId: "bldg-w20" },
-    { id: "rep-light", category: "Grounds", item: "pathway light", title: "Pathway light out", tier: "Medium", status: "Fixed", buildingId: "bldg-32" },
-    { id: "rep-leak", category: "Facilities", item: "ceiling leak", title: "Ceiling leaking in hallway", tier: "High", status: "Received", buildingId: "bldg-library" },
-    { id: "rep-shower", category: "Housing", item: "shower", title: "Shower stuck on cold", tier: "Medium", status: "Assigned", buildingId: "bldg-baker" },
-    { id: "rep-printer", category: "IT", item: "printer", title: "Printer jammed on floor 2", tier: "Low", status: "Fixed", buildingId: "bldg-32" },
+  // A rebalanced spread of historical reports so EVERY public team (Facilities,
+  // Dining, Housing, IT, Grounds, Safety) shows several reports, spanning all
+  // tiers (Low→Urgent) and all statuses (Received→Won't fix). Some are "fixed
+  // this week" and some are near-duplicates (same item + building) so the
+  // duplicate-merge / co-sign feature is demonstrable. `daysAgo` keeps every
+  // timestamp deterministic relative to the fixed seed clock.
+  type Extra = {
+    id: string;
+    category: Report["category"];
+    item: string;
+    title: string;
+    tier: Report["tier"];
+    status: Report["status"];
+    buildingId: string;
+    days: number;
+    reporterId?: string;
+    resolutionNote?: string;
+  };
+  const extras: Extra[] = [
+    // --- Facilities ---
+    { id: "rep-heater", category: "Facilities", item: "heater", title: "Heater not working", tier: "High", status: "In progress", buildingId: "bldg-maseeh", days: 6 },
+    { id: "rep-door", category: "Facilities", item: "door opener", title: "Automatic door opener broken", tier: "High", status: "Assigned", buildingId: "bldg-10", days: 8 },
+    { id: "rep-leak", category: "Facilities", item: "ceiling leak", title: "Ceiling leaking in hallway", tier: "High", status: "Received", buildingId: "bldg-library", days: 1 },
+    { id: "rep-elevator", category: "Facilities", item: "elevator", title: "Elevator stuck between floors", tier: "High", status: "In progress", buildingId: "bldg-32", days: 2 },
+    { id: "rep-ac", category: "Facilities", item: "air conditioning", title: "AC blowing warm air in the lounge", tier: "Low", status: "Won't fix", buildingId: "bldg-e52", days: 20, resolutionNote: "Seasonal system; will revisit in spring." },
+    { id: "rep-handrail-dup", category: "Facilities", item: "handrail", title: "Loose handrail, same stairwell", tier: "Medium", status: "Received", buildingId: "bldg-26", days: 2 },
+    // --- Dining ---
+    { id: "rep-vending", category: "Dining", item: "vending machine", title: "Vending machine ate my money", tier: "Low", status: "Fixed", buildingId: "bldg-w20", days: 4 },
+    // A near-duplicate of the hero ice-cream report, kept CLOSED (Fixed) so it
+    // never shadows rep-icecream as the live open duplicate at W20.
+    { id: "rep-icecream-dup", category: "Dining", item: "ice cream machine", title: "Soft-serve machine was down last week", tier: "Medium", status: "Fixed", buildingId: "bldg-w20", days: 9 },
+    { id: "rep-dishwasher", category: "Dining", item: "dishwasher", title: "Dish return belt jammed", tier: "High", status: "In progress", buildingId: "bldg-maseeh", days: 3 },
+    { id: "rep-coffee", category: "Dining", item: "coffee machine", title: "Coffee machine out of order", tier: "Low", status: "Fixed", buildingId: "bldg-next", days: 5 },
+    // --- Housing ---
+    { id: "rep-shower", category: "Housing", item: "shower", title: "Shower stuck on cold", tier: "Medium", status: "Assigned", buildingId: "bldg-baker", days: 7 },
+    { id: "rep-radiator", category: "Housing", item: "radiator", title: "Radiator clanking all night", tier: "Low", status: "Received", buildingId: "bldg-mccormick", days: 9 },
+    { id: "rep-laundry", category: "Housing", item: "washing machine", title: "Dryer not heating in basement", tier: "Medium", status: "Fixed", buildingId: "bldg-next", days: 3 },
+    { id: "rep-lock", category: "Housing", item: "door lock", title: "Room key card reader fails intermittently", tier: "High", status: "In progress", buildingId: "bldg-baker", days: 4 },
+    // --- IT ---
+    { id: "rep-printer", category: "IT", item: "printer", title: "Printer jammed on floor 2", tier: "Low", status: "Fixed", buildingId: "bldg-32", days: 6 },
+    { id: "rep-projector", category: "IT", item: "projector", title: "Lecture hall projector won't connect", tier: "High", status: "Assigned", buildingId: "bldg-26", days: 2 },
+    { id: "rep-outlet", category: "IT", item: "charging outlet", title: "Dead charging outlets at study carrels", tier: "Low", status: "Received", buildingId: "bldg-library", days: 5 },
+    // --- Grounds ---
+    { id: "rep-light", category: "Grounds", item: "pathway light", title: "Pathway light out", tier: "Medium", status: "Fixed", buildingId: "bldg-32", days: 4 },
+    { id: "rep-light-dup", category: "Grounds", item: "pathway light", title: "Another path light dark near Stata", tier: "Medium", status: "Received", buildingId: "bldg-32", days: 2 },
+    { id: "rep-ice", category: "Grounds", item: "icy walkway", title: "Icy walkway by the entrance", tier: "High", status: "In progress", buildingId: "bldg-w34", days: 3 },
+    { id: "rep-bench", category: "Grounds", item: "bench", title: "Broken bench slat on the lawn", tier: "Low", status: "Won't fix", buildingId: "bldg-e25", days: 25, resolutionNote: "Scheduled for full bench replacement next quarter." },
+    // --- Safety ---
+    { id: "rep-exit", category: "Safety", item: "exit sign", title: "Emergency exit sign unlit", tier: "Urgent", status: "Assigned", buildingId: "bldg-26", days: 2 },
+    { id: "rep-extinguisher", category: "Safety", item: "fire extinguisher", title: "Fire extinguisher past inspection date", tier: "High", status: "Received", buildingId: "bldg-maseeh", days: 5 },
+    { id: "rep-alarm", category: "Safety", item: "smoke alarm", title: "Smoke alarm chirping low battery", tier: "Medium", status: "Fixed", buildingId: "bldg-mccormick", days: 4 },
   ];
   for (const e of extras) {
     reports.push(
       report({
         id: e.id,
         buildingId: e.buildingId,
-        reporterId: "bg-student-20",
+        reporterId: e.reporterId ?? "bg-student-20",
         category: e.category,
         item: e.item,
         title: e.title,
@@ -226,7 +268,8 @@ function mitReports(): Report[] {
         location: `${BUILDING_DEFS.find((b) => b.id === e.buildingId)?.name ?? "Campus"}`,
         incomplete: false,
         locationUnverified: false,
-        createdAt: daysAgo(15),
+        resolutionNote: e.resolutionNote,
+        createdAt: daysAgo(e.days),
       }),
     );
   }
@@ -253,6 +296,28 @@ function mitCoSigns(): CoSign[] {
   for (let i = 1; i <= 13; i++) add("rep-icecream", `bg-student-${i}`, 1);
   for (let i = 14; i <= 16; i++) add("rep-handrail", `bg-student-${i}`, 2);
   for (let i = 17; i <= 24; i++) add("rep-wifi", `bg-student-${i}`, 1);
+
+  // Varied co-sign counts across the enriched feed so the priority ranking
+  // visibly differs (and the near-duplicates read as "others have this too").
+  // Co-signs are per (report, user), so reusing the same background students
+  // across DIFFERENT reports is legal and stays deterministic.
+  const spread: Array<{ reportId: string; count: number }> = [
+    { reportId: "rep-leak", count: 11 }, // Urgent + highly co-signed → tops Facilities
+    { reportId: "rep-elevator", count: 7 },
+    { reportId: "rep-exit", count: 6 },
+    { reportId: "rep-ice", count: 5 },
+    { reportId: "rep-icecream-dup", count: 5 },
+    { reportId: "rep-projector", count: 4 },
+    { reportId: "rep-handrail-dup", count: 3 },
+    { reportId: "rep-light-dup", count: 3 },
+    { reportId: "rep-dishwasher", count: 2 },
+    { reportId: "rep-lock", count: 2 },
+  ];
+  for (const { reportId, count } of spread) {
+    for (let i = 1; i <= count; i++) {
+      add(reportId, `bg-student-${((i * 3) % 40) + 1}`, 1 + (i % 4));
+    }
+  }
   return coSigns;
 }
 

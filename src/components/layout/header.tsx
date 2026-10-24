@@ -7,6 +7,7 @@ import { getStore } from "@/lib/store";
 import { Nav } from "./nav";
 import { NotificationBell } from "./notification-bell";
 import { RoleSwitcher } from "./role-switcher";
+import { UniversityName } from "./university-name";
 
 /**
  * App header, composed of stable, independently-ownable slots:
@@ -41,20 +42,15 @@ export function Header() {
         <Link href="/" aria-label="UniFix home" className="flex items-center font-semibold">
           <Image
             src="/logo.png"
-            alt="UniFix"
+            alt=""
             width={86}
             height={48}
             priority
             className="h-8 w-auto"
           />
         </Link>
-        {/* university-name slot — own element, divided from the logo (Track B fills content) */}
-        {campusName ? (
-          <span className="flex items-center gap-2 text-sm font-normal text-muted-foreground">
-            <span aria-hidden className="text-border">|</span>
-            {campusName}
-          </span>
-        ) : null}
+        {/* university-name slot — own element, divided from the logo (Track B) */}
+        <UniversityName campusName={campusName} />
         {/* nav slot */}
         <div className="hidden md:block">
           <Nav />

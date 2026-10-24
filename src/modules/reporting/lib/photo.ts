@@ -12,6 +12,37 @@ const BUCKET = "report-photos";
 /** A function that stores a photo and resolves to its public URL. */
 export type PhotoUploader = (photo: Blob, key: string) => Promise<string>;
 
+/** The largest photo the optional report photo step will accept (10 MB). */
+export const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+
+/** The outcome of validating a file the student picked on the Photo step. */
+export interface PhotoSelection {
+  /** True when the file is an image within the size cap and safe to preview. */
+  accepted: boolean;
+  /** When rejected, a short human-readable reason; null when accepted. */
+  reason: string | null;
+}
+
+/**
+ * Pure validation for a file the student picks on the optional Photo step.
+ *
+ * The Photo step is optional (no file at all is always fine), so a missing file
+ * is "accepted" with no reason. A present file must be an image (`image/*`) and
+ * no larger than {@link MAX_PHOTO_BYTES}; otherwise it is rejected with copy the
+ * UI shows. This is pure — it reads only `type` and `size`, so it is proven
+ * through the reporting interface without a browser, DOM, or `URL`.
+ */
+export function evaluatePhotoSelection(file: { type: string; size: number } | null | undefined): PhotoSelection {
+  if (!file) return { accepted: true, reason: null };
+  if (!file.type.startsWith("image/")) {
+    return { accepted: false, reason: "That file isn't an image. Please choose a photo." };
+  }
+  if (file.size > MAX_PHOTO_BYTES) {
+    return { accepted: false, reason: "That photo is larger than 10 MB. Please choose a smaller one." };
+  }
+  return { accepted: true, reason: null };
+}
+
 /** The default Supabase Storage uploader (used at runtime, not in tests). */
 export const uploadToSupabaseStorage: PhotoUploader = async (photo, key) => {
   const supabase = getSupabaseClient();
