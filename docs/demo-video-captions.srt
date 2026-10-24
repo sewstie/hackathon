@@ -1,103 +1,268 @@
 1
-00:00:00,000 --> 00:00:06,900
-Every day, students walk past broken things on campus — Wi-Fi that drops, heaters that die, railings that wobble.
+00:00:00,623 --> 00:00:04,533
+Every day, students walk past broken things on campus.
 
 2
-00:00:07,000 --> 00:00:14,000
-Reporting means finding the right office, filling out a form, and never hearing back — so most problems just go unreported.
+00:00:04,583 --> 00:00:05,753
+Wi-Fi that drops,
 
 3
-00:00:14,100 --> 00:00:20,000
-We're [NAME], [NAME] and [NAME] — students from WPI, Worcester Polytechnic Institute.
+00:00:05,803 --> 00:00:07,473
+heaters that die,
 
 4
-00:00:20,100 --> 00:00:26,500
-We built UniFix for the Hackachusetts Civic Action challenge V4: better college experiences.
+00:00:07,523 --> 00:00:08,433
+railings that wobble.
 
 5
-00:00:26,600 --> 00:00:32,000
-Students say what's wrong in plain words, and it goes straight to the one team that can fix it.
+00:00:09,518 --> 00:00:12,028
+Reporting means finding the right office,
 
 6
-00:00:32,100 --> 00:00:38,000
-Here's the student view. A quick pop-up tells judges exactly where they are.
+00:00:12,078 --> 00:00:13,128
+filling out a form,
 
 7
-00:00:38,100 --> 00:00:42,700
-The campus feed shows what's open, what's urgent, and what's already fixed.
+00:00:13,178 --> 00:00:14,868
+and never hearing back.
 
 8
-00:00:42,800 --> 00:00:47,200
-The live map shows where problems cluster, colored by severity.
+00:00:14,918 --> 00:00:16,808
+So most problems just go unreported.
 
 9
-00:00:47,300 --> 00:00:54,600
-Click any bubble to see every report inside it.
+00:00:17,209 --> 00:00:20,059
+We are three freshmen from WPI.
 
 10
-00:00:54,700 --> 00:01:07,400
-First, quality. Spam, jokes, and claims like “I won a million dollars” are blocked before they reach staff — so every report in the queue is real.
+00:00:20,109 --> 00:00:21,609
+My name is Nicolas Nabhan.
 
 11
-00:01:07,500 --> 00:01:10,900
-But safety beats everything. Ari reads as you type.
+00:00:21,659 --> 00:00:22,709
+I'm Guillermo Guerra.
 
 12
-00:01:11,000 --> 00:01:19,200
-The moment something sounds like an emergency, UniFix shows Call 911 and campus police — before any AI runs.
+00:00:22,759 --> 00:00:25,609
+And I'm Vladislav Hushcha.
 
 13
-00:01:19,300 --> 00:01:22,500
-Now a real report. Just say what's wrong.
+00:00:26,022 --> 00:00:30,772
+We built UniFix for the Hackachusetts Civic Action Challenge V4.
 
 14
-00:01:22,600 --> 00:01:25,700
-AI picks the team, then asks only what's missing.
+00:00:30,822 --> 00:00:32,072
+Better college experiences.
 
 15
-00:01:25,800 --> 00:01:27,800
-Wi-Fi is everywhere — so, no specific place.
+00:00:32,606 --> 00:00:36,236
+Students say what's wrong in plain words and it goes straight to the
 
 16
-00:01:27,900 --> 00:01:33,900
-Ari checks the past: nine similar reports, usually fixed in about three days — plus quick fixes to try first.
+00:00:36,286 --> 00:00:37,696
+one team that can fix it.
 
 17
-00:01:34,000 --> 00:01:36,200
-Add a photo if you like,
+00:00:39,226 --> 00:00:40,216
+Here's the student view.
 
 18
-00:01:36,300 --> 00:01:39,300
-check the card, and post.
+00:00:40,266 --> 00:00:44,836
+A quick pop-up tells judges exactly where they are.
 
 19
-00:01:39,400 --> 00:01:50,100
-It's rated Medium and sent to the IT team — and only IT staff can see it. Everyone who co-signs stays in the loop.
+00:00:45,316 --> 00:00:47,706
+The campus feed shows what's open,
 
 20
-00:01:50,200 --> 00:02:00,400
-On the staff side, each team sees only its own area, ranked by severity times how many students are affected — not by who complains loudest.
+00:00:47,756 --> 00:00:49,806
+what's urgent, what's already fixed.
 
 21
-00:02:00,500 --> 00:02:06,700
-If something's unclear, staff can message the reporter directly.
+00:00:50,288 --> 00:00:54,838
+The live map shows where problems cluster,
 
 22
-00:02:06,800 --> 00:02:16,700
-They can post public updates, then mark it solved. Everyone who co-signed is notified automatically.
+00:00:54,888 --> 00:00:56,938
+colored by severity.
 
 23
-00:02:16,800 --> 00:02:27,100
-The student gets a notification. One click opens the conversation, and they answer right there — no emails, no forms, no lost tickets.
+00:00:57,420 --> 00:01:00,450
+Click any bubble to see every report inside it.
 
 24
-00:02:27,200 --> 00:02:30,600
-A misunderstanding becomes a two-minute chat.
+00:01:01,980 --> 00:01:04,890
+First, quality, then spam,
 
 25
-00:02:30,700 --> 00:02:37,100
-We built UniFix with Kiro: specs, steering, hooks, skills and Kiro Crew — backed by over three hundred tests.
+00:01:04,940 --> 00:01:06,350
+jokes and claims like
 
 26
-00:02:37,200 --> 00:02:43,100
-UniFix works for any Massachusetts campus. Try it yourself — no login needed.
+00:01:06,400 --> 00:01:08,310
+“I won a million dollars”
+
+27
+00:01:08,360 --> 00:01:10,510
+are blocked before they reach staff.
+
+28
+00:01:10,560 --> 00:01:13,390
+So every report is a real one in the queue.
+
+29
+00:01:14,066 --> 00:01:17,156
+But safety beats everything.
+
+30
+00:01:17,206 --> 00:01:19,176
+Ari reads as you type.
+
+31
+00:01:19,656 --> 00:01:23,226
+So the moment something sounds like emergency,
+
+32
+00:01:23,276 --> 00:01:29,366
+UniFix shows Call 911 or campus police before any AI runs.
+
+33
+00:01:30,896 --> 00:01:32,806
+Now a real report.
+
+34
+00:01:32,856 --> 00:01:34,206
+Just say what's wrong.
+
+35
+00:01:34,687 --> 00:01:36,257
+AI picks the team,
+
+36
+00:01:36,307 --> 00:01:38,457
+then asks only what's missing.
+
+37
+00:01:39,987 --> 00:01:41,897
+Ari checks the past.
+
+38
+00:01:41,947 --> 00:01:43,057
+Nine similar reports,
+
+39
+00:01:43,107 --> 00:01:45,257
+usually fixed in about three days,
+
+40
+00:01:45,307 --> 00:01:47,777
+plus quick fixes to try first.
+
+41
+00:01:48,257 --> 00:01:49,547
+Add a photo if you like.
+
+42
+00:01:50,572 --> 00:01:53,142
+Check the card and post.
+
+43
+00:01:53,711 --> 00:01:56,921
+It's rated Medium and sent to the IT team.
+
+44
+00:01:56,971 --> 00:01:59,161
+And only IT staff can see it.
+
+45
+00:01:59,211 --> 00:02:01,461
+Everyone who co-signs stays in the loop.
+
+46
+00:02:01,942 --> 00:02:03,452
+On the staff side,
+
+47
+00:02:03,502 --> 00:02:06,032
+each team sees only its own area,
+
+48
+00:02:06,082 --> 00:02:08,312
+ranked by severity times
+
+49
+00:02:08,362 --> 00:02:10,372
+how many students are affected,
+
+50
+00:02:10,422 --> 00:02:12,132
+not by who complains loudest.
+
+51
+00:02:12,613 --> 00:02:14,563
+If something's unclear,
+
+52
+00:02:14,613 --> 00:02:17,043
+staff can message the reporter directly.
+
+53
+00:02:18,276 --> 00:02:22,106
+They can post public updates,
+
+54
+00:02:22,156 --> 00:02:23,726
+then mark it solved.
+
+55
+00:02:23,776 --> 00:02:27,486
+Everyone who co-signs is notified automatically.
+
+56
+00:02:27,973 --> 00:02:29,923
+The student gets a notification.
+
+57
+00:02:29,973 --> 00:02:31,603
+One click opens the conversation,
+
+58
+00:02:31,653 --> 00:02:33,163
+and they answer right there.
+
+59
+00:02:33,213 --> 00:02:34,243
+No emails, no forms,
+
+60
+00:02:34,293 --> 00:02:35,183
+no lost tickets.
+
+61
+00:02:36,713 --> 00:02:38,983
+A misunderstanding becomes a two-minute chat.
+
+62
+00:02:40,513 --> 00:02:43,223
+We built UniFix with Kiro,
+
+63
+00:02:43,273 --> 00:02:44,723
+with some specs,
+
+64
+00:02:44,773 --> 00:02:47,403
+steering, and skills,
+
+65
+00:02:47,453 --> 00:02:49,623
+backed by over 300 tests.
+
+66
+00:02:51,153 --> 00:02:53,323
+UniFix works for any Massachusetts campus,
+
+67
+00:02:53,373 --> 00:02:54,923
+so you can try it yourself.
+
