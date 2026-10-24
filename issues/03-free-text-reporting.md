@@ -1,6 +1,6 @@
 # 03: Free-text reporting + Ari "Reading…" + confirmation card
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 02-ai-classifier.md
 Files Touched: src/modules/reporting/ (index.ts, internals, tests), src/app/report/ (page + public report flow components)
