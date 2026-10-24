@@ -1,6 +1,6 @@
 # 08: Enriched MIT seed
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 01-prefactor-shared-seams.md
 Files Touched: src/lib/store/seed.ts, tools/gen-seed-sql.ts, supabase/seed.sql
