@@ -7,7 +7,10 @@
 import * as React from "react";
 import { Dialog } from "@/components/ui";
 
-export const LOCAL_DEMO_VIDEO = "/demo/unifix-walkthrough.mp4";
+/** The narrated demo (with the team intro) — what "Watch the Demo" plays. */
+export const LOCAL_DEMO_VIDEO = "/demo/unifix-demo.mp4";
+/** The silent, captioned product walkthrough shown under "Try out the demo". */
+export const LOCAL_WALKTHROUGH_VIDEO = "/demo/unifix-walkthrough.mp4";
 
 /** Turn a YouTube / Vimeo page URL into its embeddable player URL. */
 export function embedUrl(url: string): string | null {
@@ -49,12 +52,12 @@ export function DemoPlayer({
         />
       ) : (
         <video
-          src={LOCAL_DEMO_VIDEO}
+          src={walkthrough ? LOCAL_WALKTHROUGH_VIDEO : LOCAL_DEMO_VIDEO}
           controls
           playsInline
           autoPlay={autoPlay}
           preload="metadata"
-          poster="/demo/poster.jpg"
+          poster={walkthrough ? "/demo/poster.jpg" : "/demo/demo-poster.jpg"}
           className="absolute inset-0 size-full"
         >
           Your browser can&apos;t play this video.
