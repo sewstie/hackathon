@@ -139,6 +139,12 @@ export class InMemoryStore implements Store {
     this.db.coSigns.push(coSign);
     return coSign;
   }
+  async removeCoSign(reportId: string, userId: string): Promise<void> {
+    // Drop this user's co-sign on the report; an absent pair is a silent no-op.
+    this.db.coSigns = this.db.coSigns.filter(
+      (c) => !(c.reportId === reportId && c.userId === userId),
+    );
+  }
 
   // --- notifications ---
   async listNotifications(recipientId: string): Promise<Notification[]> {

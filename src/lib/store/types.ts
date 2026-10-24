@@ -72,6 +72,8 @@ export interface Store {
   listCoSigns(reportId: string): Promise<CoSign[]>;
   countSigners(reportId: string): Promise<number>;
   addCoSign(reportId: string, userId: string): Promise<CoSign | null>;
+  /** Toggle a user's co-sign off. No-op when the user has not co-signed. */
+  removeCoSign(reportId: string, userId: string): Promise<void>;
 
   // --- notifications ---
   listNotifications(recipientId: string): Promise<Notification[]>;

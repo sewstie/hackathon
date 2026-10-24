@@ -1,6 +1,6 @@
 # 02: Student feed with upvote + delete
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 01-prefactor-shared-seams.md
 Files Touched: src/app/campus/[campusId]/ (reshape into the feed), src/packages/priority/ (feed ordering: index.ts, lib, tests)

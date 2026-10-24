@@ -50,6 +50,25 @@ describe("Store (in-memory interface)", () => {
     expect(await store.countSigners("rep-icecream")).toBe(15);
   });
 
+  it("removing a co-sign toggles a user's upvote off (unknown pair is a no-op)", async () => {
+    // Add then remove: the signer count returns to its original value and the
+    // user's co-sign is gone from the list.
+    const before = await store.countSigners("rep-icecream");
+    await store.addCoSign("rep-icecream", "user-ana");
+    expect(await store.countSigners("rep-icecream")).toBe(before + 1);
+
+    await store.removeCoSign("rep-icecream", "user-ana");
+    expect(await store.countSigners("rep-icecream")).toBe(before);
+    const coSigns = await store.listCoSigns("rep-icecream");
+    expect(coSigns.some((c) => c.userId === "user-ana")).toBe(false);
+
+    // Removing again (user not signed) is a silent no-op, not an error.
+    await expect(
+      store.removeCoSign("rep-icecream", "user-ana"),
+    ).resolves.toBeUndefined();
+    expect(await store.countSigners("rep-icecream")).toBe(before);
+  });
+
   it("deleting a report removes it and its co-signs; unknown id is a no-op", async () => {
     const report = await store.createReport({
       campusId: MIT_CAMPUS_ID,

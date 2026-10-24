@@ -271,6 +271,15 @@ export class SupabaseStore implements Store {
     const data = this.unwrap(await this.sb.from("co_signs").insert(row).select().single<Row<"co_signs">>(), "addCoSign");
     return this.toCoSign(data);
   }
+  async removeCoSign(reportId: string, userId: string): Promise<void> {
+    // Delete this user's co-sign row; an absent pair affects zero rows (no-op).
+    const { error } = await this.sb
+      .from("co_signs")
+      .delete()
+      .eq("report_id", reportId)
+      .eq("user_id", userId);
+    if (error) throw new Error(`removeCoSign: ${error.message}`);
+  }
 
   // --- notifications ---
   async listNotifications(recipientId: string): Promise<Notification[]> {

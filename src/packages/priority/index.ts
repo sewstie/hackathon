@@ -23,6 +23,7 @@ import {
   SIGNER_CAP,
   effectiveTier,
   orderByPriorityImpl,
+  orderForFeedImpl,
   scoreOf,
   type PrioritizableReport,
 } from "./lib/impl";
@@ -46,6 +47,16 @@ export function priorityScore(report: PrioritizableReport): number {
  */
 export function orderByPriority<T extends PrioritizableReport>(reports: T[]): T[] {
   return orderByPriorityImpl(reports);
+}
+
+/**
+ * Order reports for the student feed. Same severity × reach score as
+ * `orderByPriority` (severity dominates, Urgent always leads), but ties break
+ * NEWEST-first so the feed reads like a fresh stream, with a final id tie-break
+ * for full determinism. Pure: returns a new array, never mutates its input.
+ */
+export function orderForFeed<T extends PrioritizableReport>(reports: T[]): T[] {
+  return orderForFeedImpl(reports);
 }
 
 /** Accessible presentation for a tier: a text label plus CSS-variable colors. */

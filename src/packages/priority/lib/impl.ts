@@ -76,3 +76,40 @@ export function orderByPriorityImpl<T extends PrioritizableReport>(
     return olderFirst(a, b);
   });
 }
+
+/** Newest-first: a later createdAt sorts before an earlier one. */
+function newerFirst(a: PrioritizableReport, b: PrioritizableReport): number {
+  const ta = Date.parse(a.createdAt);
+  const tb = Date.parse(b.createdAt);
+  if (Number.isNaN(ta) || Number.isNaN(tb)) return 0;
+  return tb - ta;
+}
+
+/**
+ * The student-feed order. It reuses the exact documented severity × reach score
+ * (so severity still dominates and Urgent always leads) but — unlike the staff
+ * list — breaks ties NEWEST-first so the feed reads like a fresh stream. A final
+ * id tie-break makes the result fully deterministic even for identical reports.
+ * Pure: a new array, input untouched.
+ */
+export function orderForFeedImpl<T extends PrioritizableReport>(
+  reports: T[],
+): T[] {
+  return [...reports].sort((a, b) => {
+    // Urgent (by effective tier) always leads any non-Urgent.
+    const aUrgent = effectiveTier(a) === "Urgent";
+    const bUrgent = effectiveTier(b) === "Urgent";
+    if (aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+
+    // Within the same urgency band, higher score first…
+    const diff = scoreOf(b) - scoreOf(a);
+    if (diff !== 0) return diff;
+
+    // …then newest-first for feed freshness…
+    const byRecency = newerFirst(a, b);
+    if (byRecency !== 0) return byRecency;
+
+    // …and finally a deterministic id tie-break for identical reports.
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+  });
+}
