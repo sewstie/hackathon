@@ -53,7 +53,7 @@ for (let i = 1; i < argv.length; i++) {
   if (!a.startsWith('--')) continue;
   const [k, inline] = a.slice(2).split('=');
   if (inline !== undefined) flags[k] = inline;
-  else if (argv[i + 1] && !argv[i + 1].startsWith('-') && ['ref', 'only', 'file', 'env-file', 'project'].includes(k)) flags[k] = argv[++i];
+  else if (argv[i + 1] && !argv[i + 1].startsWith('-') && ['ref', 'only', 'file', 'env-file', 'project', 'name', 'region', 'org'].includes(k)) flags[k] = argv[++i];
   else flags[k] = true;
 }
 const projectDir = path.resolve(flags.project ? String(flags.project) : process.cwd());
@@ -326,6 +326,14 @@ function frameworkPrefix(localEnv) {
   return 'NEXT_PUBLIC_';
 }
 
+// A project name both Vercel and Supabase accept: lowercase letters, digits and dashes.
+function projectName() {
+  const raw = String(flags.name || path.basename(projectDir));
+  return raw.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'app';
+}
+
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
 // ---------- prompts ----------
 
 async function confirm(question) {
@@ -573,21 +581,101 @@ async function cmdLogin() {
   if (!flags['supabase-only']) {
     if (!vercelLoggedIn()) { say('→ Vercel'); run('vercel', ['login'], { interactive: true }); }
     else say('✓ Vercel already logged in');
-    if (!vercelLinked()) { say('\n→ Link this folder to its Vercel project'); run('vercel', ['link'], { interactive: true }); }
-    else say(`✓ Linked to Vercel project "${vercelLinked().projectName || vercelLinked().projectId}"`);
+    if (vercelLinked()) say(`✓ Linked to Vercel project "${vercelLinked().projectName || vercelLinked().projectId}"`);
   }
   if (!flags['vercel-only']) {
     if (!supabaseLoggedIn()) { say('\n→ Supabase'); run('supabase', ['login'], { interactive: true }); }
     else say('✓ Supabase already logged in');
   }
-  say('\nDone. Next: ship-keys check');
+  say(`\nDone. Next: ship-keys create   (makes the Vercel + Supabase projects, or links ones that already exist)`);
+}
+
+async function createVercel(name) {
+  if (vercelLinked()) return say(`✓ Vercel: this folder is already linked to "${vercelLinked().projectName || vercelLinked().projectId}"`);
+  if (!vercelLoggedIn()) fail('Vercel isn\'t logged in on this computer. Run: ship-keys login');
+  const exists = run('vercel', ['project', 'inspect', name, '--non-interactive']).status === 0;
+  if (exists && !(await confirm(`A Vercel project called "${name}" already exists. Link this folder to it?`)))
+    return say(`  Skipped Vercel. Pick another name with: ship-keys create --name <new-name>`);
+  say(exists ? `→ Vercel: linking to "${name}"…` : `→ Vercel: creating project "${name}"…`);
+  // vercel link --yes links the project with this name, or creates it with the framework auto-detected.
+  const r = run('vercel', ['link', '--yes', '--project', name, '--non-interactive']);
+  if (r.status !== 0 || !vercelLinked()) fail(`Vercel couldn't ${exists ? 'link' : 'create'} the project: ${(r.stderr || r.stdout || '').trim().split('\n').slice(-3).join(' ')}`);
+  say(`✓ Vercel project "${vercelLinked().projectName || name}" ${exists ? 'linked' : 'created and linked'}.`);
+}
+
+async function createSupabase(name) {
+  const file = findEnvFile();
+  const env = readEnv(file);
+  if (!supabaseLoggedIn()) fail('Supabase isn\'t logged in on this computer. Run: ship-keys login');
+  const existingRef = supabaseRef(env);
+  if (existingRef) return say(`✓ Supabase: already using project ${existingRef}`);
+
+  const projects = (parseJsonOut(run('supabase', ['projects', 'list', '-o', 'json']).stdout) || []).map((p) => ({ ref: p.ref || p.id, name: p.name }));
+  const same = projects.find((p) => p.name === name);
+  let ref;
+  if (same && await confirm(`A Supabase project called "${name}" already exists (${same.ref}). Use it?`)) ref = same.ref;
+  else {
+    if (same) fail(`Pick another name with: ship-keys create --name <new-name>`);
+    let orgs = (parseJsonOut(run('supabase', ['orgs', 'list', '-o', 'json']).stdout) || []).map((o) => ({ id: o.id || o.slug, name: o.name }));
+    let org = flags.org ? String(flags.org) : orgs.length === 1 ? orgs[0].id : null;
+    if (!orgs.length && !flags.org) {
+      say(`→ Supabase: your account has no organization yet, creating "${name}"…`);
+      const r = run('supabase', ['orgs', 'create', name, '-o', 'json']);
+      const made = parseJsonOut(r.stdout);
+      orgs = (parseJsonOut(run('supabase', ['orgs', 'list', '-o', 'json']).stdout) || []).map((o) => ({ id: o.id || o.slug, name: o.name }));
+      org = made?.id || made?.slug || (orgs.length === 1 ? orgs[0].id : null);
+      if (r.status !== 0 || !org) fail(`Supabase couldn't create the organization: ${(r.stderr || '').trim().split('\n').slice(-2).join(' ')}`);
+    }
+    if (!org) {
+      say('Which Supabase organization should the project go in? Run again with --org and one of these:');
+      for (const o of orgs) say(`  ship-keys create --org ${o.id}    (${o.name})`);
+      return;
+    }
+    const region = String(flags.region || 'us-east-1');
+    if (!(await confirm(`Create Supabase project "${name}" in ${region}? (free plan: up to 2 active projects)`))) return say('Stopped. Nothing was created on Supabase.');
+
+    // The database password is made here and saved to the keys file; it's never shown or sent to Vercel.
+    const password = crypto.randomBytes(18).toString('base64url');
+    remember(password);
+    writeEnvValue(file, 'SUPABASE_DB_PASSWORD', password);
+    const cfg = readConfig();
+    writeConfig({ ...cfg, skip: [...new Set([...(cfg.skip || []), 'SUPABASE_DB_PASSWORD'])] });
+
+    say(`→ Supabase: creating project "${name}"…`);
+    const r = run('supabase', ['projects', 'create', name, '--org-id', org, '--db-password', password, '--region', region, '-o', 'json']);
+    const made = parseJsonOut(r.stdout);
+    ref = made?.ref || made?.id || (String(r.stdout).match(/\b[a-z]{20}\b/) || [])[0];
+    if (r.status !== 0 || !ref) fail(`Supabase couldn't create the project: ${(r.stderr || r.stdout || '').trim().split('\n').slice(-3).join(' ')}`);
+    say(`✓ Supabase project created: ${ref} (database password saved to ${path.basename(file)} as SUPABASE_DB_PASSWORD, hidden).`);
+  }
+  writeConfig({ ...readConfig(), supabaseRef: ref });
+
+  // A new project takes a minute or two to start; its keys only exist once it's up.
+  say('  … Waiting for the Supabase project to start (usually 1–2 minutes)…');
+  for (let i = 0; i < 30; i++) {
+    if (run('supabase', ['projects', 'api-keys', '--project-ref', ref, '-o', 'json']).status === 0) return cmdSupabase();
+    await sleep(Number(process.env.SHIP_KEYS_POLL_MS || 10000));
+  }
+  say(`  Supabase is still starting. In a few minutes run: ship-keys supabase`);
+}
+
+async function cmdCreate() {
+  const name = projectName();
+  say(`\nship-keys create · ${name}\n`);
+  if (!flags['supabase-only']) await createVercel(name);
+  if (!flags['vercel-only']) await createSupabase(name);
+  say(`\nNext: ship-keys check`);
 }
 
 async function cmdGo() {
+  if (!vercelLinked()) await createVercel(projectName());
   const env = readEnv(findEnvFile());
   const used = scanCode();
   const needsSupabase = [...used.keys(), ...env.keys()].some((n) => /SUPABASE/.test(n));
-  if (needsSupabase && supabaseRef(env) && supabaseLoggedIn()) await cmdSupabase();
+  if (needsSupabase && supabaseLoggedIn()) {
+    if (supabaseRef(env)) await cmdSupabase();
+    else await createSupabase(projectName());
+  }
   const now = readEnv(findEnvFile());
   const missing = [...used].filter(([n, u]) => u.app && !u.optional && !now.get(n)).map(([n]) => n);
   if (missing.length) say(`\n⚠️  Still missing (the site may not fully work): ${missing.join(', ')}\n   Add each with: ship-keys add NAME`);
@@ -600,20 +688,22 @@ function cmdHelp() {
 
   ship-keys setup            Download the official Vercel + Supabase tools (automatic, one time)
   ship-keys check            Which keys the code needs, and where each one is (names only)
-  ship-keys login            One-time browser login to Vercel + Supabase, and link this folder
+  ship-keys login            One-time browser login to Vercel + Supabase
+  ship-keys create           Make this app's Vercel project + Supabase project (or link existing ones)
+                             --name <name> (default: folder name) · --region us-east-1 · --org <id>
   ship-keys add NAME         Paste a key from a dashboard (hidden) into .env.local
                              --vercel-only: straight to Vercel, never saved on this computer
   ship-keys supabase         Fetch this project's Supabase URL + keys into .env.local (hidden)
   ship-keys push             Send every key in .env.local to Vercel (and Supabase secrets)
   ship-keys schema [file]    Run supabase/schema.sql on the real Supabase database
   ship-keys deploy           Put the site live on Vercel
-  ship-keys go               supabase → push → deploy in one go
+  ship-keys go               create Vercel project if needed → supabase → push → deploy
 
   Options: --dry-run (show the plan, send nothing) · --yes (no questions) · --only A,B · --all
            --ref <supabase-project-ref> · --env-file <file> · --project <folder> · --offline
   Settings (not secret) live in .ship-keys.json: "supabaseRef", "supabaseSecrets": [...], "skip": [...]`);
 }
 
-const commands = { setup: cmdSetup, check: cmdCheck, add: cmdAdd, supabase: cmdSupabase, push: cmdPush, schema: cmdSchema, deploy: cmdDeploy, login: cmdLogin, go: cmdGo, help: cmdHelp };
+const commands = { setup: cmdSetup, create: cmdCreate, check: cmdCheck, add: cmdAdd, supabase: cmdSupabase, push: cmdPush, schema: cmdSchema, deploy: cmdDeploy, login: cmdLogin, go: cmdGo, help: cmdHelp };
 if (!commands[command]) { cmdHelp(); process.exit(1); }
 await commands[command]();

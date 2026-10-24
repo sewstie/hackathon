@@ -174,14 +174,15 @@ Needs Node 20+; the Vercel and Supabase CLIs download themselves the first time.
 | Step | Command | What happens |
 | --- | --- | --- |
 | 1. What's missing | `./ship-keys check` | Table of every key the code uses: on this laptop? on Vercel? Names only. The agent can run this one. |
-| 2. Log in (once per laptop) | `./ship-keys login` | Browser opens for Vercel (click Allow, pick/create the project), then for Supabase. |
-| 3. Supabase values | `./ship-keys supabase` | Fetches the project URL + keys from Supabase into `.env.local` under the right names. |
-| 4. Other API keys | `./ship-keys add OPENAI_API_KEY` | Paste the key from the dashboard; it stays hidden. `--vercel-only` = never saved on the laptop. |
-| 5. Send to Vercel | `./ship-keys push` | Every key goes to Vercel (private ones locked). `--dry-run` shows the plan first. |
-| 6. Database | `./ship-keys schema` | Runs `supabase/schema.sql` on the real database. Asks first. |
-| 7. Go live | `./ship-keys deploy` | Builds on Vercel and prints the live link. |
+| 2. Log in (once per laptop) | `./ship-keys login` | Browser opens for Vercel, then for Supabase. You click Allow. |
+| 3. Make the projects | `./ship-keys create` | Creates the **Vercel project** and the **Supabase project** (named after the folder; `--name x` to change). Reuses one that already exists with that name. Makes the database password itself, then fills in the Supabase URL + keys. |
+| 4. Supabase values | `./ship-keys supabase` | Only if you skipped `create`: fetches an existing project's URL + keys into `.env.local`. |
+| 5. Other API keys | `./ship-keys add OPENAI_API_KEY` | Paste the key from the dashboard; it stays hidden. `--vercel-only` = never saved on the laptop. |
+| 6. Send to Vercel | `./ship-keys push` | Every key goes to Vercel (private ones locked). `--dry-run` shows the plan first. |
+| 7. Database | `./ship-keys schema` | Runs `supabase/schema.sql` on the real database. Asks first. |
+| 8. Go live | `./ship-keys deploy` | Builds on Vercel and prints the live link. |
 
-Or steps 3, 5 and 7 in one go: `./ship-keys go`. In Kiro, say *"use the ship-keys skill"*: it runs
+Or do it all in one go: `./ship-keys go` (creates whatever project is missing, sends the keys, deploys). In Kiro, say *"use the ship-keys skill"*: it runs
 `check`, tells you what's missing and where to get it, and you run the rest yourself (login and the
 hidden pastes need your terminal). It's safe by default: it adds `.env*` to `.gitignore`, refuses to
 push if a keys file was ever committed, and adds a `.vercelignore` so `.env.local` isn't uploaded.
