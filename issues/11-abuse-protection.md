@@ -1,6 +1,6 @@
 # 11: Abuse protection (rate limit + spam rejection)
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 08-duplicates-cosign.md
 Files Touched: src/modules/abuse/ (index.ts, internals, tests)
