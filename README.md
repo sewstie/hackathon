@@ -6,7 +6,7 @@
 | | |
 |---|---|
 | **Live demo** (no login) | https://hackathon-pi-ebon.vercel.app/campus/mit |
-| **Demo video** (< 3 min) | _YouTube link — add after upload_ · walkthrough also on the campus page ("Watch the Demo") |
+| **Demo video** (< 3 min) | _YouTube link — add after upload_ · walkthrough also on the front page ("Watch the Demo") |
 | **How we used Kiro** | [KIRO.md](KIRO.md) · [`.kiro/`](.kiro) (specs, steering, hooks, skills) |
 | **Team** | _add all team members (max 4)_ |
 

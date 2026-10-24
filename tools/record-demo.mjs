@@ -3,6 +3,7 @@
 // Usage: APP_URL=http://localhost:3100 node tools/record-demo.mjs <outDir>
 // Run it against an IN-MEMORY dev server (no Supabase keys) so the recording
 // never writes to the live database. Frames + timeline land in <outDir>.
+// The 6-second "Meet the team · WPI" card is spliced in afterwards, right after the hook (0:14.1).
 import { spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -116,11 +117,13 @@ await card("");
 await sleep(600);
 await cap("Students hit broken things every day — reporting them shouldn't be a maze.");
 await sleep(4500);
-await smoothScroll(900, 2200);
-await sleep(1800);
+const aboutY = await ev(`document.querySelector('#about').getBoundingClientRect().top + scrollY - 90`);
+await smoothScroll(aboutY, 2200);
+await cap("Built for Hackachusetts Civic Action, challenge V4: better college experiences.");
+await sleep(4000);
+await smoothScroll(aboutY + 900, 2200);
 await cap("UniFix: one place to report, in plain words, routed to the team that fixes it.");
-await smoothScroll(1800, 2200);
-await sleep(2200);
+await sleep(2600);
 await cap("");
 
 // ── 2. Student view ────────────────────────────────────────────────────────

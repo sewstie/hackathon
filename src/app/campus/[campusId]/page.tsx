@@ -27,8 +27,6 @@ import type { MapData } from "@/packages/campuses/map";
 import { CampusMap } from "@/components/map";
 import { AriHelper } from "@/components/ari";
 import { CampusFeed } from "./campus-feed";
-import { WatchDemoButton } from "./demo-video";
-import { SubmissionSections } from "./submission-sections";
 import { Badge, Reveal } from "@/components/ui";
 
 // Opt this route out of Cache Components' instant / static-shell validation.
@@ -121,8 +119,21 @@ export default async function CampusHomePage({
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              {/* Main call to action: the demo video (reporting lives in the top bar). */}
-              <WatchDemoButton />
+              {/* Persistent top-right action to start a report. */}
+              <Link
+                href="/report"
+                data-tour="report-cta"
+                data-spot="report-cta"
+                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary pl-6 pr-2 text-sm font-semibold text-primary-foreground shadow-[0_18px_40px_-16px_var(--cx-glow)] transition-transform hover:-translate-y-0.5"
+              >
+                Report an issue
+                <span
+                  aria-hidden
+                  className="flex size-8 items-center justify-center rounded-full bg-primary-foreground/15 transition-transform group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
+              </Link>
               <a
                 href="#map"
                 className="cx-glass inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold text-foreground transition-colors hover:border-primary/30"
@@ -143,9 +154,6 @@ export default async function CampusHomePage({
           ))}
         </dl>
       </header>
-
-      {/* ── Submission write-up + walkthrough video (right under the hero) ── */}
-      <SubmissionSections />
 
       {/* ── Map ───────────────────────────────────────────────────────── */}
       {/* Compact map: severity clusters + legend + softened heat over OSM tiles. */}
