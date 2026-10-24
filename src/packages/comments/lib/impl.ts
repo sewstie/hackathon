@@ -72,6 +72,11 @@ export async function postCommentImpl(store: Store, input: PostCommentInput): Pr
   recipients.delete(author.id);
 
   const notified = [...recipients];
-  await Promise.all(notified.map((id) => store.addNotification(id, text)));
+  const staffIds = new Set(users.filter((u) => u.role === "responder").map((u) => u.id));
+  const studentLink = `/report-detail?id=${encodeURIComponent(report.id)}&chat=${visibility}#conversation`;
+  const staffLink = `/staff?report=${encodeURIComponent(report.id)}&chat=${visibility}`;
+  await Promise.all(
+    notified.map((id) => store.addNotification(id, text, staffIds.has(id) ? staffLink : studentLink)),
+  );
   return { ok: true, comment, notified };
 }

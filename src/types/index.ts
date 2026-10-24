@@ -142,6 +142,8 @@ export interface Notification {
   body: string;
   read: boolean;
   createdAt: string;
+  /** In-app page to open when the notification is clicked (e.g. the report's chat). */
+  link?: string;
 }
 
 /** A direct (private) report, scoped to exactly one office. */

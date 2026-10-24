@@ -99,6 +99,9 @@ create table if not exists notifications (
   created_at    timestamptz not null default now()
 );
 create index if not exists notifications_recipient_idx on notifications (recipient_id);
+-- In-app page a notification opens (e.g. a report's conversation). Added later,
+-- so existing databases get it too.
+alter table notifications add column if not exists link text;
 
 -- ---------------------------------------------------------------------------
 -- Private (direct) reports — office-scoped

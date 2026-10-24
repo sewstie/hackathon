@@ -15,6 +15,20 @@ interface ActiveUserContextValue {
 
 const ActiveUserContext = React.createContext<ActiveUserContextValue | null>(null);
 
+/**
+ * The demo remembers who you were "viewing as" in EACH view, so a refresh keeps
+ * you on the same person (e.g. the Housing staff member) instead of resetting.
+ */
+const rememberKey = (role: User["role"]) => `unifix.viewAs.${role}`;
+
+export function rememberedUserId(role: User["role"]): string | null {
+  try {
+    return window.localStorage.getItem(rememberKey(role));
+  } catch {
+    return null;
+  }
+}
+
 /** The demo's identity: no real login, a header switcher picks a seeded user. */
 export function ActiveUserProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = React.useState<User[]>([]);
@@ -28,9 +42,11 @@ export function ActiveUserProvider({ children }: { children: React.ReactNode }) 
       .then((roster) => {
         if (cancelled) return;
         setUsers(roster);
-        // Default to Ana (the scripted default), else the first user.
+        // The student you last viewed as, else Ana (the scripted default).
+        const remembered = rememberedUserId("student");
+        const student = roster.find((u) => u.id === remembered && u.role === "student");
         const ana = roster.find((u) => u.name === "Ana");
-        setActiveUserId(ana?.id ?? roster[0]?.id ?? null);
+        setActiveUserId(student?.id ?? ana?.id ?? roster[0]?.id ?? null);
         setLoading(false);
       })
       .catch(() => {
@@ -46,9 +62,25 @@ export function ActiveUserProvider({ children }: { children: React.ReactNode }) 
     [users, activeUserId],
   );
 
+  // Switching who you view as also remembers it for that view (survives refresh).
+  const chooseUser = React.useCallback(
+    (id: string) => {
+      const u = users.find((x) => x.id === id);
+      if (u) {
+        try {
+          window.localStorage.setItem(rememberKey(u.role), u.id);
+        } catch {
+          // storage unavailable: still switch for this page
+        }
+      }
+      setActiveUserId(id);
+    },
+    [users],
+  );
+
   const value = React.useMemo<ActiveUserContextValue>(
-    () => ({ users, activeUser, setActiveUserId, loading }),
-    [users, activeUser, loading],
+    () => ({ users, activeUser, setActiveUserId: chooseUser, loading }),
+    [users, activeUser, loading, chooseUser],
   );
 
   return <ActiveUserContext.Provider value={value}>{children}</ActiveUserContext.Provider>;

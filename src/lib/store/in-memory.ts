@@ -158,11 +158,12 @@ export class InMemoryStore implements Store {
       (n) => n.recipientId === recipientId && !n.read,
     ).length;
   }
-  async addNotification(recipientId: string, body: string): Promise<Notification> {
+  async addNotification(recipientId: string, body: string, link?: string): Promise<Notification> {
     const n: Notification = {
       id: this.id("notif"),
       recipientId,
       body,
+      ...(link ? { link } : {}),
       read: false,
       createdAt: this.now(),
     };
@@ -252,7 +253,7 @@ export class InMemoryStore implements Store {
     if (resolutionNote !== undefined) r.resolutionNote = resolutionNote;
     await this.logAccess({ actorId: actor.id, actorOffice: actor.privateOffice, action: "status-change", reportId });
     // Notify the student of the change.
-    await this.addNotification(r.reporterId, `Your private report "${r.title}" is now ${status}`);
+    await this.addNotification(r.reporterId, `Your private report "${r.title}" is now ${status}`, `/private/thread/${r.id}`);
     return { allowed: true, data: r };
   }
 
@@ -295,7 +296,7 @@ export class InMemoryStore implements Store {
         r.reporterId
       : r.reporterId;
     if (!isReporter) {
-      await this.addNotification(recipientId, `New reply on your private report "${r.title}"`);
+      await this.addNotification(recipientId, `New reply on your private report "${r.title}"`, `/private/thread/${r.id}`);
     }
     return { allowed: true, data: message };
   }

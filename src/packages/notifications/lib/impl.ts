@@ -59,7 +59,7 @@ export async function changeStatusImpl(
 
   const body = notificationBodyImpl(report.title, status);
   for (const recipientId of recipientIds) {
-    await store.addNotification(recipientId, body);
+    await store.addNotification(recipientId, body, `/report-detail?id=${encodeURIComponent(reportId)}`);
   }
 
   return { report, notified: recipientIds.size };

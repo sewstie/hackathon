@@ -135,7 +135,7 @@ export class SupabaseStore implements Store {
     return { id: r.id, reportId: r.report_id, userId: r.user_id, createdAt: r.created_at };
   }
   private toNotification(r: Row<"notifications">): Notification {
-    return { id: r.id, recipientId: r.recipient_id, body: r.body, read: r.read, createdAt: r.created_at };
+    return { id: r.id, recipientId: r.recipient_id, body: r.body, read: r.read, createdAt: r.created_at, ...(r.link ? { link: r.link } : {}) };
   }
   private toPrivateReport(r: Row<"private_reports">): PrivateReport {
     return {
@@ -304,8 +304,8 @@ export class SupabaseStore implements Store {
     if (error) throw new Error(`countUnread: ${error.message}`);
     return count ?? 0;
   }
-  async addNotification(recipientId: string, body: string): Promise<Notification> {
-    const row: Insert<"notifications"> = { id: this.id("notif"), recipient_id: recipientId, body, read: false };
+  async addNotification(recipientId: string, body: string, link?: string): Promise<Notification> {
+    const row: Insert<"notifications"> = { id: this.id("notif"), recipient_id: recipientId, body, read: false, link: link ?? null };
     const data = this.unwrap(await this.sb.from("notifications").insert(row).select().single<Row<"notifications">>(), "addNotification");
     return this.toNotification(data);
   }
@@ -388,7 +388,7 @@ export class SupabaseStore implements Store {
     if (resolutionNote !== undefined) patch.resolution_note = resolutionNote;
     const data = this.unwrap(await this.sb.from("private_reports").update(patch).eq("id", reportId).select().single<Row<"private_reports">>(), "updatePrivateStatus");
     await this.logAccess({ actorId: actor.id, actorOffice: actor.privateOffice, action: "status-change", reportId });
-    await this.addNotification(r.reporterId, `Your private report "${r.title}" is now ${status}`);
+    await this.addNotification(r.reporterId, `Your private report "${r.title}" is now ${status}`, `/private/thread/${r.id}`);
     return { allowed: true, data: this.toPrivateReport(data) };
   }
 
@@ -416,7 +416,7 @@ export class SupabaseStore implements Store {
     };
     const data = this.unwrap(await this.sb.from("private_messages").insert(row).select().single<Row<"private_messages">>(), "addPrivateMessage");
     if (!isReporter) {
-      await this.addNotification(r.reporterId, `New reply on your private report "${r.title}"`);
+      await this.addNotification(r.reporterId, `New reply on your private report "${r.title}"`, `/private/thread/${r.id}`);
     }
     return { allowed: true, data: this.toPrivateMessage(data) };
   }

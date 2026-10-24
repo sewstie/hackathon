@@ -17,10 +17,15 @@ describe("report comments", () => {
     const q = await postComment(store, { report, author: ivan, body: "Which floor exactly?", visibility: "direct" });
     expect(q.ok).toBe(true);
     expect(await store.countUnread(ana.id)).toBe(1);
+    // Clicking it opens the report's private chat.
+    const [toAna] = await store.listNotifications(ana.id);
+    expect(toAna.link).toBe(`/report-detail?id=${report.id}&chat=direct#conversation`);
 
     const reply = await postComment(store, { report, author: ana, body: "2nd floor, near the stairs", visibility: "direct" });
     expect(reply.ok).toBe(true);
     expect(await store.countUnread(ivan.id)).toBe(1);
+    const [toIvan] = await store.listNotifications(ivan.id);
+    expect(toIvan.link).toBe(`/staff?report=${report.id}&chat=direct`);
 
     // Direct messages are hidden from other students and from anonymous viewers.
     expect(await listComments(store, report.id, ben)).toHaveLength(0);

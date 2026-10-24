@@ -82,7 +82,7 @@ export interface Store {
   // --- notifications ---
   listNotifications(recipientId: string): Promise<Notification[]>;
   countUnread(recipientId: string): Promise<number>;
-  addNotification(recipientId: string, body: string): Promise<Notification>;
+  addNotification(recipientId: string, body: string, link?: string): Promise<Notification>;
   markAllRead(recipientId: string): Promise<void>;
 
   // --- quick fixes & self-resolutions ---

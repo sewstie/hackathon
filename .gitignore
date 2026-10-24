@@ -44,3 +44,6 @@ next-env.d.ts
 
 # build output
 /dist
+
+# Supabase CLI scratch
+supabase/.temp/
