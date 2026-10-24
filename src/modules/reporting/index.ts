@@ -161,3 +161,56 @@ export async function fileReport(
 
 /** Re-export the team lookup so the confirm card can name the destination. */
 export { teamForCategory };
+
+// --- ticket 04: smart follow-ups -------------------------------------------
+//
+// The follow-up flow is a thin, deep orchestration over the seeded campus data
+// (chips) and the device's geolocation (trust check). The UI consumes these two
+// calls; the rules (location-first, 3-question cap, seed-sourced chips, 500 m
+// radius) live in ./lib/followups and are proven through this interface.
+import {
+  checkDeviceLocation,
+  planFollowUps,
+  requiredDetailsFor,
+  type FollowUpContext,
+  type FollowUpPlan,
+  type FollowUpQuestion,
+  type GeoCoords,
+  type LocationCheck,
+  type VerifyContext,
+} from "./lib/followups";
+
+export type {
+  FollowUpPlan,
+  FollowUpQuestion,
+  GeoCoords,
+  LocationCheck,
+};
+
+/**
+ * Build the follow-up plan for a draft: only the details still missing, asked
+ * one at a time with location first, capped at three. Chips are drawn from the
+ * campus's seeded buildings / floors / dining halls / items; an unseeded campus
+ * yields free-text. If missing details remain after the cap the plan is marked
+ * `incomplete` so the report can still be filed and flagged.
+ */
+export function buildFollowUpPlan(
+  draft: ReportDraft,
+  ctx: FollowUpContext,
+): Promise<FollowUpPlan> {
+  return planFollowUps(draft, ctx);
+}
+
+/**
+ * Verify a device's coordinates against the chosen building's seeded location.
+ * More than 500 m away sets `locationUnverified` so staff can weigh the report.
+ */
+export function verifyDeviceLocation(
+  ctx: VerifyContext,
+  coords: GeoCoords,
+): Promise<LocationCheck> {
+  return checkDeviceLocation(ctx, coords);
+}
+
+/** The ordered required details for a category (location first). */
+export { requiredDetailsFor };

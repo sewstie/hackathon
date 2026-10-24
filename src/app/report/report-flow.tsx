@@ -17,19 +17,28 @@ import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Select 
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import type { Classification } from "@/modules/ai";
 import {
+  buildFollowUpPlan,
   fileReport,
   teamForCategory,
   type ReportDraft,
 } from "@/modules/reporting";
+import type { Building } from "@/types";
 import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
+
+import { FollowUpStep, type FollowUpAnswers } from "./follow-up-step";
 
 const MAX_CHARS = 500;
 
-type Phase = "compose" | "classifying" | "confirm" | "filing" | "done";
+type Phase = "compose" | "classifying" | "followups" | "confirm" | "filing" | "done";
 
 interface FiledSummary {
   confirmation: string;
   photoError: boolean;
+}
+
+interface FollowUpState {
+  buildings: Building[];
+  plan: Awaited<ReturnType<typeof buildFollowUpPlan>>;
 }
 
 export function ReportFlow() {
@@ -41,6 +50,12 @@ export function ReportFlow() {
   const [draft, setDraft] = React.useState<ReportDraft | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [filed, setFiled] = React.useState<FiledSummary | null>(null);
+  const [followUp, setFollowUp] = React.useState<FollowUpState | null>(null);
+  const [fileFlags, setFileFlags] = React.useState<{
+    buildingId?: string;
+    incomplete: boolean;
+    locationUnverified: boolean;
+  }>({ incomplete: false, locationUnverified: false });
 
   const remaining = MAX_CHARS - text.length;
 
@@ -58,7 +73,7 @@ export function ReportFlow() {
       });
       if (!res.ok) throw new Error("Classification failed.");
       const c = (await res.json()) as Classification;
-      setDraft({
+      const nextDraft: ReportDraft = {
         text: trimmed,
         category: c.category,
         item: c.item,
@@ -68,12 +83,37 @@ export function ReportFlow() {
         missingDetails: c.missingDetails,
         namesPerson: c.namesPerson,
         fromFallback: c.source === "fallback",
-      });
-      setPhase("confirm");
+      };
+      setDraft(nextDraft);
+
+      // Ticket 04: ask only the details still missing (location first, max 3).
+      const store = getStore();
+      const [plan, buildings] = await Promise.all([
+        buildFollowUpPlan(nextDraft, { store, campusId: MIT_CAMPUS_ID }),
+        store.listBuildings(MIT_CAMPUS_ID),
+      ]);
+      setFileFlags({ incomplete: plan.incomplete, locationUnverified: false });
+
+      if (plan.questions.length > 0) {
+        setFollowUp({ plan, buildings });
+        setPhase("followups");
+      } else {
+        setPhase("confirm");
+      }
     } catch {
       setError("We couldn't read your report just now. Please try again.");
       setPhase("compose");
     }
+  }
+
+  function handleFollowUpsDone(answers: FollowUpAnswers) {
+    setDraft((d) => (d ? { ...d, location: answers.location } : d));
+    setFileFlags((f) => ({
+      ...f,
+      buildingId: answers.buildingId,
+      locationUnverified: answers.locationUnverified,
+    }));
+    setPhase("confirm");
   }
 
   async function handleFile() {
@@ -85,6 +125,9 @@ export function ReportFlow() {
         store: getStore(),
         reporterId: activeUser.id,
         campusId: MIT_CAMPUS_ID,
+        buildingId: fileFlags.buildingId,
+        incomplete: fileFlags.incomplete,
+        locationUnverified: fileFlags.locationUnverified,
         photo: photo ?? undefined,
       });
       setFiled({ confirmation: result.confirmation, photoError: result.photoError });
@@ -106,6 +149,8 @@ export function ReportFlow() {
     setDraft(null);
     setFiled(null);
     setError(null);
+    setFollowUp(null);
+    setFileFlags({ incomplete: false, locationUnverified: false });
   }
 
   if (loading) {
@@ -127,6 +172,17 @@ export function ReportFlow() {
           </Button>
         </div>
       </div>
+    );
+  }
+
+  if (phase === "followups" && followUp) {
+    return (
+      <FollowUpStep
+        plan={followUp.plan}
+        buildings={followUp.buildings}
+        campusId={MIT_CAMPUS_ID}
+        onDone={handleFollowUpsDone}
+      />
     );
   }
 

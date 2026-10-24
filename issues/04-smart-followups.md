@@ -1,6 +1,6 @@
 # 04: Smart follow-ups (chips, location-first, max 3, Use my location)
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 03-free-text-reporting.md
 Files Touched: src/modules/reporting/ (follow-ups internals + tests), src/app/report/ (follow-up step components)
