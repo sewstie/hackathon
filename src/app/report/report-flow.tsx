@@ -7,8 +7,17 @@
 //
 // Ticket 03 scope: the free-text box (<=500 chars) + optional photo, the Ari
 // "Reading your report…" state, and the title/location/tier/category confirm
-// card. Follow-up questions (04), emergency takeover (05) and the names-a-person
-// block (06) are separate tickets that extend this same screen.
+// card. Ticket 04 adds follow-up questions. Ticket 05 adds the emergency
+// takeover + safety note (below); the names-a-person block (06) extends this
+// same screen next.
+//
+// Safety ordering (ticket 05): the instant the student submits, a PURE
+// detectEmergency runs client-side BEFORE any network/AI call; a match shows
+// the full-screen Call-911 takeover immediately. The AI classifier may
+// independently RAISE an emergency (Urgent + life-safety), but can never close
+// one — only the explicit "Not an emergency" action dismisses it, which files
+// the report to Safety as Urgent. A softer detectSafetyHazard drives a non-
+// takeover red note on the confirm card (no quick fixes).
 import * as React from "react";
 
 import { AriShell } from "@/components/ari";
@@ -17,19 +26,34 @@ import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Select 
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import type { Classification } from "@/modules/ai";
 import {
+  detectEmergency,
+  detectSafetyHazard,
+  logEmergencyCall,
+  type EmergencyCallKind,
+} from "@/modules/emergency";
+import {
   buildFollowUpPlan,
   fileReport,
   teamForCategory,
   type ReportDraft,
 } from "@/modules/reporting";
-import type { Building } from "@/types";
+import type { Building, Campus } from "@/types";
 import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
 
+import { EmergencyTakeover } from "./emergency-takeover";
 import { FollowUpStep, type FollowUpAnswers } from "./follow-up-step";
+import { SafetyNote } from "./safety-note";
 
 const MAX_CHARS = 500;
 
-type Phase = "compose" | "classifying" | "followups" | "confirm" | "filing" | "done";
+type Phase =
+  | "compose"
+  | "classifying"
+  | "emergency"
+  | "followups"
+  | "confirm"
+  | "filing"
+  | "done";
 
 interface FiledSummary {
   confirmation: string;
@@ -51,11 +75,31 @@ export function ReportFlow() {
   const [error, setError] = React.useState<string | null>(null);
   const [filed, setFiled] = React.useState<FiledSummary | null>(null);
   const [followUp, setFollowUp] = React.useState<FollowUpState | null>(null);
+  const [campus, setCampus] = React.useState<Campus | null>(null);
+  /** The reason behind the active-emergency takeover; null when none. */
+  const [emergencyReason, setEmergencyReason] = React.useState<string | null>(null);
+  /** The softer, non-takeover hazard note reason; null when none. */
+  const [hazardReason, setHazardReason] = React.useState<string | null>(null);
   const [fileFlags, setFileFlags] = React.useState<{
     buildingId?: string;
     incomplete: boolean;
     locationUnverified: boolean;
   }>({ incomplete: false, locationUnverified: false });
+
+  // Load the active campus once so the takeover / note can show the campus-
+  // police name + number (no AI, no blocking — purely presentational contacts).
+  React.useEffect(() => {
+    let alive = true;
+    getStore()
+      .getCampus(MIT_CAMPUS_ID)
+      .then((c) => {
+        if (alive) setCampus(c);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const remaining = MAX_CHARS - text.length;
 
@@ -64,6 +108,20 @@ export function ReportFlow() {
     const trimmed = text.trim();
     if (!trimmed) return;
     setError(null);
+
+    // SAFETY FIRST — pure, instant, client-side, BEFORE any network/AI call.
+    // A life-threatening match takes over the whole screen immediately.
+    const emergency = detectEmergency(trimmed);
+    if (emergency.isEmergency) {
+      setEmergencyReason(emergency.reason);
+      setPhase("emergency");
+      return;
+    }
+
+    // A non-active hazard drives a softer note shown later on the confirm card.
+    const hazard = detectSafetyHazard(trimmed);
+    setHazardReason(hazard.isHazard ? hazard.reason : null);
+
     setPhase("classifying");
     try {
       const res = await fetch("/api/classify", {
@@ -86,6 +144,14 @@ export function ReportFlow() {
       };
       setDraft(nextDraft);
 
+      // The AI may independently RAISE an emergency (life-safety Urgent) that
+      // the keyword check missed — but it can NEVER close one. Show the takeover.
+      if (c.category === "Safety" && c.tier === "Urgent") {
+        setEmergencyReason("This may be a life-safety emergency.");
+        setPhase("emergency");
+        return;
+      }
+
       // Ticket 04: ask only the details still missing (location first, max 3).
       const store = getStore();
       const [plan, buildings] = await Promise.all([
@@ -104,6 +170,37 @@ export function ReportFlow() {
       setError("We couldn't read your report just now. Please try again.");
       setPhase("compose");
     }
+  }
+
+  /** Record a Call 911 / Campus Police tap (never auto-dialed; audit only). */
+  function handleEmergencyCall(kind: EmergencyCallKind) {
+    if (!activeUser) return;
+    // Fire-and-forget: logging must never delay the student reaching help.
+    void logEmergencyCall({ store: getStore(), actorId: activeUser.id, kind });
+  }
+
+  /**
+   * The ONLY emergency dismissal: "Not an emergency — continue my report".
+   * Per the spec this files the report to Safety as Urgent, so we seed a draft
+   * with that routing and drop the student onto the confirm card.
+   */
+  function handleNotAnEmergency() {
+    setEmergencyReason(null);
+    setDraft((d) => {
+      const base: ReportDraft = d ?? {
+        text: text.trim(),
+        category: "Safety",
+        item: "safety concern",
+        title: text.trim().slice(0, 60) || "Safety concern",
+        tier: "Urgent",
+        location: "",
+        missingDetails: [],
+        namesPerson: false,
+        fromFallback: true,
+      };
+      return { ...base, category: "Safety", tier: "Urgent" };
+    });
+    setPhase("confirm");
   }
 
   function handleFollowUpsDone(answers: FollowUpAnswers) {
@@ -150,11 +247,26 @@ export function ReportFlow() {
     setFiled(null);
     setError(null);
     setFollowUp(null);
+    setEmergencyReason(null);
+    setHazardReason(null);
     setFileFlags({ incomplete: false, locationUnverified: false });
   }
 
   if (loading) {
     return <p className="text-muted-foreground">Loading…</p>;
+  }
+
+  // Safety beats everything: when raised, the takeover covers the whole screen.
+  if (phase === "emergency" && emergencyReason) {
+    return (
+      <EmergencyTakeover
+        reason={emergencyReason}
+        campusPoliceName={campus?.campusPoliceName ?? "Campus Police"}
+        campusPolicePhone={campus?.campusPolicePhone ?? "911"}
+        onContinue={handleNotAnEmergency}
+        onCall={handleEmergencyCall}
+      />
+    );
   }
 
   if (phase === "done" && filed) {
@@ -188,14 +300,23 @@ export function ReportFlow() {
 
   if (phase === "confirm" || phase === "filing") {
     return (
-      <ConfirmCard
-        draft={draft!}
-        filing={phase === "filing"}
-        error={error}
-        onChange={updateDraft}
-        onBack={reset}
-        onFile={handleFile}
-      />
+      <div className="flex flex-col gap-4">
+        {hazardReason ? (
+          <SafetyNote
+            reason={hazardReason}
+            campusPoliceName={campus?.campusPoliceName ?? "Campus Police"}
+            campusPolicePhone={campus?.campusPolicePhone ?? "911"}
+          />
+        ) : null}
+        <ConfirmCard
+          draft={draft!}
+          filing={phase === "filing"}
+          error={error}
+          onChange={updateDraft}
+          onBack={reset}
+          onFile={handleFile}
+        />
+      </div>
     );
   }
 

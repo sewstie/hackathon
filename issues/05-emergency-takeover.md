@@ -1,6 +1,6 @@
 # 05: Emergency takeover + safety hazard note
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 03-free-text-reporting.md
 Files Touched: src/modules/emergency/ (index.ts, internals, tests), src/app/report/ (emergency takeover + safety-note components)
