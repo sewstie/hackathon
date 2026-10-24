@@ -3,20 +3,32 @@
 // The actual Leaflet render. Imported ONLY via next/dynamic with { ssr: false }
 // (see campus-map.tsx), because Leaflet touches `window` at module load and the
 // App Router would otherwise throw "window is not defined" during SSR.
+//
+// The map draws three layers over OpenStreetMap tiles:
+//   1. a softened density heat layer, sitting quietly in the background;
+//   2. severity-aware CLUSTERS — numbered bubbles colored by their worst member,
+//      which zoom-expand on click so dense areas stay readable;
+//   3. a tier color legend so the colors are interpretable without guessing.
+// All grouping is precomputed by the pure `clusterPins` transform; this file is
+// a thin view over tested data.
 
-import { useEffect, useRef } from "react";
-import { CircleMarker, MapContainer, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { useEffect, useMemo, useRef } from "react";
+import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet.heat";
 import "leaflet/dist/leaflet.css";
-import type { HeatPoint, MapData } from "@/packages/campuses/map";
+import { TIER_PIN_CSS_VAR } from "@/packages/campuses/map";
+import type { HeatPoint, MapCluster, MapData } from "@/packages/campuses/map";
+import { TIERS, type Tier } from "@/types";
 
 /** A sensible campus-scale zoom for OpenStreetMap tiles. */
 const DEFAULT_ZOOM = 15;
+/** How far to zoom in when a multi-report cluster is clicked (expand). */
+const EXPAND_ZOOM = 18;
 
 /**
  * Resolve a CSS custom property (e.g. "--tier-high-fg") to its computed color.
- * Pins carry only the variable NAME (no hex in source); we read the themed
+ * Markers carry only the variable NAME (no hex in source); we read the themed
  * value from the document at render time. Falls back to the primary color.
  */
 function resolveCssVar(name: string): string {
@@ -25,16 +37,24 @@ function resolveCssVar(name: string): string {
   return styles.getPropertyValue(name).trim() || styles.getPropertyValue("--primary").trim() || "#1d4ed8";
 }
 
-/** Draws the leaflet.heat density layer; it is a Leaflet plugin, not a React layer. */
+/** Draws the leaflet.heat density layer, softened to a quiet background signal. */
 function HeatLayer({ points }: { points: HeatPoint[] }) {
   const map = useMap();
   const layerRef = useRef<L.Layer | null>(null);
 
   useEffect(() => {
-    // `heatLayer` is added to L by the leaflet.heat side-effect import.
+    // Guard: nothing to draw, and leaflet.heat dislikes an empty array.
+    if (points.length === 0) return;
     const heat = (L as unknown as {
       heatLayer: (pts: HeatPoint[], opts?: Record<string, unknown>) => L.Layer;
-    }).heatLayer(points, { radius: 25, blur: 18, maxZoom: 17 });
+    }).heatLayer(points, {
+      // Softened: smaller radius, more blur, capped opacity so clusters lead.
+      radius: 18,
+      blur: 24,
+      maxZoom: 17,
+      minOpacity: 0.15,
+      max: 3,
+    });
     heat.addTo(map);
     layerRef.current = heat;
     return () => {
@@ -48,6 +68,82 @@ function HeatLayer({ points }: { points: HeatPoint[] }) {
   return null;
 }
 
+/** A single cluster marker: a tier-colored bubble showing its report count. */
+function ClusterMarker({ cluster }: { cluster: MapCluster }) {
+  const map = useMap();
+  const color = resolveCssVar(cluster.cssVar);
+  const size = cluster.count > 1 ? 34 : 22;
+
+  const icon = useMemo(
+    () =>
+      L.divIcon({
+        className: "", // avoid Leaflet's default white box
+        html: `<div style="
+            display:flex;align-items:center;justify-content:center;
+            width:${size}px;height:${size}px;border-radius:9999px;
+            background:${color};color:#fff;font-weight:600;font-size:12px;
+            border:2px solid rgba(255,255,255,0.9);
+            box-shadow:0 1px 4px rgba(0,0,0,0.35);
+          ">${cluster.count}</div>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
+      }),
+    [color, size, cluster.count],
+  );
+
+  return (
+    <Marker
+      position={[cluster.lat, cluster.lng]}
+      icon={icon}
+      eventHandlers={{
+        // Expand on click: zoom toward the cluster so dense areas spread out.
+        click: () => {
+          if (cluster.count > 1) {
+            map.flyTo([cluster.lat, cluster.lng], EXPAND_ZOOM, { duration: 0.5 });
+          }
+        },
+      }}
+    >
+      <Tooltip>
+        {cluster.count === 1
+          ? `1 report · ${cluster.tier}`
+          : `${cluster.count} reports · up to ${cluster.tier}`}
+      </Tooltip>
+      <Popup>
+        <span className="font-medium">
+          {cluster.count === 1 ? "1 report" : `${cluster.count} reports`}
+        </span>
+        <br />
+        Highest severity: {cluster.tier}
+      </Popup>
+    </Marker>
+  );
+}
+
+/** The tier color legend, positioned over the map's bottom-right corner. */
+function TierLegend() {
+  return (
+    <div
+      className="absolute bottom-2 right-2 z-[1000] flex flex-col gap-1 rounded-[--radius] border border-border bg-background/90 p-2 text-xs shadow-sm backdrop-blur"
+      aria-label="Severity legend"
+    >
+      <span className="font-medium text-foreground">Severity</span>
+      <ul className="flex flex-col gap-1">
+        {(TIERS as readonly Tier[]).map((tier) => (
+          <li key={tier} className="flex items-center gap-2">
+            <span
+              aria-hidden
+              className="inline-block h-3 w-3 rounded-full border border-white/80"
+              style={{ background: `var(${TIER_PIN_CSS_VAR[tier]})` }}
+            />
+            <span className="text-muted-foreground">{tier}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export interface CampusMapInnerProps {
   data: MapData;
   /** Accessible label for the map region. */
@@ -55,41 +151,43 @@ export interface CampusMapInnerProps {
 }
 
 export default function CampusMapInner({ data, ariaLabel }: CampusMapInnerProps) {
+  // Guard against a missing/invalid center so Leaflet never throws on bad input.
+  const [centerLat, centerLng] = data.center;
+  const center: [number, number] =
+    Number.isFinite(centerLat) && Number.isFinite(centerLng)
+      ? [centerLat, centerLng]
+      : [42.3601, -71.0942]; // MIT fallback
+
+  // Only draw clusters with finite coordinates (one bad data point can't blank it).
+  const clusters = data.clusters.filter(
+    (c) => Number.isFinite(c.lat) && Number.isFinite(c.lng),
+  );
+  const heatPoints = data.heatPoints.filter(
+    (p) => Number.isFinite(p[0]) && Number.isFinite(p[1]),
+  );
+
   return (
-    <MapContainer
-      center={data.center}
-      zoom={DEFAULT_ZOOM}
-      scrollWheelZoom={false}
-      className="h-full w-full"
-      aria-label={ariaLabel ?? "Campus report map"}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="relative h-full w-full">
+      <MapContainer
+        center={center}
+        zoom={DEFAULT_ZOOM}
+        scrollWheelZoom={false}
+        className="h-full w-full"
+        aria-label={ariaLabel ?? "Campus report map"}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      <HeatLayer points={data.heatPoints} />
+        <HeatLayer points={heatPoints} />
 
-      {data.pins.map((pin) => {
-        const color = resolveCssVar(pin.cssVar);
-        return (
-          <CircleMarker
-            key={pin.reportId}
-            center={[pin.lat, pin.lng]}
-            radius={8}
-            pathOptions={{ color, fillColor: color, fillOpacity: 0.85, weight: 2 }}
-          >
-            <Tooltip>
-              {pin.title} · {pin.tier}
-            </Tooltip>
-            <Popup>
-              <span className="font-medium">{pin.title}</span>
-              <br />
-              {pin.tier} · {pin.status}
-            </Popup>
-          </CircleMarker>
-        );
-      })}
-    </MapContainer>
+        {clusters.map((cluster) => (
+          <ClusterMarker key={cluster.id} cluster={cluster} />
+        ))}
+      </MapContainer>
+
+      <TierLegend />
+    </div>
   );
 }

@@ -8,10 +8,14 @@
 
 export {
   buildMapData,
+  clusterPins,
   TIER_PIN_CSS_VAR,
   HEAT_WINDOW_DAYS,
+  CLUSTER_PRECISION,
   type MapData,
   type MapDataInput,
   type MapPin,
+  type MapCluster,
+  type ClusterOptions,
   type HeatPoint,
 } from "./lib/map-data";

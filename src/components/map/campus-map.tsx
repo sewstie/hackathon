@@ -6,6 +6,7 @@
 
 import dynamic from "next/dynamic";
 import type { MapData } from "@/packages/campuses/map";
+import { MapErrorBoundary } from "./map-error-boundary";
 
 const CampusMapInner = dynamic(() => import("./campus-map-inner"), {
   ssr: false,
@@ -24,11 +25,13 @@ export interface CampusMapProps {
   ariaLabel?: string;
 }
 
-/** Renders the campus report map (pins + 120-day heat layer) client-side only. */
+/** Renders the campus report map (clusters + legend + heat layer) client-side only. */
 export function CampusMap({ data, ariaLabel }: CampusMapProps) {
   return (
     <div className="h-80 w-full overflow-hidden rounded-[--radius] border border-border">
-      <CampusMapInner data={data} ariaLabel={ariaLabel} />
+      <MapErrorBoundary>
+        <CampusMapInner data={data} ariaLabel={ariaLabel} />
+      </MapErrorBoundary>
     </div>
   );
 }

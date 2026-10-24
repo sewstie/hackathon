@@ -5,6 +5,12 @@
 // client component in this folder) which owns upvote (co-sign) toggling, the
 // live signer count, confirm-gated delete, and the empty state. Private reports
 // are never read here, so they never reach the map or the feed.
+//
+// MIT-demo fix: the crash that broke "Open the MIT demo" was the map transform
+// evaluating the unstable `Date.now()` during prerender (Next 16 Cache
+// Components rejects it). The root-cause fix lives in `buildMapData`, which now
+// anchors its 120-day heat window to a deterministic, data-derived time when no
+// `now` is passed — safe during prerender and at request time alike.
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,8 +21,11 @@ import type { MapData } from "@/packages/campuses/map";
 import { CampusMap } from "@/components/map";
 import { CampusFeed } from "./campus-feed";
 
-// This page reads request-time data (the campusId param + the store), so it is
-// a blocking dynamic route rather than a prerendered one.
+// Opt this route out of Cache Components' instant / static-shell validation.
+// It legitimately blocks on request-time data (the campusId param + the store)
+// and inherits a shared layout nav that reads `usePathname`, so it is not an
+// "instant" segment. This is the documented opt-out (route-segment-config
+// `instant`), NOT a no-op — removing it reintroduces a prerender error.
 export const instant = false;
 
 export default async function CampusHomePage({
@@ -36,6 +45,8 @@ export default async function CampusHomePage({
   // office-scoped path and never appear here).
   const reports = await store.listReports(campus.id);
   const buildings = await store.listBuildings(campus.id);
+  // No `now` passed: the heat window anchors to the newest report's timestamp
+  // (deterministic, prerender-safe) instead of the unstable Date.now().
   const mapData: MapData = buildMapData({ campus, buildings, reports });
 
   return (
@@ -60,13 +71,13 @@ export default async function CampusHomePage({
         </Link>
       </header>
 
-      {/* Compact map: tier-colored pins + density heat layer over OSM tiles. */}
+      {/* Compact map: severity clusters + legend + softened heat over OSM tiles. */}
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold tracking-tight">Where problems cluster</h2>
         <CampusMap data={mapData} ariaLabel={`Report map for ${campus.name}`} />
         <p className="text-xs text-muted-foreground">
-          Pins are colored by severity; the heat layer shows recent report density.
-          Tiles &copy; OpenStreetMap contributors.
+          Clusters are colored by their most severe report; the heat layer shows
+          recent report density. Tiles &copy; OpenStreetMap contributors.
         </p>
       </section>
 

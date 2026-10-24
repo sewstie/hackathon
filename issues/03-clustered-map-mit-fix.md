@@ -1,6 +1,6 @@
 # 03: Legible clustered map + MIT-demo fix
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 02-feed-upvote-delete.md
 Files Touched: src/components/map/ (campus-map.tsx, campus-map-inner.tsx, index.ts, error boundary), src/packages/campuses/map/ (clustering transform + tests)
