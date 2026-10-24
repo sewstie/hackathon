@@ -23,6 +23,7 @@ import {
   type User,
 } from "@/types";
 import { useActiveUser } from "@/components/layout";
+import { PrivateInboxHint } from "@/components/onboarding";
 import {
   Badge,
   Button,
@@ -51,7 +52,7 @@ function QueueRow({
     <button
       type="button"
       onClick={() => onOpen(row)}
-      className="block w-full rounded-[--radius] border border-border bg-card p-3 text-left transition-colors hover:bg-muted"
+      className="block w-full rounded-(--radius) border border-border bg-card p-3 text-left transition-colors hover:bg-muted"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="font-medium">{report.title}</span>
@@ -157,7 +158,7 @@ function ReportDetail({
 
         {report.photoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={report.photoUrl} alt="Report photo" className="max-w-full rounded-[--radius]" />
+          <img src={report.photoUrl} alt="Report photo" className="max-w-full rounded-(--radius)" />
         )}
 
         <div className="flex flex-col gap-2">
@@ -247,6 +248,8 @@ export default function StaffPage() {
   const [selected, setSelected] = React.useState<StaffQueueRow | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [reloadKey, setReloadKey] = React.useState(0);
+  /** Explainer shown each time the Private inbox tab is opened. */
+  const [inboxHint, setInboxHint] = React.useState(false);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -291,7 +294,7 @@ export default function StaffPage() {
   if (!activeUser || activeUser.role !== "responder") {
     return (
       <div className="flex max-w-prose flex-col gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">Staff dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Staff dashboard</h1>
         <p className="text-sm text-muted-foreground">
           Switch to a staff member in the header to see their queue.
         </p>
@@ -302,7 +305,7 @@ export default function StaffPage() {
   return (
     <div className="flex max-w-3xl flex-col gap-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Staff dashboard</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Staff dashboard</h1>
         <p className="text-sm text-muted-foreground">
           Viewing as {activeUser.name}
           {tabs.team ? ` · ${tabs.team} team` : ""}
@@ -311,11 +314,20 @@ export default function StaffPage() {
         </p>
       </header>
 
-      <Tabs key={activeUser.id} defaultValue={tabs.team ? "team" : "private"}>
-        <TabsList>
+      <PrivateInboxHint open={inboxHint} onClose={() => setInboxHint(false)} />
+      <Tabs
+        key={activeUser.id}
+        defaultValue={tabs.team ? "team" : "private"}
+        onValueChange={(v) => {
+          if (v === "private") setInboxHint(true);
+        }}
+      >
+        <TabsList data-spot="staff-tabs">
           {tabs.team && <TabsTrigger value="team">{tabs.team} queue</TabsTrigger>}
           {tabs.hasPrivateInbox && (
-            <TabsTrigger value="private">Private inbox</TabsTrigger>
+            <TabsTrigger value="private" data-spot="private-tab">
+              Private inbox
+            </TabsTrigger>
           )}
         </TabsList>
 
@@ -324,7 +336,7 @@ export default function StaffPage() {
             <ReportDetail row={selected} onClose={() => setSelected(null)} onChanged={refresh} />
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="flex flex-wrap items-end gap-4">
+              <div className="flex flex-wrap items-end gap-4" data-spot="filters">
                 <div className="flex flex-col gap-1">
                   <label htmlFor="filter-status" className="text-sm text-muted-foreground">
                     Status
@@ -361,7 +373,7 @@ export default function StaffPage() {
                 </div>
               </div>
 
-              <Card>
+              <Card data-spot="queue">
                 <CardHeader>
                   <CardTitle>{tabs.team} queue</CardTitle>
                 </CardHeader>
@@ -397,7 +409,7 @@ export default function StaffPage() {
                     <Link
                       key={pr.id}
                       href="/staff-private"
-                      className="block rounded-[--radius] border border-border bg-card p-3 transition-colors hover:bg-muted"
+                      className="block rounded-(--radius) border border-border bg-card p-3 transition-colors hover:bg-muted"
                     >
                       <div className="font-medium">{pr.title}</div>
                       <div className="mt-1 text-sm text-muted-foreground">

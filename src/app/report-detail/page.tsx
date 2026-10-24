@@ -146,7 +146,7 @@ function ReportDetailInner() {
           </div>
 
           {alreadySigned ? (
-            <p className="rounded-[--radius] bg-muted p-3 text-sm">
+            <p className="rounded-(--radius) bg-muted p-3 text-sm">
               You&apos;re on it. We&apos;ll notify you when it&apos;s fixed.
             </p>
           ) : (

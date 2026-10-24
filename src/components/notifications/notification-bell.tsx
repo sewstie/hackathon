@@ -100,7 +100,7 @@ export function NotificationBell() {
             {items.map((n) => (
               <li
                 key={n.id}
-                className="rounded-[--radius] border border-border bg-muted/40 p-3 text-sm"
+                className="rounded-(--radius) border border-border bg-muted/40 p-3 text-sm"
               >
                 {n.body}
               </li>

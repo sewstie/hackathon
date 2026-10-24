@@ -64,7 +64,7 @@ export function CityHandoffCard({ campus }: CityHandoffCardProps) {
             href={card.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 items-center rounded-[--radius] px-4 text-sm font-medium underline"
+            className="inline-flex h-10 items-center rounded-(--radius) px-4 text-sm font-medium underline"
           >
             Open {card.serviceName} →
           </a>

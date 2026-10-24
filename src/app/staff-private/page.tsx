@@ -7,7 +7,13 @@
 // office-scoped seam, not by this UI.
 
 import { StaffPrivateView } from "./staff-private-view";
+import { PrivateInboxGate } from "./private-inbox-gate";
 
 export default function StaffPrivatePage() {
-  return <StaffPrivateView />;
+  return (
+    <>
+      <PrivateInboxGate />
+      <StaffPrivateView />
+    </>
+  );
 }

@@ -87,17 +87,13 @@ describe("Onboarding", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("does not re-onboard when the session is already marked seen", async () => {
-    try {
-      window.sessionStorage.setItem("unifix.onboarding.seen", "1");
-    } catch {
-      return;
-    }
+  it("shows the welcome every time the demo is opened, even if seen before", async () => {
+    window.sessionStorage.setItem("unifix.onboarding.seen", "1");
+    window.sessionStorage.setItem("unifix.onboarding.lastView", "student");
     renderOnboarding();
     await act(async () => {
       await Promise.resolve();
     });
-    expect(screen.queryByText("You're in the student view")).not.toBeInTheDocument();
-    expect(screen.queryByText("Try it yourself")).not.toBeInTheDocument();
+    expect(screen.getByText("You're in the student view")).toBeInTheDocument();
   });
 });

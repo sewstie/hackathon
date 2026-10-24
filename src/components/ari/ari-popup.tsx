@@ -48,7 +48,7 @@ export function AriPopup({
             {quickFixes.map((fix) => (
               <li
                 key={fix.id}
-                className="rounded-[--radius] border border-border bg-background p-2 text-sm"
+                className="rounded-(--radius) border border-border bg-background p-2 text-sm"
               >
                 {fix.text}
               </li>

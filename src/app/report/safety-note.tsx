@@ -23,7 +23,7 @@ export function SafetyNote({ reason, campusPoliceName, campusPolicePhone }: Safe
   return (
     <div
       role="note"
-      className="flex flex-col gap-1 rounded-[--radius] border-2 border-danger bg-danger/10 p-4 text-sm"
+      className="flex flex-col gap-1 rounded-(--radius) border-2 border-danger bg-danger/10 p-4 text-sm"
     >
       <p className="font-semibold text-danger">Safety hazard: {reason}</p>
       <p className="text-foreground">

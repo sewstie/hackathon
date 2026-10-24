@@ -101,7 +101,7 @@ export function PrivateThreadView({ reportId }: { reportId: string }) {
     <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
         <p className="text-sm font-medium text-primary">Direct (private) report</p>
-        <h1 className="text-2xl font-semibold tracking-tight">Your private thread</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Your private thread</h1>
         {report && (
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Status:</span>
@@ -126,8 +126,8 @@ export function PrivateThreadView({ reportId }: { reportId: string }) {
                   key={m.id}
                   className={
                     m.authorRole === "student"
-                      ? "self-end rounded-[--radius] bg-primary px-3 py-2 text-sm text-primary-foreground"
-                      : "self-start rounded-[--radius] bg-muted px-3 py-2 text-sm"
+                      ? "self-end rounded-(--radius) bg-primary px-3 py-2 text-sm text-primary-foreground"
+                      : "self-start rounded-(--radius) bg-muted px-3 py-2 text-sm"
                   }
                 >
                   <span className="mb-1 block text-xs opacity-70">
@@ -151,7 +151,7 @@ export function PrivateThreadView({ reportId }: { reportId: string }) {
           onChange={(e) => setDraft(e.target.value)}
           rows={3}
           placeholder="Write a message to the office…"
-          className="w-full rounded-[--radius] border border-border bg-background p-3 text-sm"
+          className="w-full rounded-(--radius) border border-border bg-background p-3 text-sm"
         />
         <div>
           <Button onClick={onSend} disabled={busy || draft.trim().length === 0}>

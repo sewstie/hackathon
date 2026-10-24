@@ -17,7 +17,7 @@ function ReportRow({ row }: { row: RowData }) {
   return (
     <Link
       href={{ pathname: "/report-detail", query: { id: report.id } }}
-      className="block rounded-[--radius] border border-border bg-card p-3 transition-colors hover:bg-muted"
+      className="block rounded-(--radius) border border-border bg-card p-3 transition-colors hover:bg-muted"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="font-medium">{report.title}</span>
@@ -89,7 +89,7 @@ export default function MyReportsPage() {
   return (
     <div className="flex max-w-prose flex-col gap-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">My reports</h1>
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">My reports</h1>
         <p className="text-sm text-muted-foreground">
           Anonymous to students. You see counts, never who filed or co-signed.
         </p>

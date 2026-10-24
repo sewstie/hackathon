@@ -92,7 +92,7 @@ export function PhotoStep({ photo, onChange, onNext, onBack }: PhotoStepProps) {
             <img
               src={previewUrl}
               alt={`Preview of ${photo.name}`}
-              className="max-h-64 w-full rounded-[--radius] border border-border object-contain bg-muted"
+              className="max-h-64 w-full rounded-(--radius) border border-border object-contain bg-muted"
             />
             <div className="flex items-center gap-2">
               <Button type="button" variant="secondary" onClick={() => inputRef.current?.click()}>
@@ -115,7 +115,7 @@ export function PhotoStep({ photo, onChange, onNext, onBack }: PhotoStepProps) {
             onDrop={onDrop}
             aria-label="Add a photo: tap to choose, or drag an image here"
             className={
-              "flex min-h-40 w-full flex-col items-center justify-center gap-2 rounded-[--radius] border-2 border-dashed border-border bg-muted/40 p-6 text-center text-sm text-muted-foreground transition-colors hover:border-primary" +
+              "flex min-h-40 w-full flex-col items-center justify-center gap-2 rounded-(--radius) border-2 border-dashed border-border bg-muted/40 p-6 text-center text-sm text-muted-foreground transition-colors hover:border-primary" +
               (dragging ? " border-primary bg-muted" : "")
             }
           >

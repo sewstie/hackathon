@@ -11,13 +11,11 @@ import * as React from "react";
 export function UniversityName({ campusName }: { campusName: string }) {
   return (
     <span className="flex items-center gap-2 text-sm">
-      <span className="font-semibold text-foreground">UniFix</span>
+      {/* The logo already reads "UniFix"; the name stays for screen readers. */}
+      <span className="sr-only">UniFix</span>
       {campusName ? (
         <>
-          <span aria-hidden="true" className="text-border">
-            |
-          </span>
-          <span className="font-normal text-muted-foreground">{campusName}</span>
+          <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">{campusName}</span>
         </>
       ) : null}
     </span>

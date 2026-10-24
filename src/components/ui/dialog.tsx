@@ -19,6 +19,11 @@ export interface DialogProps {
    * Falls back to the first focusable element, then the dialog itself.
    */
   initialFocusRef?: React.RefObject<HTMLElement | null>;
+  /** Optional full-bleed block rendered above the title (e.g. an illustration). */
+  hero?: React.ReactNode;
+  /** Extra classes for the title and the body wrapper (layout tweaks). */
+  titleClassName?: string;
+  bodyClassName?: string;
 }
 
 /**
@@ -34,6 +39,9 @@ export function Dialog({
   children,
   className,
   initialFocusRef,
+  hero,
+  titleClassName,
+  bodyClassName,
 }: DialogProps) {
   const panelRef = React.useRef<HTMLDivElement>(null);
   const titleId = React.useId();
@@ -102,7 +110,7 @@ export function Dialog({
         type="button"
         aria-label="Close dialog"
         tabIndex={-1}
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
         onClick={onClose}
       />
       <div
@@ -113,11 +121,12 @@ export function Dialog({
         aria-describedby={description ? descId : undefined}
         tabIndex={-1}
         className={cn(
-          "relative z-10 w-full max-w-md rounded-[--radius] border border-border bg-card p-6 text-card-foreground shadow-lg",
+          "cx-pop relative z-10 w-full max-w-md rounded-3xl border border-border bg-card p-6 text-card-foreground shadow-[var(--shadow-lg)] sm:p-7",
           className,
         )}
       >
-        <h2 id={titleId} className="text-lg font-semibold">
+        {hero}
+        <h2 id={titleId} className={cn("text-lg font-semibold", titleClassName)}>
           {title}
         </h2>
         {description ? (
@@ -125,7 +134,7 @@ export function Dialog({
             {description}
           </p>
         ) : null}
-        <div className="mt-4">{children}</div>
+        <div className={cn("mt-4", bodyClassName)}>{children}</div>
       </div>
     </div>
   );

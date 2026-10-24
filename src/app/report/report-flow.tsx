@@ -19,11 +19,13 @@
 // the report to Safety as Urgent. A softer detectSafetyHazard drives a non-
 // takeover red note on the confirm card (no quick fixes).
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { AriShell } from "@/components/ari";
+import { stopReportTour } from "@/components/onboarding";
 import { useActiveUser } from "@/components/layout/active-user";
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Input, Select } from "@/components/ui";
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Dialog, Input, Select } from "@/components/ui";
 import { getStore, MIT_CAMPUS_ID } from "@/lib/store";
 import type { Classification } from "@/modules/ai";
 import {
@@ -39,7 +41,7 @@ import {
   teamForCategory,
   type ReportDraft,
 } from "@/modules/reporting";
-import type { Building, Campus } from "@/types";
+import type { Building, Campus, Report } from "@/types";
 import { CATEGORIES, TIERS, type Category, type Tier } from "@/types";
 
 import { EmergencyTakeover } from "./emergency-takeover";
@@ -65,6 +67,8 @@ type Phase =
 interface FiledSummary {
   confirmation: string;
   photoError: boolean;
+  /** The filed report: drives the "where it went" pop-up. */
+  report: Report;
 }
 
 interface FollowUpState {
@@ -73,15 +77,20 @@ interface FollowUpState {
 }
 
 export function ReportFlow() {
-  const { activeUser, loading } = useActiveUser();
+  const { activeUser, loading, users, setActiveUserId } = useActiveUser();
   const router = useRouter();
+  // Ari's campus helper hands its text over as ?text=… so the student never
+  // types the same thing twice.
+  const carried = useSearchParams().get("text");
 
   const [phase, setPhase] = React.useState<Phase>("compose");
-  const [text, setText] = React.useState("");
+  const [text, setText] = React.useState(() => (carried ?? "").slice(0, MAX_CHARS));
   const [photo, setPhoto] = React.useState<File | null>(null);
   const [draft, setDraft] = React.useState<ReportDraft | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [filed, setFiled] = React.useState<FiledSummary | null>(null);
+  /** The "your report was rated X and sent to Y" pop-up after posting. */
+  const [sentOpen, setSentOpen] = React.useState(false);
   const [followUp, setFollowUp] = React.useState<FollowUpState | null>(null);
   const [campus, setCampus] = React.useState<Campus | null>(null);
   /** The reason behind the active-emergency takeover; null when none. */
@@ -110,6 +119,27 @@ export function ReportFlow() {
   }, []);
 
   const remaining = MAX_CHARS - text.length;
+
+  // Ari also watches WHILE the student types: once they pause (~0.9 s) on text
+  // that reads as an emergency, the Call 911 / campus-police takeover comes up
+  // without waiting for Continue. The submit-time check below still runs.
+  const liveTimer = React.useRef<number | undefined>(undefined);
+  const dismissedLive = React.useRef<string | null>(null);
+  React.useEffect(() => () => window.clearTimeout(liveTimer.current), []);
+  function handleTextChange(next: string) {
+    setText(next);
+    window.clearTimeout(liveTimer.current);
+    const t = next.trim();
+    if (!t || t === dismissedLive.current) return;
+    liveTimer.current = window.setTimeout(() => {
+      const hit = detectEmergency(t);
+      if (hit.isEmergency) {
+        dismissedLive.current = t;
+        setEmergencyReason(hit.reason);
+        setPhase("emergency");
+      }
+    }, 900);
+  }
 
   async function handleSubmitText(e: React.FormEvent) {
     e.preventDefault();
@@ -263,7 +293,8 @@ export function ReportFlow() {
         locationUnverified: fileFlags.locationUnverified,
         photo: photo ?? undefined,
       });
-      setFiled({ confirmation: result.confirmation, photoError: result.photoError });
+      setFiled({ confirmation: result.confirmation, photoError: result.photoError, report: result.report });
+      setSentOpen(true);
       setPhase("done");
     } catch {
       setError("We couldn't file your report just now. Please try again.");
@@ -281,6 +312,7 @@ export function ReportFlow() {
     setPhoto(null);
     setDraft(null);
     setFiled(null);
+    setSentOpen(false);
     setError(null);
     setFollowUp(null);
     setEmergencyReason(null);
@@ -322,8 +354,52 @@ export function ReportFlow() {
   }
 
   if (phase === "done" && filed) {
+    const team = teamForCategory(filed.report.category);
+    // The staff member who owns that team's queue, so "see it" lands on it.
+    const responder = users.find((u) => u.role === "responder" && u.publicTeam === team);
     return (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4" data-tour="done">
+        <Dialog
+          open={sentOpen}
+          onClose={() => setSentOpen(false)}
+          title="Your report is in 🎉"
+          className="max-w-md"
+        >
+          <div className="flex flex-col gap-4 text-sm">
+            <p className="font-medium text-foreground">{filed.report.title}</p>
+            <dl className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-border p-3">
+                <dt className="text-xs text-muted-foreground">Ari rated it</dt>
+                <dd className="mt-1">
+                  <Badge tier={filed.report.tier} />
+                </dd>
+              </div>
+              <div className="rounded-2xl border border-border p-3">
+                <dt className="text-xs text-muted-foreground">Sent to</dt>
+                <dd className="mt-1 font-semibold text-foreground">{team} team</dd>
+              </div>
+            </dl>
+            <p className="text-muted-foreground">
+              It&apos;s now in the {team} staff queue, ranked by severity × how many
+              students hit it. You&apos;ll be notified every time its status changes.
+            </p>
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button variant="ghost" onClick={() => setSentOpen(false)}>
+                Close
+              </Button>
+              <Link
+                href="/staff"
+                onClick={() => {
+                  if (responder) setActiveUserId(responder.id);
+                  stopReportTour();
+                }}
+                className="inline-flex h-10 items-center justify-center rounded-(--radius) bg-staff px-4 text-sm font-medium text-staff-foreground transition-opacity hover:opacity-90"
+              >
+                See it in the {team} staff queue →
+              </Link>
+            </div>
+          </div>
+        </Dialog>
         <AriShell message={filed.confirmation} />
         {filed.photoError ? (
           <p role="status" className="text-sm text-muted-foreground">
@@ -342,12 +418,14 @@ export function ReportFlow() {
   if (phase === "followups" && followUp) {
     return (
       <StepFrame phase={phase}>
-        <FollowUpStep
-          plan={followUp.plan}
-          buildings={followUp.buildings}
-          campusId={MIT_CAMPUS_ID}
-          onDone={handleFollowUpsDone}
-        />
+        <div data-tour="followups">
+          <FollowUpStep
+            plan={followUp.plan}
+            buildings={followUp.buildings}
+            campusId={MIT_CAMPUS_ID}
+            onDone={handleFollowUpsDone}
+          />
+        </div>
       </StepFrame>
     );
   }
@@ -355,12 +433,14 @@ export function ReportFlow() {
   if (phase === "photo") {
     return (
       <StepFrame phase={phase}>
-        <PhotoStep
-          photo={photo}
-          onChange={setPhoto}
-          onNext={() => setPhase("confirm")}
-          onBack={() => setPhase(followUp ? "followups" : "compose")}
-        />
+        <div data-tour="photo">
+          <PhotoStep
+            photo={photo}
+            onChange={setPhoto}
+            onNext={() => setPhase("confirm")}
+            onBack={() => setPhase(followUp ? "followups" : "compose")}
+          />
+        </div>
       </StepFrame>
     );
   }
@@ -368,7 +448,7 @@ export function ReportFlow() {
   if (phase === "confirm" || phase === "filing") {
     return (
       <StepFrame phase={phase}>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" data-tour="confirm">
           {hazardReason ? (
             <SafetyNote
               reason={hazardReason}
@@ -399,12 +479,13 @@ export function ReportFlow() {
           </label>
           <textarea
             id="report-text"
+            data-tour="report-text"
             value={text}
             maxLength={MAX_CHARS}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => handleTextChange(e.target.value)}
             disabled={phase === "classifying"}
             placeholder="Describe the problem in your own words — e.g. “The ice cream machine in Lobdell is broken again.”"
-            className="min-h-28 w-full rounded-[--radius] border border-border bg-background p-3 text-sm placeholder:text-muted-foreground disabled:opacity-50"
+            className="min-h-28 w-full rounded-(--radius) border border-border bg-background p-3 text-sm placeholder:text-muted-foreground disabled:opacity-50"
           />
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>Anonymous to students. Staff can see who filed.</span>
@@ -418,7 +499,7 @@ export function ReportFlow() {
           ) : null}
 
           <div>
-            <Button type="submit" disabled={!text.trim() || phase === "classifying"}>
+            <Button type="submit" disabled={!text.trim() || phase === "classifying"} data-tour="report-submit">
               {phase === "classifying" ? "Reading…" : "Continue"}
             </Button>
           </div>
@@ -520,7 +601,7 @@ function ConfirmCard({ draft, filing, error, onChange, onBack, onFile }: Confirm
         ) : null}
 
         <div className="flex items-center gap-2">
-          <Button onClick={onFile} disabled={filing}>
+          <Button onClick={onFile} disabled={filing} data-tour="post">
             {filing ? "Posting…" : "Post report"}
           </Button>
           <Button variant="ghost" onClick={onBack} disabled={filing}>

@@ -5,3 +5,4 @@ export { Badge, type BadgeProps } from "./badge";
 export { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./card";
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
 export { Dialog, type DialogProps } from "./dialog";
+export { Reveal } from "./reveal";

@@ -6,7 +6,8 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import type { LanguageModel } from "ai";
 
-const DEFAULT_MODEL = "claude-3-5-haiku-latest";
+// Claude Opus 5.5 powers classification (override with AI_MODEL).
+const DEFAULT_MODEL = "claude-opus-5-5";
 
 /** The default model from env, or null when no API key is configured. */
 export function defaultModel(): LanguageModel | null {

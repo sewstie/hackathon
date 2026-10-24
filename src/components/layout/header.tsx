@@ -29,29 +29,31 @@ export function Header() {
 function Logo({ href }: { href: string }) {
   return (
     <Link href={href} aria-label="UniFix home" className="flex items-center font-semibold">
-      <Image src="/logo.png" alt="" width={86} height={48} priority className="h-8 w-auto" />
+      <Image src="/logo-mark.png" alt="" width={658} height={248} priority className="h-10 w-auto sm:h-11" />
     </Link>
   );
 }
 
 function LandingHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-2">
         <Logo href="/" />
-        <span className="font-semibold">UniFix</span>
+        {/* The logo already reads "UniFix"; keep the name for screen readers. */}
+        <span className="sr-only">UniFix</span>
         <nav aria-label="Demos" className="ml-auto flex flex-wrap items-center gap-2">
-          <Link
-            href={DEMO_ENTRY.student}
-            className="inline-flex h-9 items-center rounded-[--radius] bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90"
-          >
-            Student demo
-          </Link>
+          {/* Staff is available but quiet; the student demo is the main door. */}
           <Link
             href={DEMO_ENTRY.staff}
-            className="inline-flex h-9 items-center rounded-[--radius] bg-staff px-3 text-sm font-medium text-staff-foreground transition-colors hover:opacity-90"
+            className="inline-flex h-9 items-center rounded-full px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Staff demo
+          </Link>
+          <Link
+            href={DEMO_ENTRY.student}
+            className="inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-[0_10px_24px_-12px_var(--primary)] transition-transform hover:-translate-y-0.5"
+          >
+            Student demo <span aria-hidden>→</span>
           </Link>
         </nav>
       </div>
@@ -95,7 +97,7 @@ function DemoHeader({ view }: { view: Exclude<DemoView, "landing"> }) {
   const staff = view === "staff";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
       {/* The view banner: the obvious "which side am I on" signal. */}
       <div
         className={cn(
@@ -103,7 +105,7 @@ function DemoHeader({ view }: { view: Exclude<DemoView, "landing"> }) {
           staff ? "bg-staff text-staff-foreground" : "bg-primary text-primary-foreground",
         )}
       >
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5" data-spot="switch-view">
           <span className="rounded-full bg-background/20 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide">
             Demo
           </span>
@@ -114,12 +116,25 @@ function DemoHeader({ view }: { view: Exclude<DemoView, "landing"> }) {
               : "what a student sees when they report problems"}
           </span>
           <span className="ml-auto flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event("unifix:onboarding-open"))}
+              className="underline-offset-2 opacity-90 hover:underline"
+            >
+              Demo guide
+            </button>
             <Link href="/" className="underline-offset-2 opacity-90 hover:underline">
               About UniFix
             </Link>
             <Link
               href={staff ? DEMO_ENTRY.student : DEMO_ENTRY.staff}
-              className="rounded-[--radius] bg-background px-2.5 py-1 text-xs font-semibold text-foreground transition-opacity hover:opacity-90"
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-semibold transition-opacity hover:opacity-90",
+                // In the staff view the way back is available but quiet.
+                staff
+                  ? "border border-staff-foreground/40 text-staff-foreground"
+                  : "bg-background text-foreground",
+              )}
             >
               {staff ? "Switch to student view →" : "Switch to staff view →"}
             </Link>
@@ -130,12 +145,16 @@ function DemoHeader({ view }: { view: Exclude<DemoView, "landing"> }) {
       <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-2">
         <Logo href={staff ? DEMO_ENTRY.staff : DEMO_ENTRY.student} />
         <UniversityName campusName={staff && campusName ? `${campusName} Staff` : campusName} />
-        <div className="hidden md:block">
+        <div className="hidden md:block" data-spot="nav">
           <Nav view={view} />
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <NotificationBell />
-          <RoleSwitcher view={view} />
+          <span data-spot="bell">
+            <NotificationBell />
+          </span>
+          <span data-spot="role">
+            <RoleSwitcher view={view} />
+          </span>
         </div>
         <div className="w-full md:hidden">
           <Nav view={view} />
