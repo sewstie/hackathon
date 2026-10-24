@@ -19,9 +19,7 @@ export interface SpotStep {
 export const STUDENT_SPOTS: SpotStep[] = [
   { spot: "switch-view", title: "Which side you're on", body: "This bar says you're in the student view. You can jump to the staff view any time." },
   { spot: "nav", title: "Student pages", body: "The campus feed, a new report, a private report, and the reports you filed or co-signed." },
-  { spot: "nav-report", title: "Start a report here", body: "Say what's wrong in plain words. Ari sorts it and asks only what's missing." },
-  { spot: "watch-demo", title: "Watch the demo", body: "A short video of the whole product — student side and staff side." },
-  { spot: "about", title: "What UniFix is", body: "The problem, who it helps, every feature, and how we built it with Kiro." },
+  { spot: "report-cta", title: "Start a report here", body: "Say what's wrong in plain words. Ari sorts it and asks only what's missing." },
   { spot: "stats", title: "Live numbers", body: "How many reports are open, how many are high or urgent, and how many got fixed." },
   { spot: "map", title: "The campus map", body: "Problems clustered by building. The color is the most severe report there." },
   { spot: "feed", title: "Campus reports", body: "Ranked by severity × how many students hit it. Tap ▲ to co-sign one you also hit." },

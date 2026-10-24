@@ -31,8 +31,6 @@ export function Nav({ view = "student" }: { view?: Exclude<DemoView, "landing"> 
             href={link.href}
             aria-current={active ? "page" : undefined}
             data-spot={`nav-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
-            // The guided report tour starts here (the hero button is now "Watch the Demo").
-            data-tour={link.href === "/report" ? "report-cta" : undefined}
             className={cn(
               "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
               active

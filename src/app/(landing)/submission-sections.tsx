@@ -1,8 +1,9 @@
-// The submission write-up, shown on the campus home right under the hero:
+// The submission write-up, shown on the front page (About) right under the hero:
 // what UniFix is, the problem, who it helps, every feature, the Hackachusetts
 // track, how Kiro was used, and how to test it — then the walkthrough video.
 import Link from "next/link";
 import { Reveal } from "@/components/ui";
+import { DEMO_ENTRY } from "@/components/layout";
 import { DemoPlayer } from "./demo-video";
 
 const REPO_URL = "https://github.com/sewstie/hackathon";
@@ -175,14 +176,15 @@ export function SubmissionSections() {
         </div>
         <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm leading-relaxed">
           <li>
-            You&apos;re in the <strong>student view</strong>. Click <strong>Report</strong> in the top bar and
-            type <em>“my wifi is not working”</em> — or use <strong>Demo guide → Try creating a report, step by step</strong>.
+            Click <strong>Student demo</strong> (top right). You land in the <strong>student view</strong>; the
+            pop-up offers <strong>Try creating a report, step by step</strong>. Or click{" "}
+            <strong>Report an issue</strong> and type <em>“my wifi is not working”</em>.
           </li>
           <li>
             Type <em>“somebody collapsed in the library”</em> to see Ari&apos;s emergency screen
             (it never dials for you).
           </li>
-          <li>Upvote a report in the feed below, and click a map bubble to list its reports.</li>
+          <li>Upvote a report in the campus feed, and click a map bubble to list its reports.</li>
           <li>
             Click <strong>Switch to staff view</strong> in the banner. Pick a team in the Staff
             member menu (top right) — each sees only its own area. Open a report, message the
@@ -195,7 +197,10 @@ export function SubmissionSections() {
           <a href={REPO_URL} className="font-semibold text-primary underline underline-offset-2">
             github.com/sewstie/hackathon
           </a>{" "}
-          · <Link href="/" className="font-semibold text-primary underline underline-offset-2">About UniFix</Link>
+          ·{" "}
+          <Link href={DEMO_ENTRY.student} className="font-semibold text-primary underline underline-offset-2">
+            Open the student demo
+          </Link>
         </p>
       </Reveal>
 

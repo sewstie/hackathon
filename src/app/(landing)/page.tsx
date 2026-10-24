@@ -4,6 +4,8 @@ import { Reveal } from "@/components/ui";
 import { AriRobot } from "@/components/ari";
 import { DEMO_ENTRY } from "@/components/layout";
 import { SchoolSearch } from "./school-search";
+import { WatchDemoButton } from "./demo-video";
+import { SubmissionSections } from "./submission-sections";
 
 export const metadata = {
   title: "UniFix · report what's broken on campus",
@@ -54,18 +56,22 @@ export default function LandingPage() {
             </p>
 
             <div className="flex flex-col items-start gap-3">
+              {/* The demo video comes first; the student demo is right beside it. */}
+              <div className="flex w-full flex-wrap items-center gap-3">
+                <WatchDemoButton />
               <Link
                 href={DEMO_ENTRY.student}
-                className="group inline-flex h-14 items-center justify-center gap-3 rounded-full bg-primary pl-7 pr-2 text-base font-semibold text-primary-foreground shadow-[0_22px_50px_-18px_var(--cx-glow)] transition-transform hover:-translate-y-0.5"
+                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full border-2 border-primary bg-card pl-5 pr-1.5 text-sm font-semibold text-primary transition-transform hover:-translate-y-0.5"
               >
                 Start the student demo
                 <span
                   aria-hidden
-                  className="flex size-10 items-center justify-center rounded-full bg-primary-foreground/15 transition-transform group-hover:translate-x-0.5"
+                  className="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:translate-x-0.5"
                 >
                   →
                 </span>
               </Link>
+              </div>
               <p className="text-sm text-muted-foreground">
                 Runs on a live MIT demo campus · no sign-up · 1 minute
               </p>
@@ -102,11 +108,14 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Submission write-up + the walkthrough video, right under the hero ── */}
+      <SubmissionSections />
+
       {/* ── The demo doors: student first, staff quieter ─────────────── */}
       <Reveal className="flex flex-col gap-6" aria-labelledby="demos-heading">
         <div className="flex flex-col gap-2">
           <Eyebrow>
-            <span className="text-primary">01</span> — Live demo
+            <span className="text-primary">06</span> — Live demo
           </Eyebrow>
           <h2 id="demos-heading" className="text-3xl font-bold tracking-tight sm:text-4xl">
             Start as a student
@@ -164,7 +173,7 @@ export default function LandingPage() {
       <Reveal className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Eyebrow>
-            <span className="text-primary">02</span> — How it works
+            <span className="text-primary">07</span> — How it works
           </Eyebrow>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Three steps, no forms</h2>
         </div>
@@ -196,7 +205,7 @@ export default function LandingPage() {
       <Reveal className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Eyebrow>
-            <span className="text-primary">03</span> — Why it matters
+            <span className="text-primary">08</span> — Why it matters
           </Eyebrow>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Why campuses matter in Massachusetts</h2>
           <p className="max-w-prose text-sm leading-relaxed text-muted-foreground">
@@ -246,7 +255,7 @@ export default function LandingPage() {
       <Reveal className="flex flex-col gap-6 rounded-[2rem] border border-border bg-card p-7 sm:p-10">
         <div className="flex flex-col gap-2">
           <Eyebrow>
-            <span className="text-primary">04</span> — Any campus
+            <span className="text-primary">09</span> — Any campus
           </Eyebrow>
           <h2 className="text-3xl font-bold tracking-tight">Works for any campus</h2>
           <p className="max-w-prose text-sm text-muted-foreground">
