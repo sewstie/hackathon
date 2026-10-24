@@ -1,6 +1,6 @@
 # 04: Entry routing, About page & onboarding pop-up/nudge
 
-Status: OPEN
+Status: DONE
 Track: A
 Blocked By: 03-clustered-map-mit-fix.md
 Files Touched: src/app/(landing)/ (reshape: demo entry → student feed), src/app/about/ (new About route for the pitch content), src/components/onboarding/ (welcome pop-up + try-reporting nudge)
