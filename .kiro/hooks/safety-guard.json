@@ -1,0 +1,11 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Re-prove the safety rules whenever emergency detection changes",
+      "trigger": "PostFileSave",
+      "matcher": "src/modules/emergency/.*\\.ts$",
+      "action": { "type": "command", "command": "npx vitest run src/modules/emergency src/modules/ai" }
+    }
+  ]
+}

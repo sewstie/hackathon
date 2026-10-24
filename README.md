@@ -1,4 +1,60 @@
-# hackathon
+# UniFix — report what's broken on campus, and watch it get fixed
+
+**Hackachusetts 2026 · Civic Action · Challenge V4: "Better college experiences"**
+(from the [Hackachusetts 2026 campus data portal](https://hackachusetts2026.vercel.app))
+
+| | |
+|---|---|
+| **Live demo** (no login) | https://hackathon-pi-ebon.vercel.app/campus/mit |
+| **Demo video** (< 3 min) | _YouTube link — add after upload_ · walkthrough also on the campus page ("Watch the Demo") |
+| **How we used Kiro** | [KIRO.md](KIRO.md) · [`.kiro/`](.kiro) (specs, steering, hooks, skills) |
+| **Team** | _add all team members (max 4)_ |
+
+## What it does
+
+UniFix lets college students report what's broken on campus in plain language. AI classifies each
+report, asks only the few details still missing (max 3, location first, or "No specific place"),
+merges duplicates into one co-signed ticket, ranks it by **severity × reach**, and routes it to the
+**one staff team** that fixes it — each staff member only sees their own area. Every report has a
+visible status from Received to Fixed, and everyone who co-signed is notified.
+
+- **Ari**, a small robot helper, shows how often an issue happened before and how fast it usually gets
+  fixed, plus safe quick fixes that can save a report.
+- **Safety beats everything:** emergency wording ("someone collapsed", "got stabbed", "smells like gas")
+  instantly shows **Call 911** and **Campus Police** — before any AI runs. Self-harm adds **988**.
+- **Private reports** that name a person go to exactly one office, with a private two-way thread.
+- **Comments + chat:** public comments for everyone, plus a direct staff ↔ reporter chat; notifications
+  open the conversation. Staff can **Mark solved** or **Dismiss** with a reason.
+- **Live campus map** with severity clusters; click a bubble to list its reports.
+- **Junk stays out:** spam, jokes and prize/money claims are blocked; public posts can't name people.
+- **Any campus:** every Massachusetts school from the challenge's IPEDS directory opens instantly.
+
+## Testing instructions (judges)
+
+1. Open the live demo. You're in the **student view** (a pop-up explains it; **Demo guide** in the top bar
+   reopens it, including a click-by-click guided report).
+2. Click **Report** and type `my wifi is not working` → pick **No specific place** → see Ari's history
+   and quick fixes → **Still broken — file it** → it goes to the **IT** team.
+3. Type `somebody collapsed in the library` to see the emergency screen (it never dials).
+4. Type `I won a million dollars` — it's rejected as not a real report.
+5. **Switch to staff view** (banner). Pick a staff member (top right) — each sees only their team.
+   Open a report → **Message the reporter** → **Mark solved**.
+6. Switch back to the student, open the bell, click the notification → you land in the chat.
+
+## Run it locally
+
+```sh
+npm install
+npm run dev          # http://localhost:3000 — works offline with the in-memory MIT demo
+npm run check        # typecheck + module boundaries + lint + tests + build
+```
+
+Optional live services (keys are never printed): `./ship-keys add ANTHROPIC_API_KEY`, then
+`npm run ai:check` (AI model defaults to `claude-opus-5-5`). Supabase + Vercel: see Step 5 below.
+
+---
+
+## How this repo was built (team workflow)
 
 A 3-person hackathon starter for **Kiro CLI** or **Claude Code**. We plan together on one laptop,
 split the work into 3 non-overlapping tracks, then each person runs a **Ralph loop** (an AI agent
