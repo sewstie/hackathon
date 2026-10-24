@@ -38,6 +38,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
   const [emergency, setEmergency] = React.useState(false);
   const [campus, setCampus] = React.useState<Campus | null>(null);
   const [filing, setFiling] = React.useState(false);
+  const [filedReportId, setFiledReportId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     getStore()
@@ -61,7 +62,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
     setFiling(true);
     try {
       const title = text.trim().slice(0, 80) || "Private report";
-      await filePrivateReport(getStore(), {
+      const filed = await filePrivateReport(getStore(), {
         campusId: MIT_CAMPUS_ID,
         reporterId: activeUser.id,
         office,
@@ -69,6 +70,7 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
         body: text.trim(),
         dontShareName,
       });
+      setFiledReportId(filed.id);
       setStep("filed");
     } finally {
       setFiling(false);
@@ -91,8 +93,16 @@ export function PrivateReportFlow({ initialText = "" }: { initialText?: string }
             Your report is with {office}. You&apos;ll be notified of any reply or
             status change.
           </p>
-          <div>
-            <Button onClick={() => router.push(`/campus/${MIT_CAMPUS_ID}`)}>
+          <div className="flex flex-wrap gap-2">
+            {filedReportId && (
+              <Button onClick={() => router.push(`/private/thread/${filedReportId}`)}>
+                Open your private thread
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/campus/${MIT_CAMPUS_ID}`)}
+            >
               Back to campus home
             </Button>
           </div>

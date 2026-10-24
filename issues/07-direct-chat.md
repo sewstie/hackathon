@@ -1,6 +1,6 @@
 # 07: Two-way direct chat on private reports
 
-Status: OPEN
+Status: DONE
 Track: C
 Blocked By: 01-prefactor-shared-seams.md
 Files Touched: src/app/staff-private/staff-private-view.tsx, src/app/private/thread/ (reachability wiring)
