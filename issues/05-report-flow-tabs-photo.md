@@ -1,6 +1,6 @@
 # 05: Tabbed report flow with polished photo step
 
-Status: OPEN
+Status: DONE
 Track: B
 Blocked By: 01-prefactor-shared-seams.md
 Files Touched: src/app/report/ (report-flow.tsx + step/tab components), src/modules/reporting/ (photo step glue only; reuse existing PhotoUploader)

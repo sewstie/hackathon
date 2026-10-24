@@ -22,7 +22,13 @@ import type { Store } from "@/lib/store";
 import type { Category, Report, Tier } from "@/types";
 
 import { confirmationFor, teamForCategory } from "./lib/teams";
-import { uploadToSupabaseStorage, type PhotoUploader } from "./lib/photo";
+import {
+  evaluatePhotoSelection,
+  MAX_PHOTO_BYTES,
+  uploadToSupabaseStorage,
+  type PhotoSelection,
+  type PhotoUploader,
+} from "./lib/photo";
 
 /** The editable draft shown on the confirmation card before posting. */
 export interface ReportDraft {
@@ -161,6 +167,16 @@ export async function fileReport(
 
 /** Re-export the team lookup so the confirm card can name the destination. */
 export { teamForCategory };
+
+// --- ticket 05: optional Photo step ----------------------------------------
+//
+// The report flow gains a visible Photo step (Describe → Details → Photo →
+// Review). Attaching is always optional; when a file IS picked the step shows a
+// local preview and lets the student replace/remove it before posting. The glue
+// the module owns is the pure gate on what may be previewed/attached — an image
+// within a size cap — so the step (and tests) share one rule without a browser.
+export { evaluatePhotoSelection, MAX_PHOTO_BYTES };
+export type { PhotoSelection };
 
 // --- ticket 04: smart follow-ups -------------------------------------------
 //
